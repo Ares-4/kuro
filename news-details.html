@@ -371,27 +371,68 @@
 							</div>
 							<div class="comment-form">
 								<h3 class="comment-form__title">Leave a Comment</h3>
-								<form id="contact_form" name="contact_form" class="" action="includes/sendmail.php" method="post">
-									<div class="row">
-										<div class="col-sm-6">
-											<div class="mb-3">
-												<input name="form_name" class="form-control" type="text" placeholder="Enter Name">
-											</div>
-										</div>
-										<div class="col-sm-6">
-											<div class="mb-3">
-												<input name="form_email" class="form-control required email" type="email" placeholder="Enter Email">
-											</div>
-										</div>
-									</div>
-									<div class="mb-3">
-										<textarea name="form_message" class="form-control required" rows="5" placeholder="Enter Message"></textarea>
-									</div>
-									<div class="mb-3">
-										<input name="form_botcheck" class="form-control" type="hidden" value="" />
-										<button type="submit" class="theme-btn btn-style-one" data-loading-text="Please wait..."><span class="btn-title">Submit Comment</span></button>
-									</div>
-								</form>
+                                                                <form id="contact_form" name="contact_form" class="" data-source="News Details Page">
+                                                                        <div class="row">
+                                                                                <div class="col-sm-6">
+                                                                                        <div class="mb-3">
+                                                                                                <input name="form_name" class="form-control" type="text" placeholder="Enter Name">
+                                                                                        </div>
+                                                                                </div>
+                                                                                <div class="col-sm-6">
+                                                                                        <div class="mb-3">
+                                                                                                <input name="form_email" class="form-control required email" type="email" placeholder="Enter Email">
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                                <div class="col-sm-6">
+                                                                                        <div class="mb-3">
+                                                                                                <input name="form_phone" class="form-control" type="text" placeholder="Enter Phone (optional)">
+                                                                                        </div>
+                                                                                </div>
+                                                                                <div class="col-sm-6">
+                                                                                        <div class="mb-3">
+                                                                                                <label class="form-label">Visa expiry date</label>
+                                                                                                <input name="visa_expiry_date" class="form-control" type="date">
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                                <div class="col-sm-12">
+                                                                                        <div class="mb-3">
+                                                                                                <div class="form-check mb-3">
+                                                                                                        <input name="reminder_opt_in" class="form-check-input" type="checkbox" id="reminder_opt_in_news">
+                                                                                                        <label class="form-check-label" for="reminder_opt_in_news">Send me automated reminders</label>
+                                                                                                </div>
+                                                                                                <span class="d-block mb-2 fw-semibold">Notify me via:</span>
+                                                                                                <div class="form-check form-check-inline">
+                                                                                                        <input class="form-check-input" type="checkbox" name="channel_email" id="channel_email_news" checked>
+                                                                                                        <label class="form-check-label" for="channel_email_news">Email</label>
+                                                                                                </div>
+                                                                                                <div class="form-check form-check-inline">
+                                                                                                        <input class="form-check-input" type="checkbox" name="channel_sms" id="channel_sms_news">
+                                                                                                        <label class="form-check-label" for="channel_sms_news">SMS</label>
+                                                                                                </div>
+                                                                                                <div class="form-check form-check-inline">
+                                                                                                        <input class="form-check-input" type="checkbox" name="channel_whatsapp" id="channel_whatsapp_news">
+                                                                                                        <label class="form-check-label" for="channel_whatsapp_news">WhatsApp</label>
+                                                                                                </div>
+                                                                                                <input type="hidden" name="reminder_type" value="Visa expiry">
+                                                                                                <input type="hidden" name="form_subject" value="Blog Comment">
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                                <textarea name="form_message" class="form-control required" rows="5" placeholder="Enter Message"></textarea>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                                <input name="form_botcheck" class="form-control" type="hidden" value="" />
+                                                                                <button type="submit" class="theme-btn btn-style-one" data-loading-text="Please wait..."><span class="btn-title">Submit Comment</span></button>
+                                                                        </div>
+                                                                        <div id="client-id-display" class="alert alert-info d-none" role="alert">
+                                                                                Your Client ID is <strong class="client-id"></strong>. Check your inbox for confirmation details.
+                                                                        </div>
+                                                                </form>
 							</div>
 						</div>
 					</div>
@@ -654,31 +695,6 @@
 <script src="js/script.js"></script>
 <!-- form submit -->
 <script src="js/jquery.validate.min.js"></script>
-<script src="js/jquery.form.min.js"></script>
-<script>
-	(function($) {
-		$("#contact_form").validate({
-			submitHandler: function(form) {
-				var form_btn = $(form).find('button[type="submit"]');
-				var form_result_div = '#form-result';
-				$(form_result_div).remove();
-				form_btn.before('<div id="form-result" class="alert alert-success" role="alert" style="display: none;"></div>');
-				var form_btn_old_msg = form_btn.html();
-				form_btn.html(form_btn.prop('disabled', true).data("loading-text"));
-				$(form).ajaxSubmit({
-					dataType:  'json',
-					success: function(data) {
-						if( data.status == 'true' ) {
-							$(form).find('.form-control').val('');
-						}
-						form_btn.prop('disabled', false).html(form_btn_old_msg);
-						$(form_result_div).html(data.message).fadeIn('slow');
-						setTimeout(function(){ $(form_result_div).fadeOut('slow') }, 6000);
-					}
-				});
-			}
-		});
-	})(jQuery);
-</script>
+<script src="js/intake-form.js"></script>
 </body>
 </html>

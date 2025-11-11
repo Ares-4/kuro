@@ -12712,3 +12712,22 @@ Sidebar
 .footer-bottom .copyright-text a:hover {
   color: #ffffff;
 }
+
+.whatsapp-btn {
+  margin-top: 20px;
+  display: inline-block;
+}
+
+.whatsapp-btn .btn-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.whatsapp-btn .fab {
+  font-size: 18px;
+}
+
+#client-id-display {
+  margin-top: 15px;
+}

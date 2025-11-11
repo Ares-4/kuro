@@ -882,7 +882,7 @@
 						<h2>Feel free to write</h2>
 					</div>
 					<!-- Contact Form -->
-					<form id="contact_form" name="contact_form" class="" action="includes/sendmail.php" method="post">
+                                        <form id="contact_form" name="contact_form" class="" data-source="Home Page">
 						<div class="row">
 							<div class="col-sm-6">
 								<div class="mb-3">
@@ -895,27 +895,64 @@
 								</div>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col-sm-6">
-								<div class="mb-3">
-									<input name="form_subject" class="form-control required" type="text" placeholder="Enter Subject">
-								</div>
-							</div>
-							<div class="col-sm-6">
-								<div class="mb-3">
-									<input name="form_phone" class="form-control" type="text" placeholder="Enter Phone">
-								</div>
-							</div>
-						</div>
-						<div class="mb-3">
-							<textarea name="form_message" class="form-control required" rows="7" placeholder="Enter Message"></textarea>
-						</div>
-						<div class="mb-3">
-							<input name="form_botcheck" class="form-control" type="hidden" value="" />
-							<button type="submit" class="theme-btn btn-style-one" data-loading-text="Please wait..."><span class="btn-title">Send message</span></button>
-							<button type="reset" class="theme-btn btn-style-one bg-theme-color5"><span class="btn-title">Reset</span></button>
-						</div>
-					</form>
+                                                <div class="row">
+                                                        <div class="col-sm-6">
+                                                                <div class="mb-3">
+                                                                        <input name="form_subject" class="form-control required" type="text" placeholder="Enter Subject">
+                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                                <div class="mb-3">
+                                                                        <input name="form_phone" class="form-control" type="text" placeholder="Enter Phone">
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                                <div class="row">
+                                                        <div class="col-sm-6">
+                                                                <div class="mb-3">
+                                                                        <label class="form-label">Visa expiry date</label>
+                                                                        <input name="visa_expiry_date" class="form-control" type="date">
+                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                                <div class="mb-3 form-check mt-4 pt-2">
+                                                                        <input name="reminder_opt_in" class="form-check-input" type="checkbox" id="reminder_opt_in_home">
+                                                                        <label class="form-check-label" for="reminder_opt_in_home">Send me automated reminders</label>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                                <div class="row">
+                                                        <div class="col-sm-12">
+                                                                <div class="mb-3">
+                                                                        <span class="d-block mb-2 fw-semibold">Notify me via:</span>
+                                                                        <div class="form-check form-check-inline">
+                                                                                <input class="form-check-input" type="checkbox" name="channel_email" id="channel_email_home" checked>
+                                                                                <label class="form-check-label" for="channel_email_home">Email</label>
+                                                                        </div>
+                                                                        <div class="form-check form-check-inline">
+                                                                                <input class="form-check-input" type="checkbox" name="channel_sms" id="channel_sms_home">
+                                                                                <label class="form-check-label" for="channel_sms_home">SMS</label>
+                                                                        </div>
+                                                                        <div class="form-check form-check-inline">
+                                                                                <input class="form-check-input" type="checkbox" name="channel_whatsapp" id="channel_whatsapp_home">
+                                                                                <label class="form-check-label" for="channel_whatsapp_home">WhatsApp</label>
+                                                                        </div>
+                                                                        <input type="hidden" name="reminder_type" value="Visa expiry">
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                        <textarea name="form_message" class="form-control required" rows="7" placeholder="Enter Message"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                        <input name="form_botcheck" class="form-control" type="hidden" value="" />
+                                                        <button type="submit" class="theme-btn btn-style-one" data-loading-text="Please wait..."><span class="btn-title">Send message</span></button>
+                                                        <button type="reset" class="theme-btn btn-style-one bg-theme-color5"><span class="btn-title">Reset</span></button>
+                                                </div>
+                                                <div id="client-id-display" class="alert alert-info d-none" role="alert">
+                                                        Your Client ID is <strong class="client-id"></strong>. Keep it nearby for future check-ins.
+                                                </div>
+                                        </form>
 					<!-- Contact Form Validation-->
 				</div>
 				<div class="col-xl-5 col-lg-6">
@@ -925,10 +962,10 @@
 							<h2>Get in touch with us</h2>
 							<div class="text">Lorem ipsum is simply free text available dolor sit amet consectetur notted adipisicing elit sed do eiusmod tempor incididunt simply dolore magna.</div>
 						</div>
-						<ul class="list-unstyled contact-details__info">
-							<li>
-								<div class="icon bg-theme-color2">
-									<span class="lnr-icon-phone-plus"></span>
+                                                  <ul class="list-unstyled contact-details__info">
+                                                          <li>
+                                                                  <div class="icon bg-theme-color2">
+                                                                          <span class="lnr-icon-phone-plus"></span>
 								</div>
 								<div class="text">
 									<h6>Have any question?</h6>
@@ -944,18 +981,21 @@
 									<a href="mailto:support@kuroeduconsultancy.com">support@kuroeduconsultancy.com</a>
 								</div>
 							</li>
-							<li>
-								<div class="icon">
-									<span class="lnr-icon-location"></span>
-								</div>
-								<div class="text">
-									<h6>Visit anytime</h6>
-									<span>66 broklyn golden street. New York</span>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
+                                                          <li>
+                                                                  <div class="icon">
+                                                                          <span class="lnr-icon-location"></span>
+                                                                  </div>
+                                                                  <div class="text">
+                                                                          <h6>Visit anytime</h6>
+                                                                          <span>66 broklyn golden street. New York</span>
+                                                                  </div>
+                                                          </li>
+                                                  </ul>
+                                                  <a class="theme-btn btn-style-three whatsapp-btn" href="https://wa.me/263712345678" target="_blank" rel="noopener">
+                                                          <span class="btn-title"><span class="fab fa-whatsapp"></span> Chat on WhatsApp</span>
+                                                  </a>
+                                          </div>
+                                  </div>
 			</div>
 		</div>
 	</section>
@@ -1138,6 +1178,9 @@
 <script src="js/select2.min.js"></script>
 <script src="js/swiper.min.js"></script>
 <script src="js/owl.js"></script>
-<script src="js/script.js"></script>
-</body>
-</html>
+ <script src="js/script.js"></script>
+ <!-- form submit -->
+ <script src="js/jquery.validate.min.js"></script>
+ <script src="js/intake-form.js"></script>
+ </body>
+ </html>

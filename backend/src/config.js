@@ -1,42 +1,95 @@
-import dotenv from 'dotenv';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: process.env.DOTENV_PATH || path.join(__dirname, '..', '.env') });
+const DEFAULT_ENV_PATH = path.join(__dirname, '..', '.env');
+
+const parseEnvFile = (filePath) => {
+  if (!fs.existsSync(filePath)) {
+    return {};
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+  const env = {};
+
+  for (const line of content.split(/\r?\n/)) {
+    if (!line || line.trim().startsWith('#')) {
+      continue;
+    }
+
+    const equalsIndex = line.indexOf('=');
+    if (equalsIndex === -1) {
+      continue;
+    }
+
+    const key = line.slice(0, equalsIndex).trim();
+    let value = line.slice(equalsIndex + 1).trim();
+
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+
+    value = value.replace(/\\n/g, '\n');
+
+    if (key) {
+      env[key] = value;
+    }
+  }
+
+  return env;
+};
+
+const envFilePath = process.env.DOTENV_PATH || DEFAULT_ENV_PATH;
+const fileEnv = parseEnvFile(envFilePath);
+const mergedEnv = { ...fileEnv, ...process.env };
+
+const getBoolean = (value, fallback = false) => {
+  if (value === undefined) {
+    return fallback;
+  }
+
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  return ['1', 'true', 'yes', 'on'].includes(String(value).toLowerCase());
+};
 
 export const CONFIG = {
-  port: process.env.PORT || 4000,
-  adminToken: process.env.ADMIN_TOKEN || 'change-me-admin-token',
-  allowedOrigins: process.env.ALLOWED_ORIGINS || '',
-  sendgridApiKey: process.env.SENDGRID_API_KEY || '',
-  sendgridFromEmail: process.env.SENDGRID_FROM_EMAIL || 'support@kuroeduconsultancy.com',
+  port: Number(mergedEnv.PORT || 4000),
+  adminToken: mergedEnv.ADMIN_TOKEN || 'change-me-admin-token',
+  allowedOrigins: mergedEnv.ALLOWED_ORIGINS || '',
+  email: {
+    host: mergedEnv.SMTP_HOST || '',
+    port: Number(mergedEnv.SMTP_PORT || 587),
+    user: mergedEnv.SMTP_USER || '',
+    pass: mergedEnv.SMTP_PASS || '',
+    from: mergedEnv.EMAIL_FROM || 'support@kuroeduconsultancy.com',
+    secure: getBoolean(mergedEnv.SMTP_SECURE, false)
+  },
   twilio: {
-    accountSid: process.env.TWILIO_ACCOUNT_SID || '',
-    authToken: process.env.TWILIO_AUTH_TOKEN || '',
-    messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID || '',
-    whatsappFrom: process.env.TWILIO_WHATSAPP_FROM || ''
+    accountSid: mergedEnv.TWILIO_ACCOUNT_SID || '',
+    authToken: mergedEnv.TWILIO_AUTH_TOKEN || '',
+    messagingServiceSid: mergedEnv.TWILIO_MESSAGING_SERVICE_SID || '',
+    whatsappFrom: mergedEnv.TWILIO_WHATSAPP_FROM || ''
   },
   docusign: {
-    integrationKey: process.env.DOCUSIGN_INTEGRATION_KEY || '',
-    userId: process.env.DOCUSIGN_USER_ID || '',
-    authServer: process.env.DOCUSIGN_AUTH_SERVER || 'account.docusign.com',
-    privateKey: process.env.DOCUSIGN_PRIVATE_KEY || '',
-    templateId: process.env.DOCUSIGN_TEMPLATE_ID || '',
-    basePath: process.env.DOCUSIGN_BASE_PATH || 'https://demo.docusign.net/restapi'
+    integrationKey: mergedEnv.DOCUSIGN_INTEGRATION_KEY || '',
+    userId: mergedEnv.DOCUSIGN_USER_ID || '',
+    authServer: mergedEnv.DOCUSIGN_AUTH_SERVER || 'account.docusign.com',
+    privateKey: mergedEnv.DOCUSIGN_PRIVATE_KEY || '',
+    templateId: mergedEnv.DOCUSIGN_TEMPLATE_ID || '',
+    basePath: mergedEnv.DOCUSIGN_BASE_PATH || 'https://demo.docusign.net/restapi'
   },
-  aws: {
-    region: process.env.AWS_REGION || 'us-east-1',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-    backupBucket: process.env.AWS_BACKUP_BUCKET || ''
-  },
+  reminderWindowDays: Number(mergedEnv.REMINDER_WINDOW_DAYS || 14),
   trello: {
-    apiKey: process.env.TRELLO_API_KEY || '',
-    token: process.env.TRELLO_TOKEN || '',
-    listId: process.env.TRELLO_LIST_ID || ''
-  },
-  reminderWindowDays: Number(process.env.REMINDER_WINDOW_DAYS || 14)
+    apiKey: mergedEnv.TRELLO_API_KEY || '',
+    token: mergedEnv.TRELLO_TOKEN || '',
+    listId: mergedEnv.TRELLO_LIST_ID || ''
+  }
 };
+
+export const RAW_ENV = mergedEnv;

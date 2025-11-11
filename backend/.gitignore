@@ -1,3 +1,5 @@
 node_modules/
 data/*.sqlite
+data/*.json
+backups/
 .env

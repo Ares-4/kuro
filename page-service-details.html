@@ -294,12 +294,32 @@
 						</div>
 
 						<!--Start Services Details Sidebar Single-->
-						<div class="sidebar-widget service-sidebar-single mt-5">
-							<div class="service-sidebar-single-btn wow fadeInUp"
-								data-wow-delay="0.5s" data-wow-duration="1200m">
-								<a href="#" class="theme-btn btn-style-one d-grid"><span class="btn-title"><span class="fas fa-file-pdf"></span> download pdf file</span></a>
-							</div>
-						</div>
+                                                <div class="sidebar-widget service-sidebar-single mt-5">
+                                                        <div class="service-sidebar-single-btn wow fadeInUp"
+                                                                data-wow-delay="0.5s" data-wow-duration="1200m">
+                                                                <form id="signature_request_form" class="signature-request">
+                                                                        <h4 class="mb-3">Sign the Student Visa Agreement</h4>
+                                                                        <p class="small text-light">Complete this form to receive a secure DocuSign link. We will email the agreement to the signer instantly.</p>
+                                                                        <div class="mb-3">
+                                                                                <input type="text" name="signer_name" class="form-control" placeholder="Signer full name" required>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                                <input type="email" name="signer_email" class="form-control" placeholder="Signer email" required>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                                <input type="text" name="client_id" class="form-control" placeholder="Client ID (e.g. KURO-1234)" required>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                                <select name="document_type" class="form-control">
+                                                                                        <option value="Student Visa Agreement" selected>Student Visa Agreement</option>
+                                                                                        <option value="Travel Services Mandate">Travel Services Mandate</option>
+                                                                                </select>
+                                                                        </div>
+                                                                        <button type="submit" class="theme-btn btn-style-one d-grid" data-loading-text="Preparing..."><span class="btn-title"><span class="fas fa-file-signature"></span> Start e-signature</span></button>
+                                                                        <div id="signature-result" class="alert alert-info d-none mt-3" role="alert"></div>
+                                                                </form>
+                                                        </div>
+                                                </div>
 						<!--End Services Details Sidebar Single-->
 					</div>
 				</div>
@@ -508,41 +528,8 @@
 <script src="js/appear.js"></script>
 <script src="js/select2.min.js"></script>
 <script src="js/swiper.min.js"></script>
-<script src="js/owl.js"></script>
-<script src="js/script.js"></script>
-
-<!-- THEME TOGGLE SCRIPT ADDED -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggler = document.getElementById('theme-toggler');
-    const darkThemeStyle = document.getElementById('dark-theme-style');
-    const themeIcon = themeToggler.querySelector('i');
-
-    // Function to set the theme
-    const setTheme = (isDark) => {
-        darkThemeStyle.disabled = !isDark;
-        document.body.classList.toggle('dark-mode', isDark);
-        themeIcon.classList.toggle('fa-sun', isDark);
-        themeIcon.classList.toggle('fa-moon', !isDark);
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    };
-
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {
-        setTheme(true);
-    } else {
-        setTheme(false);
-    }
-
-    // Add click event listener to the button
-    themeToggler.addEventListener('click', () => {
-        const isDark = !darkThemeStyle.disabled;
-        setTheme(!isDark);
-    });
-});
-</script>
-</body>
-</html>
+ <script src="js/owl.js"></script>
+ <script src="js/script.js"></script>
+ <script src="js/signature-flow.js"></script>
+ </body>
+ </html>

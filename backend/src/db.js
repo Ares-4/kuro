@@ -1,84 +1,149 @@
-import sqlite3 from 'sqlite3';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dataDir = path.join(__dirname, '..', 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
+const dbPath = path.join(dataDir, 'clients.json');
 
-const dbPath = path.join(dataDir, 'clients.sqlite');
+const defaultState = {
+  clients: [],
+  reminders: [],
+  signedDocuments: []
+};
 
-export const db = new sqlite3.Database(dbPath);
+let state = { ...defaultState };
+let writeInFlight = Promise.resolve();
 
-export const run = (sql, params = []) => new Promise((resolve, reject) => {
-  db.run(sql, params, function (err) {
-    if (err) {
-      reject(err);
+const ensureDataDir = async () => {
+  await fs.promises.mkdir(dataDir, { recursive: true });
+};
+
+const loadState = async () => {
+  try {
+    const content = await fs.promises.readFile(dbPath, 'utf8');
+    const parsed = JSON.parse(content);
+    state = { ...defaultState, ...parsed };
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      state = { ...defaultState };
+      await persist();
     } else {
-      resolve(this);
+      throw error;
     }
-  });
-});
+  }
+};
 
-export const get = (sql, params = []) => new Promise((resolve, reject) => {
-  db.get(sql, params, (err, row) => {
-    if (err) {
-      reject(err);
-    } else {
-      resolve(row);
-    }
-  });
-});
-
-export const all = (sql, params = []) => new Promise((resolve, reject) => {
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      reject(err);
-    } else {
-      resolve(rows);
-    }
-  });
-});
+export const persist = async () => {
+  writeInFlight = writeInFlight.then(() =>
+    fs.promises.writeFile(dbPath, JSON.stringify(state, null, 2), 'utf8')
+  );
+  return writeInFlight;
+};
 
 export const init = async () => {
-  await run(`CREATE TABLE IF NOT EXISTS clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    client_id TEXT UNIQUE NOT NULL,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT,
-    subject TEXT,
-    message TEXT,
-    source_page TEXT,
-    reminder_opt_in INTEGER DEFAULT 0,
-    whatsapp_opt_in INTEGER DEFAULT 0,
-    visa_expiry_date TEXT,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  await run(`CREATE TABLE IF NOT EXISTS reminders (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    client_id TEXT NOT NULL,
-    reminder_type TEXT NOT NULL,
-    reminder_date TEXT NOT NULL,
-    delivery_channels TEXT NOT NULL,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (client_id) REFERENCES clients(client_id)
-  )`);
-
-  await run(`CREATE TABLE IF NOT EXISTS signed_documents (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    client_id TEXT NOT NULL,
-    envelope_id TEXT NOT NULL,
-    document_type TEXT NOT NULL,
-    status TEXT NOT NULL,
-    document_url TEXT,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (client_id) REFERENCES clients(client_id)
-  )`);
+  await ensureDataDir();
+  await loadState();
 };
+
+const sortByCreatedAtDesc = (a, b) => new Date(b.created_at) - new Date(a.created_at);
+
+export const createClient = async (client) => {
+  state.clients.push(client);
+  await persist();
+};
+
+export const listClients = () => [...state.clients].sort(sortByCreatedAtDesc);
+
+export const findClient = (clientId) => state.clients.find((client) => client.client_id === clientId) || null;
+
+export const addReminder = async (reminder) => {
+  state.reminders.push(reminder);
+  await persist();
+};
+
+export const listRemindersForClient = (clientId) =>
+  state.reminders
+    .filter((reminder) => reminder.client_id === clientId)
+    .sort((a, b) => new Date(a.reminder_date) - new Date(b.reminder_date));
+
+export const listRemindersWithinWindow = (windowDays) => {
+  const now = new Date();
+  const future = new Date(now.getTime() + windowDays * 24 * 60 * 60 * 1000);
+
+  return state.reminders.filter((reminder) => {
+    const reminderDate = reminder.reminder_date ? new Date(reminder.reminder_date) : null;
+    if (!reminderDate) {
+      return false;
+    }
+
+    return reminderDate >= startOfDay(now) && reminderDate <= startOfDay(future);
+  });
+};
+
+const startOfDay = (date) => {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+};
+
+export const addSignedDocument = async (document) => {
+  state.signedDocuments.push(document);
+  await persist();
+};
+
+export const listSignedDocuments = (clientId) =>
+  state.signedDocuments
+    .filter((document) => document.client_id === clientId)
+    .sort(sortByCreatedAtDesc);
+
+export const exportCsv = () => {
+  const header = 'client_id,name,email,phone,subject,message,source_page,reminder_opt_in,whatsapp_opt_in,visa_expiry_date,created_at';
+  const rows = state.clients.map((client) =>
+    [
+      client.client_id,
+      client.name,
+      client.email,
+      client.phone || '',
+      (client.subject || '').replace(/\n/g, ' '),
+      (client.message || '').replace(/\n/g, ' '),
+      client.source_page || '',
+      client.reminder_opt_in ? 1 : 0,
+      client.whatsapp_opt_in ? 1 : 0,
+      client.visa_expiry_date || '',
+      client.created_at
+    ]
+      .map((value) => `"${String(value ?? '').replace(/"/g, '""')}"`)
+      .join(',')
+  );
+
+  return [header, ...rows].join('\n');
+};
+
+export const recordSignedDocumentStatus = async ({ clientId, envelopeId, status, documentUrl, documentType }) => {
+  const existing = state.signedDocuments.find(
+    (doc) => doc.client_id === clientId && doc.envelope_id === envelopeId
+  );
+
+  if (existing) {
+    existing.status = status;
+    existing.document_url = documentUrl;
+    existing.document_type = documentType || existing.document_type;
+    existing.updated_at = new Date().toISOString();
+  } else {
+    state.signedDocuments.push({
+      client_id: clientId,
+      envelope_id: envelopeId,
+      status,
+      document_url: documentUrl || '',
+      document_type: documentType || 'Visa Agreement',
+      created_at: new Date().toISOString()
+    });
+  }
+
+  await persist();
+};
+
+export const getState = () => state;

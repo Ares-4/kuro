@@ -19,7 +19,7 @@ export const requestSignature = async ({ clientId, signerName, signerEmail, docu
     CONFIG.docusign.integrationKey,
     CONFIG.docusign.userId,
     'signature',
-    Buffer.from(CONFIG.docusign.privateKey, 'base64'),
+    buffer: Buffer.from(CONFIG.docusign.privateKey),
     jwtLifeSec
   );
 

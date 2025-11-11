@@ -10,7 +10,6 @@
     "migrate": "node src/migrate.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
     "docusign-esign": "^5.15.0",
     "dotenv": "^16.3.1",
     "express": "^4.19.2",

@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
@@ -19,8 +18,36 @@ const app = express();
 
 await init();
 
+const allowedOrigins = CONFIG.allowedOrigins
+  ? CONFIG.allowedOrigins.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : [];
+
 app.use(helmet());
-app.use(cors({ origin: CONFIG.allowedOrigins ? CONFIG.allowedOrigins.split(',') : true }));
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!allowedOrigins.length) {
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+    } else {
+      res.header('Access-Control-Allow-Origin', '*');
+    }
+  } else if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
+  res.header('Vary', 'Origin');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Admin-Token, X-Requested-With'
+  );
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  return next();
+});
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 

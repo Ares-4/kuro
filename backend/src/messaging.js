@@ -1,36 +1,140 @@
-import nodemailer from 'nodemailer';
-import twilio from 'twilio';
+import net from 'net';
+import tls from 'tls';
 import { CONFIG } from './config.js';
 
 const emailConfigured = Boolean(CONFIG.email.host && CONFIG.email.user && CONFIG.email.pass);
+const twilioConfigured = Boolean(CONFIG.twilio.accountSid && CONFIG.twilio.authToken);
 
-let mailer = null;
-if (emailConfigured) {
-  mailer = nodemailer.createTransport({
-    host: CONFIG.email.host,
-    port: CONFIG.email.port,
-    secure: CONFIG.email.port === 465,
-    auth: {
-      user: CONFIG.email.user,
-      pass: CONFIG.email.pass
-    }
+const readResponse = (socket) =>
+  new Promise((resolve, reject) => {
+    let buffer = '';
+
+    const onData = (chunk) => {
+      buffer += chunk.toString();
+      const lines = buffer.split(/\r?\n/).filter(Boolean);
+      const lastLine = lines[lines.length - 1];
+      if (lastLine && /^\d{3} /.test(lastLine)) {
+        socket.off('data', onData);
+        resolve(buffer);
+      }
+    };
+
+    socket.once('error', reject);
+    socket.on('data', onData);
   });
-}
 
-let smsClient = null;
-const smsConfigured = CONFIG.twilio.accountSid && CONFIG.twilio.authToken;
-if (smsConfigured) {
-  smsClient = twilio(CONFIG.twilio.accountSid, CONFIG.twilio.authToken);
-}
+const sendCommand = async (socket, command) => {
+  if (command) {
+    socket.write(`${command}\r\n`);
+  }
+  const response = await readResponse(socket);
+  const statusCode = Number(response.slice(0, 3));
+  if (statusCode >= 400) {
+    throw new Error(`SMTP command failed: ${response.trim()}`);
+  }
+  return response;
+};
 
-export const sendIntakeConfirmation = async ({
-  to,
-  name,
-  clientId,
-  reminderOptIn,
-  visaExpiryDate
-}) => {
+const upgradeToTls = (socket, host) =>
+  new Promise((resolve, reject) => {
+    const secureSocket = tls.connect({ socket, servername: host }, () => {
+      secureSocket.removeListener('error', reject);
+      resolve(secureSocket);
+    });
+
+    secureSocket.once('error', reject);
+  });
+
+const sendSmtpMail = async ({ to, subject, html }) => {
+  const { host, port, user, pass, from, secure } = CONFIG.email;
+  const hostname = 'kuro-backend.local';
+
+  let socket = secure
+    ? await new Promise((resolve, reject) => {
+        const tlsSocket = tls.connect(port, host, { servername: host }, () => {
+          tlsSocket.removeListener('error', reject);
+          resolve(tlsSocket);
+        });
+        tlsSocket.once('error', reject);
+      })
+    : await new Promise((resolve, reject) => {
+        const plainSocket = net.createConnection(port, host, () => {
+          plainSocket.removeListener('error', reject);
+          resolve(plainSocket);
+        });
+        plainSocket.once('error', reject);
+      });
+
+  await readResponse(socket); // greeting
+  await sendCommand(socket, `EHLO ${hostname}`);
+
+  if (!secure) {
+    await sendCommand(socket, 'STARTTLS');
+    socket = await upgradeToTls(socket, host);
+    await sendCommand(socket, `EHLO ${hostname}`);
+  }
+
+  await sendCommand(socket, 'AUTH LOGIN');
+  await sendCommand(socket, Buffer.from(user).toString('base64'));
+  await sendCommand(socket, Buffer.from(pass).toString('base64'));
+  await sendCommand(socket, `MAIL FROM:<${from}>`);
+  await sendCommand(socket, `RCPT TO:<${to}>`);
+  await sendCommand(socket, 'DATA');
+
+  const message = [
+    `From: ${from}`,
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/html; charset=utf-8',
+    '',
+    html,
+    '.',
+    ''
+  ].join('\r\n');
+
+  socket.write(`${message}`);
+  const dataResponse = await readResponse(socket);
+  const statusCode = Number(dataResponse.slice(0, 3));
+  if (statusCode >= 400) {
+    throw new Error(`SMTP DATA failed: ${dataResponse.trim()}`);
+  }
+
+  await sendCommand(socket, 'QUIT');
+  socket.end();
+};
+
+const sendTwilioMessage = async (payload) => {
+  if (!twilioConfigured) {
+    return;
+  }
+
+  const url = new URL(
+    `/2010-04-01/Accounts/${CONFIG.twilio.accountSid}/Messages.json`,
+    'https://api.twilio.com'
+  );
+
+  const body = new URLSearchParams(payload);
+  const auth = Buffer.from(`${CONFIG.twilio.accountSid}:${CONFIG.twilio.authToken}`).toString('base64');
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Twilio API error: ${response.status} ${text}`);
+  }
+};
+
+export const sendIntakeConfirmation = async ({ to, name, clientId, reminderOptIn, visaExpiryDate }) => {
   if (!emailConfigured) {
+    console.info('Skipping email confirmation; SMTP is not configured.');
     return;
   }
 
@@ -48,55 +152,83 @@ export const sendIntakeConfirmation = async ({
     <p>Warm regards,<br/>Kuro Educational Consultancy</p>
   `;
 
-  await mailer.sendMail({
+  await sendSmtpMail({
     to,
-    from: CONFIG.email.from,
     subject: 'We received your enquiry',
     html
   });
 };
 
-export const sendReminderNotification = async ({ client, reminder }) => {
-  const promises = [];
+const ensureChannelsArray = (channels) => {
+  if (!Array.isArray(channels)) {
+    if (typeof channels === 'string') {
+      try {
+        const parsed = JSON.parse(channels);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+      } catch (_) {
+        return channels.split(',').map((value) => value.trim()).filter(Boolean);
+      }
+    }
+    return [];
+  }
 
-  if (emailConfigured && reminder.delivery_channels.includes('email')) {
-    promises.push(
-      mailer.sendMail({
+  return channels;
+};
+
+export const sendReminderNotification = async ({ client, reminder }) => {
+  const channels = ensureChannelsArray(reminder.delivery_channels);
+  const tasks = [];
+
+  if (emailConfigured && channels.includes('email')) {
+    const html = `
+      <p>Hi ${client.name},</p>
+      <p>This is a friendly reminder that <strong>${reminder.reminder_type}</strong> is scheduled for ${
+        reminder.reminder_date
+      }.</p>
+      <p>Your Client ID is <strong>${client.client_id}</strong>.</p>
+      <p>- Kuro Educational Consultancy</p>
+    `;
+
+    tasks.push(
+      sendSmtpMail({
         to: client.email,
-        from: CONFIG.email.from,
         subject: `Reminder: ${reminder.reminder_type} for ${client.name}`,
-        html: `<p>Hi ${client.name},</p>
-          <p>This is a friendly reminder that <strong>${reminder.reminder_type}</strong> is scheduled for ${reminder.reminder_date}.</p>
-          <p>Your Client ID is <strong>${client.client_id}</strong>.</p>
-          <p>- Kuro Educational Consultancy</p>`
+        html
       })
     );
   }
 
-  if (smsConfigured && reminder.delivery_channels.includes('sms')) {
-    promises.push(
-      smsClient.messages.create({
-        to: client.phone,
-        messagingServiceSid: CONFIG.twilio.messagingServiceSid,
-        body: `Reminder: ${reminder.reminder_type} is scheduled for ${reminder.reminder_date}. Client ID: ${client.client_id}`
+  if (twilioConfigured && channels.includes('sms') && client.phone) {
+    tasks.push(
+      sendTwilioMessage({
+        To: client.phone,
+        MessagingServiceSid: CONFIG.twilio.messagingServiceSid,
+        Body: `Reminder: ${reminder.reminder_type} is scheduled for ${reminder.reminder_date}. Client ID: ${client.client_id}`
       })
     );
   }
 
   if (
-    smsConfigured &&
+    twilioConfigured &&
     CONFIG.twilio.whatsappFrom &&
     client.whatsapp_opt_in &&
-    reminder.delivery_channels.includes('whatsapp')
+    channels.includes('whatsapp') &&
+    client.phone
   ) {
-    promises.push(
-      smsClient.messages.create({
-        from: `whatsapp:${CONFIG.twilio.whatsappFrom}`,
-        to: `whatsapp:${client.phone}`,
-        body: `Kuro Educational Consultancy reminder: ${reminder.reminder_type} on ${reminder.reminder_date}. Client ID ${client.client_id}`
+    tasks.push(
+      sendTwilioMessage({
+        To: `whatsapp:${client.phone}`,
+        From: `whatsapp:${CONFIG.twilio.whatsappFrom}`,
+        Body: `Kuro Educational Consultancy reminder: ${reminder.reminder_type} on ${reminder.reminder_date}. Client ID ${client.client_id}`
       })
     );
   }
 
-  await Promise.allSettled(promises);
+  if (!tasks.length) {
+    return;
+  }
+
+  await Promise.allSettled(tasks);
 };

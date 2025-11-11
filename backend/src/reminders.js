@@ -1,33 +1,53 @@
-import cron from 'node-cron';
-import { all, get } from './db.js';
+import { listRemindersWithinWindow, findClient } from './db.js';
 import { CONFIG } from './config.js';
 import { sendReminderNotification } from './messaging.js';
 
+const REMINDER_CHECK_INTERVAL_MS = 60 * 1000;
+
 export const processReminderWindow = async () => {
-  const reminders = await all(
-    `SELECT r.id, r.client_id, r.reminder_type, r.reminder_date, r.delivery_channels
-       FROM reminders r
-      WHERE date(r.reminder_date) <= date('now', '+${CONFIG.reminderWindowDays} day')
-        AND date(r.reminder_date) >= date('now')`
-  );
+  const reminders = listRemindersWithinWindow(CONFIG.reminderWindowDays);
+  let processed = 0;
 
   for (const reminder of reminders) {
-    const client = await get('SELECT * FROM clients WHERE client_id = ?', [reminder.client_id]);
-    if (client) {
-      try {
-        await sendReminderNotification({ client, reminder });
-      } catch (error) {
-        console.error('Failed to deliver reminder notification', error);
-      }
+    const client = findClient(reminder.client_id);
+    if (!client) {
+      continue;
+    }
+
+    try {
+      await sendReminderNotification({ client, reminder });
+      processed += 1;
+    } catch (error) {
+      console.error('Failed to deliver reminder notification', error);
     }
   }
 
-  return reminders.length;
+  return processed;
 };
 
-export const scheduleReminderJobs = () =>
-  cron.schedule('0 8 * * *', () => {
-    processReminderWindow().catch((error) => {
-      console.error('Scheduled reminder processing failed', error);
-    });
-  });
+const hasRunToday = new Set();
+
+const reminderInterval = () => {
+  setInterval(() => {
+    const now = new Date();
+    const key = now.toISOString().slice(0, 10);
+
+    if (now.getHours() === 8 && now.getMinutes() === 0) {
+      if (hasRunToday.has(key)) {
+        return;
+      }
+
+      hasRunToday.add(key);
+      processReminderWindow().catch((error) => {
+        console.error('Scheduled reminder processing failed', error);
+      });
+    } else if (hasRunToday.size > 10) {
+      const oldest = [...hasRunToday].sort()[0];
+      hasRunToday.delete(oldest);
+    }
+  }, REMINDER_CHECK_INTERVAL_MS);
+};
+
+export const scheduleReminderJobs = () => {
+  reminderInterval();
+};

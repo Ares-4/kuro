@@ -1,6 +1,6 @@
 # Kuro CRM Backend
 
-This Express service powers the CRM intake, automated reminders, WhatsApp notifications, and DocuSign e-signature handoff for Kuro Educational Consultancy.
+This lightweight Node.js service powers the CRM intake, automated reminders, WhatsApp notifications, and DocuSign e-signature handoff for Kuro Educational Consultancy without requiring any external npm dependencies.
 
 ## Getting started
 
@@ -22,13 +22,12 @@ The `.env.example` file documents every configurable integration. Update the pla
 | `SMTP_*`, `EMAIL_FROM` | SMTP host credentials and default sender for outbound mail. |
 | `TWILIO_*` | Credentials for SMS/WhatsApp reminders. |
 | `DOCUSIGN_*` | Credentials for envelope creation. |
-| `AWS_*` | Optional bucket credentials for automated backups. |
 | `TRELLO_*` | Optional Kanban automation keys. |
 | `REMINDER_WINDOW_DAYS` | Number of days ahead to queue reminders (default `14`). |
 
-**Note:** Optional features such as AWS backups, Twilio messaging, DocuSign signing, and Trello automation stay dormant until their corresponding environment variables are set. The service still runs locally without those accounts.
+**Note:** Optional features such as Twilio messaging, DocuSign signing, and Trello automation stay dormant until their corresponding environment variables are set. The service still runs locally without those accounts.
 
-The service persists client data to `data/clients.sqlite`. The file is created automatically on first run and is excluded from version control.
+The service persists client data to `data/clients.json` and writes rolling backups to `backups/`. Both directories are created automatically on first run and are excluded from version control.
 
 ## API
 
@@ -40,4 +39,4 @@ The service persists client data to `data/clients.sqlite`. The file is created a
 - `GET /api/admin/clients/:clientId` — Detail view for a single client with reminders and signed document metadata.
 - `GET /api/admin/export.csv` — CSV export of all clients.
 
-Automated visa reminders run daily at 08:00 server time, while weekly backups to S3 execute every Monday at 03:00 when AWS credentials are configured.
+Automated visa reminders run daily at 08:00 server time, while file-based backups execute every Monday at 03:00.

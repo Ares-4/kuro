@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2493026919792043"
+ crossorigin="anonymous"></script>
+
 <meta charset="utf-8">
 <title>News</title>
 <!-- Stylesheets -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+<!-- Dark Mode Stylesheet -->
+<link href="css/style-dark.css" rel="stylesheet" id="dark-theme-style" disabled>
 
 <link rel="shortcut icon" href="images/favicon-16x16.png" type="image/x-icon">
 <link rel="icon" href="images/favicon-16x16.png" type="image/x-icon">
@@ -15,6 +21,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
 <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+
+<!-- Custom CSS for Theme Toggle Button -->
+<style>
+	.theme-toggle-btn {
+		background-color: transparent;
+		border: 1px solid #e1e6dc;
+		color: #015cb5;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		font-size: 18px;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 300ms ease;
+		margin-left: 10px;
+	}
+	.theme-toggle-btn:hover {
+		background-color: #015cb5;
+		color: #ffffff;
+		border-color: #015cb5;
+	}
+	body.dark-mode .theme-toggle-btn {
+		background-color: transparent;
+		border-color: #ffffff;
+		color: #ffffff;
+	}
+    body.dark-mode .theme-toggle-btn:hover {
+		background-color: #ffffff;
+		color: #171717;
+	}
+</style>
+
 </head>
 
 <body>
@@ -40,13 +80,6 @@
 				</div>
 				
 				<div class="top-right">
-					<!--<ul class="social-icon-one">
-						<li><a href="#"><span class="fab fa-twitter"></span></a></li>
-						<li><a href="#"><span class="fab fa-facebook-f"></span></a></li>
-						<li><a href="#"><span class="fab fa-pinterest-p"></span></a></li>
-						<li><a href="#"><span class="fab fa-instagram"></span></a></li>
-					</ul>-->
-
 					<ul class="useful-links">
 						<li><a href="#">Help</a></li>
 						<li><a href="#">Support</a></li>
@@ -62,7 +95,7 @@
 			<!-- Main box -->
 			<div class="main-box">
 				<div class="logo-box">
-					<div class="logo"><a href="index.html"><img src="images/logo-3.png" alt="" title=""></a></div>
+					<div class="logo"><a href="index.html"><img src="images/LOGO.png" alt="Kuro Logo" title=""></a></div>
 				</div>
 
 				<!--Nav Box-->
@@ -70,92 +103,17 @@
 					
 					<nav class="nav main-menu">
 						<ul class="navigation">
-							<li class="current dropdwn"><a href="index.html">Home</a>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="page-country.html">Country</a></li>
+							<li class="current dropdown"><a href="page-service.html">Visa</a>
 								<ul>
-									<li><a href="index.html">Home page 01</a></li>
-									<li><a href="index.html">Home page 02</a></li>
-									<li><a href="index-3.html">Home page 03</a></li>
-									<li class="dropdown"><a href="#">Dark Styles</a>
-										<ul>
-											<li><a href="index-1-dark.html">Home Dark 01</a></li>
-											<li><a href="index-dark.html">Home Dark 02</a></li>
-											<li><a href="index-3-dark.html">Home Dark 03</a></li>
-										</ul>
-									</li>
-									<li class="dropdown"><a href="#">Boxed Styles</a>
-										<ul>
-											<li><a href="index-1-boxed.html">Home Boxed 01</a></li>
-											<li><a href="index-boxed.html">Home Boxed 02</a></li>
-											<li><a href="index-3-boxed.html">Home Boxed 03</a></li>
-										</ul>
-									</li>
-									<li class="dropdown"><a href="#">Single Styles</a>
-										<ul>
-											<li><a href="index-1-Single.html">Home Single One</a></li>
-											<li><a href="index-Single.html">Home Single Two</a></li>
-											<li><a href="index-3-Single.html">Home Single Three</a></li>
-										</ul>
-									</li>
-									<li><a href="index-1-rtl.html">Home RTL 01</a></li>
-									<li class="dropdown"><a href="#">Header Styles</a>
-										<ul>
-											<li><a href="index.html">Header Style 01</a></li>
-											<li><a href="index.html">Header Style 02</a></li>
-											<li><a href="index-3.html">Header Style 03</a></li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-							<li class="dropdwn"><a href="page-country.html">Country</a>
-							<!--<li class="dropdown"><a>Pages</a>
-								<ul>
-									<li><a href="page-about.html">About</a></li>
-									<li class="dropdwn"><a href="page-country-details.html">Country</a>
-										<ul>
-											<li><a href="page-country.html">Country grid</a></li>
-											<li><a href="page-country-details.html">Country Details</a></li>
-										</ul>
-									</li>
-									<li class="dropdwn"><a href="page-team-details.html">Team</a>
-										<ul>
-											<li><a href="page-team.html">Team List</a></li>
-											<li><a href="page-team-details.html">Team Details</a></li>
-										</ul>
-									</li>
-									<!-<li><a href="page-testimonial.html">Testimonial</a></li>
-									<li class="dropdown"><a href="shop-product-details.html">Shop</a>
-										<ul>
-											<li><a href="shop-products.html">Products</a></li>
-											<li><a href="shop-products-sidebar.html">Products with Sidebar</a></li>
-											<li><a href="shop-product-details.html">Product Details</a></li>
-											<li><a href="shop-cart.html">Cart</a></li>
-											<li><a href="shop-checkout.html">Checkout</a></li>
-										</ul>
-									</li>->
-									!-<li><a href="page-FAQ.html">FAQ</a></li>->
-									!-<li><a href="page-404.html">Page 404</a></li>->
-								</ul>
-							</li>-->
-							<li class="dropdwn"><a href="page-service.html">Visa</a>
-								<ul>
-									<li><a href="page-service.html">Visa grid</a></li>
+									<li><a href="page-service.html">Visa Grid</a></li>
 									<li><a href="page-service-details.html">Visa Details</a></li>
-								</ul>
-							</li>
-							<!--<li class="dropdown"><a href="#">Coaching</a>
-								<ul>
-									<li><a href="page-course.html">Coaching grid</a></li>
-									<li><a href="page-course-details.html">Coaching Details</a></li>
-								</ul>
-							</li>-->
-							<!--<li class="dropdwn"><a href="news-grid.html">News</a>-->
-								<ul>
-									<li><a href="news-grid.html">News Grid</a></li>
-									<li><a href="news-details.html">News Details</a></li>
 								</ul>
 							</li>
 							<li><a href="page-contact.html">Contact</a></li>
 							<li><a href="page-about.html">About</a></li>
+							<li><a href="student-portal.html">Student Portal</a></li>
 						</ul>
 					</nav>
 					<!-- Main Menu End-->
@@ -173,7 +131,12 @@
 							</button>
 						</div>
 
-						<a href="#" class="theme-btn btn-style-one"><span class="btn-title">Book Consultation</span></a>
+						<!-- THEME TOGGLE BUTTON ADDED -->
+						<button class="theme-toggle-btn" id="theme-toggler" title="Toggle Night Mode">
+							<i class="fa fa-moon"></i>
+						</button>
+
+						<a href="https://calendly.com/kuroeducationalconsultancy/30min" class="theme-btn btn-style-one"><span class="btn-title">Book Consultation</span></a>
 
 						<!-- Mobile Nav toggler -->
 						<div class="mobile-nav-toggler"><span class="icon lnr-icon-bars"></span></div>
@@ -190,7 +153,7 @@
 			<!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header-->
 			<nav class="menu-box">
 				<div class="upper-box">
-					<div class="nav-logo"><a href="index.html"><img src="images/logo-3.png" alt="" title=""></a></div>
+					<div class="nav-logo"><a href="index.html"><img src="images/LOGO.png" alt="Kuro Logo" title=""></a></div>
 					<div class="close-btn"><i class="icon fa fa-times"></i></div>
 				</div>
 		
@@ -256,7 +219,7 @@
 				<div class="inner-container">
 					<!--Logo-->
 					<div class="logo">
-						<a href="index.html" title=""><img src="images/logo-3.png" alt="" title=""></a>
+						<a href="index.html" title=""><img src="images/LOGO.png" alt="Kuro Logo" title=""></a>
 					</div>
 		
 					<!--Right Col-->
@@ -361,7 +324,7 @@
 		<div class="bg bg-pattern-7"></div>
 		<div class="auto-container">
 			<div class="footer-upper">
-				<div class="logo-box"><img src="images/logo-3.png" alt=""></div>
+				<div class="logo-box"><img src="images/LOGO.png" alt="Kuro Logo"></div>
 				<ul class="contact-info">
 					<li>
 						<i class="icon fa fa-phone-square"></i>
@@ -396,8 +359,6 @@
 								<h6 class="widget-title">Links</h6>
 								<ul class="user-links">
 									<li><a href="#">About</a></li>
-									<!--<li><a href="#">Meet Team</a></li>-->
-									<!--<li><a href="#">News & Media</a></li>-->
 									<li><a href="#">Collaborations</a></li>
 									<li><a href="#">Contact</a></li>
 								</ul>
@@ -407,8 +368,6 @@
 								<h6 class="widget-title">Visa</h6>
 								<ul class="user-links">
 									<li><a href="#">Student Visa</a></li>
-									<!--<li><a href="#">Business Visa</a></li>-->
-									<!--<li><a href="#">Family Visa</a></li>-->
 									<li><a href="#">Travel Visa</a></li>
 									<li><a href="#">Work Visa</a></li>
 								</ul>
@@ -417,7 +376,6 @@
 							<div class="footer-widget col-lg-4 col-md-4 col-ms-12">
 								<h6 class="widget-title">Services</h6>
 								<ul class="user-links">
-									<!--<li><a href="#">PR Applicants</a></li>-->
 									<li><a href="#">Visa Consultancy</a></li>
 									<li><a href="#">Travel Insurance</a></li>
 									<li><a href="#">Document Processing</a></li>
@@ -426,35 +384,6 @@
 							</div>
 						</div>
 					</div>
-	
-					<!--Footer Column->
-					<div class="footer-column col-xl-3 col-lg-4 col-md-6 col-sm-8">
-						<div class="footer-widget gallery-widget">
-							<h6 class="widget-title">Gallery</h6>
-							<div class="widget-content">
-								<div class="outer clearfix">
-									<figure class="image">
-										<a href="#"><img src="images/resource/project-thumb-1.jpg" alt=""></a>
-									</figure>
-									<figure class="image">
-										<a href="#"><img src="images/resource/project-thumb-2.jpg" alt=""></a>
-									</figure>
-									<figure class="image">
-										<a href="#"><img src="images/resource/project-thumb-3.jpg" alt=""></a>
-									</figure>
-									<figure class="image">
-										<a href="#"><img src="images/resource/project-thumb-4.jpg" alt=""></a>
-									</figure>
-									<figure class="image">
-										<a href="#"><img src="images/resource/project-thumb-5.jpg" alt=""></a>
-									</figure>
-									<figure class="image">
-										<a href="#"><img src="images/resource/project-thumb-6.jpg" alt=""></a>
-									</figure>
-								</div>
-							</div>
-						</div>
-					</div>-->
 	
 					<!--Footer Column-->
 					<div class="footer-column col-xl-3 col-lg-12 col-md-6">
@@ -470,13 +399,6 @@
 									</div>
 								</form>
 							</div>
-							<!--<ul class="social-icon-two">
-								<li><a href="#"><i class="fab fa-twitter"></i></a></li>
-								<li><a href="#"><i class="fab fa-facebook"></i></a></li>
-								<li><a href="#"><i class="fab fa-pinterest"></i></a></li>
-								<li><a href="#"><i class="fab fa-instagram"></i></a></li>
-							</ul>-->
-	
 						</div>
 					</div>
 				</div>
@@ -487,7 +409,7 @@
 		<div class="footer-bottom">
 			<div class="auto-container">
 				<div class="inner-container">
-					<div class="copyright-text">&copy; Copyright 2023 by <a href="index.html">kuroeduconsultancy.com</a></div>
+					<div class="copyright-text">&copy; Copyright 2025 by <a href="index.html">kuroeduconsultancy.com</a></div>
 				</div>
 			</div>
 		</div>
@@ -512,5 +434,39 @@
 <script src="js/swiper.min.js"></script>
 <script src="js/owl.js"></script>
 <script src="js/script.js"></script>
+
+<!-- THEME TOGGLE SCRIPT ADDED -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggler = document.getElementById('theme-toggler');
+    const darkThemeStyle = document.getElementById('dark-theme-style');
+    const themeIcon = themeToggler.querySelector('i');
+
+    // Function to set the theme
+    const setTheme = (isDark) => {
+        darkThemeStyle.disabled = !isDark;
+        document.body.classList.toggle('dark-mode', isDark);
+        themeIcon.classList.toggle('fa-sun', isDark);
+        themeIcon.classList.toggle('fa-moon', !isDark);
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    };
+
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {
+        setTheme(true);
+    } else {
+        setTheme(false);
+    }
+
+    // Add click event listener to the button
+    themeToggler.addEventListener('click', () => {
+        const isDark = !darkThemeStyle.disabled;
+        setTheme(!isDark);
+    });
+});
+</script>
 </body>
 </html>

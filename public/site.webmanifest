@@ -1,0 +1,63 @@
+{
+  "name": "Kuro Educational Consultancy",
+  "short_name": "Kuro Education",
+  "description": "Expert guidance for students in Zimbabwe and Africa to study abroad in Poland, Germany, and Cyprus.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "categories": [
+    "education",
+    "business"
+  ],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/b0726bfc9b19c3dc7fd96e33c85383d5.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/b0726bfc9b19c3dc7fd96e33c85383d5.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/33a2e36eb341bdf8d7c59d5507c0bf99.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/585b9cfecc961e5c1a00bb9a0a35bf12.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/33a2e36eb341bdf8d7c59d5507c0bf99.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/17af830489377c0bbddafc566e44e4f2.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/585b9cfecc961e5c1a00bb9a0a35bf12.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+This file has been deprecated and its content removed as favicons are now hosted externally via GitHub Pages.

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square70x70logo src="https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/b0726bfc9b19c3dc7fd96e33c85383d5.png"/>
+            <square150x150logo src="https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/33a2e36eb341bdf8d7c59d5507c0bf99.png"/>
+            <wide310x150logo src="https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/33a2e36eb341bdf8d7c59d5507c0bf99.png"/>
+            <square310x310logo src="https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/585b9cfecc961e5c1a00bb9a0a35bf12.png"/>
+            <TileColor>#0f172a</TileColor>
+        </tile>
+    </msapplication>
+</browserconfig>

@@ -1,0 +1,40 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="globe-gradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dx="4" dy="8" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Sphere -->
+  <circle cx="256" cy="256" r="240" fill="url(#globe-gradient)" filter="url(#shadow)"/>
+
+  <!-- Globe Grid Lines -->
+  <path d="M256 16C388.548 16 496 123.452 496 256C496 388.548 388.548 496 256 496C123.452 496 16 388.548 16 256C16 123.452 123.452 16 256 16Z" stroke="white" stroke-opacity="0.2" stroke-width="4"/>
+  <path d="M256 16C320 16 376 123.452 376 256C376 388.548 320 496 256 496C192 496 136 388.548 136 256C136 123.452 192 16 256 16Z" stroke="white" stroke-opacity="0.2" stroke-width="4"/>
+  <path d="M16 256H496" stroke="white" stroke-opacity="0.2" stroke-width="4"/>
+  <path d="M46 136H466" stroke="white" stroke-opacity="0.15" stroke-width="4"/>
+  <path d="M46 376H466" stroke="white" stroke-opacity="0.15" stroke-width="4"/>
+
+  <!-- Simplified Continents (Abstract) -->
+  <path d="M170 180C190 160 230 150 250 170C270 190 260 220 240 240C220 260 180 270 160 250C140 230 150 200 170 180Z" fill="white" fill-opacity="0.3"/>
+  <path d="M300 220C320 200 360 190 380 210C400 230 390 260 370 280C350 300 310 310 290 290C270 270 280 240 300 220Z" fill="white" fill-opacity="0.3"/>
+
+  <!-- Airplane / Swoosh Element -->
+  <g transform="translate(0, 20)">
+    <path d="M120 300C160 340 260 360 360 280" stroke="#4ade80" stroke-width="24" stroke-linecap="round"/>
+    <path d="M360 280L340 260L390 270L370 310L360 280Z" fill="#4ade80"/>
+    <path d="M365 275L405 255L385 295L365 275Z" fill="#86efac"/>
+  </g>
+</svg>

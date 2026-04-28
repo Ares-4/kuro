@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SystemSettingsProvider } from '@/contexts/SystemSettingsContext';
@@ -116,6 +117,7 @@ function App() {
             <TawkToWidget />
             <KuroChatWidget />
             <Toaster />
+            <Analytics />
           </ReadinessProvider>
         </SystemSettingsProvider>
       </AuthProvider>

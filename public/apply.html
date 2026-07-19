@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply — Kuro Educational Consultancy</title>
+</head>
+<body>
 <style>
   :root{
     --bg-0:#0a0e1c;
@@ -72,17 +80,6 @@
   .msg.ok{color:#4ade80;}
   .msg.err{color:#f87171;}
   .privacy{font-size:12px;color:var(--muted);margin-top:16px;}
-
-  .foot-toggle{margin-top:30px;text-align:center;font-size:12px;color:#5a6690;}
-  .foot-toggle a{color:#5a6690;text-decoration:underline;cursor:pointer;}
-  .admin{display:none;margin-top:20px;}
-  .admin.show{display:block;}
-  table{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);border-radius:8px;overflow:hidden;}
-  th,td{border:1px solid var(--card-line);padding:8px 9px;text-align:left;vertical-align:top;color:var(--ink);}
-  th{background:#161d3c;color:var(--sky);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.03em;}
-  .admin-bar{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;flex-wrap:wrap;gap:10px;}
-  .count{font-size:13px;color:var(--muted);}
-  .empty{font-size:13px;color:#5a6690;padding:20px 0;}
 </style>
 
 <div class="topbar">
@@ -131,11 +128,15 @@
         <input id="f_phone" type="text" placeholder="+263...">
       </div>
       <div>
-        <label>Country of residence</label>
-        <input id="f_country" type="text" placeholder="e.g. Zimbabwe">
+        <label>Passport number</label>
+        <input id="f_passport" type="text" placeholder="e.g. AB1234567">
       </div>
     </div>
     <div class="field-row">
+      <div>
+        <label>Country of residence</label>
+        <input id="f_country" type="text" placeholder="e.g. Zimbabwe">
+      </div>
       <div>
         <label>Highest education completed</label>
         <select id="f_edu">
@@ -147,7 +148,6 @@
           <option>Other</option>
         </select>
       </div>
-      <div></div>
     </div>
 
     <div class="section-label">Study plans</div>
@@ -211,22 +211,11 @@
     </div>
     <p class="privacy">Your details go directly to Kuro's candidate list. No payment is collected here.</p>
   </div>
-
-  
-  <div id="admin" class="admin">
-    <div class="admin-bar">
-      <div class="count" id="count">0 candidates</div>
-      <div>
-        <button class="secondary" onclick="loadCandidates()">Refresh</button>
-      </div>
-    </div>
-    <div id="tableHolder"><div class="empty">Loading…</div></div>
   </div>
 </div>
 
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwWfgK_UI8x4PSGmwXwtGT8QWCQfTSSYS4Tq9DpQMgC7VK7DAF9IT0Tuv-SJ_DkdzcEkA/exec";
-let candidates = [];
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxXnCWOvUtuQX7udnG_CJuy831o6RY2p89BSanKO1Rv58vSxE9ixwPY_Cm02w_diVB0Hw/exec";
 
 function required(id){ return document.getElementById(id).value.trim(); }
 
@@ -244,6 +233,7 @@ async function submitCandidate(){
     motherName: required('f_mother'),
     name, email,
     phone: required('f_phone'),
+    passport: required('f_passport'),
     country: required('f_country'),
     education: required('f_edu'),
     field: required('f_field'),
@@ -268,11 +258,6 @@ async function submitCandidate(){
     });
   }catch(e){}
 
-  try{
-    const id = 'candidate:' + Date.now() + ':' + Math.random().toString(36).slice(2,7);
-    await window.storage.set(id, JSON.stringify({...record, status:'New'}), true);
-  }catch(e){}
-
   msgEl.className = 'msg ok';
   msgEl.textContent = 'Submitted — thank you. Kuro will be in touch.';
   document.querySelectorAll('.card input, .card select, .card textarea').forEach(el => el.value = '');
@@ -281,50 +266,11 @@ async function submitCandidate(){
   btn.textContent = 'Submit details';
 }
 
-function toggleAdmin(){
-  const el = document.getElementById('admin');
-  el.classList.toggle('show');
-  if(el.classList.contains('show')) loadCandidates();
-}
-
-async function loadCandidates(){
-  const holder = document.getElementById('tableHolder');
-  holder.innerHTML = '<div class="empty">Loading…</div>';
-  try{
-    const list = await window.storage.list('candidate:', true);
-    const keys = (list && list.keys) ? list.keys : [];
-    candidates = [];
-    for(const k of keys){
-      try{
-        const r = await window.storage.get(k, true);
-        if(r && r.value) candidates.push(JSON.parse(r.value));
-      }catch(e){}
-    }
-    candidates.sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
-    renderTable();
-  }catch(e){
-    holder.innerHTML = '<div class="empty">No candidates yet.</div>';
-    document.getElementById('count').textContent = '0 candidates';
-  }
-}
-
-function renderTable(){
-  const holder = document.getElementById('tableHolder');
-  document.getElementById('count').textContent = candidates.length + (candidates.length===1?' candidate':' candidates') + ' (local backup — full record is in your Google Sheet)';
-  if(candidates.length === 0){
-    holder.innerHTML = '<div class="empty">No candidates yet.</div>';
-    return;
-  }
-  let html = '<table><thead><tr><th>Father</th><th>Mother</th><th>Candidate</th><th>Email</th><th>Phone</th><th>Country</th><th>Field</th><th>University</th><th>IELTS</th><th>NAWA</th><th>Submitted</th></tr></thead><tbody>';
-  for(const c of candidates){
-    html += `<tr><td>${esc(c.fatherName)}</td><td>${esc(c.motherName)}</td><td>${esc(c.name)}</td><td>${esc(c.email)}</td><td>${esc(c.phone)}</td><td>${esc(c.country)}</td><td>${esc(c.field)}</td><td>${esc(c.university)}</td><td>${esc(c.ielts)}</td><td>${esc(c.nawa)}</td><td>${new Date(c.submittedAt).toLocaleDateString()}</td></tr>`;
-  }
-  html += '</tbody></table>';
-  holder.innerHTML = html;
-}
-
 function esc(s){
   if(!s) return '';
   return String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 }
 </script>
+
+</body>
+</html>

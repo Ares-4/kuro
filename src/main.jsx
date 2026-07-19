@@ -3,11 +3,15 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
+import { inject } from '@vercel/analytics';
 
 import { PublicSiteSettingsProvider } from '@/contexts/PublicSiteSettingsContext';
 import { AdminAuthProvider } from '@/contexts/AdminAuthContext';
 import { envConfig } from '@/config/environment';
 import StartupErrorModal from '@/components/StartupErrorModal';
+
+// Initialize Vercel Web Analytics
+inject();
 
 const Root = () => {
   const [isConfigValid, setIsConfigValid] = useState(envConfig.isValid);

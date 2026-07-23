@@ -1,0 +1,120 @@
+export const DEFAULT_CONTENT = {
+  home: {
+    hero_title: 'Global Study & Relocation Support: Africa to the World',
+    hero_subtitle: 'Your trusted partner for admissions, visa support, and relocation to top universities in the EU, Australia, USA, Canada, and UK.',
+    hero_cta_label: 'Start Your Journey',
+    featured_destinations_heading: 'Top Destinations',
+    featured_destinations_intro: 'Open doors to world-class education. Whether you dream of European culture, American innovation, or Australian lifestyle, we have the right path for you.',
+    why_choose_us_heading: 'Why Choose Kuro?',
+    why_choose_us_intro: "We don't just process applications; we build futures. Our student-first approach ensures transparency, compliance, and success.",
+    testimonials_heading: 'Student Success Stories',
+    cta_section_title: 'Ready to Start Your Adventure?',
+    cta_section_subtitle: "Don't let the complex process stop you. Get expert help today and secure your future.",
+    cta_button_label: 'Apply Now',
+    meta_title: 'Global Study Abroad Support - Kuro Education',
+    meta_description: 'Expert admissions, visa, and relocation support for students from Africa to EU, Australia, USA, Canada, UK and beyond.'
+  },
+  student_stories: {
+    stories_heading: 'Student Stories',
+    stories_intro: 'Hear from students who have successfully embarked on their global education journey with Kuro.',
+    story_1_quote: 'A life-changing experience. The guidance I received was invaluable in navigating the complex visa process.',
+    story_1_author: 'Student A',
+    story_2_quote: 'Support was incredible. From selecting the university to finding accommodation, Kuro was there every step of the way.',
+    story_2_author: 'Student B',
+    story_3_quote: 'I highly recommend Kuro to anyone looking to study abroad. Their expertise is unmatched.',
+    story_3_author: 'Student C',
+    meta_title: 'Student Success Stories - Kuro Education',
+    meta_description: 'Read testimonials from students who have successfully studied abroad with Kuro Education Consultancy.'
+  },
+  expert_team: {
+    team_heading: 'Our Expert Team',
+    team_intro: 'Meet the dedicated professionals committed to making your study abroad dreams a reality.',
+    team_member_1_name: 'Education Consultant',
+    team_member_1_title: 'Senior Advisor',
+    team_member_1_bio: 'Specializing in UK and European university admissions with over 10 years of experience.',
+    team_member_2_name: 'Education Consultant',
+    team_member_2_title: 'Senior Advisor',
+    team_member_2_bio: 'Expert in visa regulations and compliance for USA and Canada student visas.',
+    team_member_3_name: 'Education Consultant',
+    team_member_3_title: 'Senior Advisor',
+    team_member_3_bio: 'Dedicated to student success and relocation support for Australian universities.',
+    meta_title: 'Our Team - Kuro Education',
+    meta_description: 'Meet the expert consultants at Kuro Education dedicated to your study abroad success.'
+  },
+  destinations: {
+    page_heading: 'Explore Study Destinations Worldwide',
+    page_intro: 'Open doors to world-class education. Whether you dream of European culture, American innovation, or Australian lifestyle, we have the right path for you.',
+    meta_title: 'Study Destinations Worldwide - Kuro Education',
+    meta_description: 'Explore top study destinations in EU, Australia, USA, Canada, UK and more with Kuro Education Consultancy.'
+  },
+  services: {
+    page_heading: 'Our Services',
+    page_intro: 'We provide a comprehensive suite of services designed to simplify every step of your study abroad journey.',
+    admissions_title: 'Admissions & Placement',
+    admissions_desc: 'Expert guidance to find and apply to the best universities matching your profile.',
+    visa_title: 'Visa & Compliance',
+    visa_desc: 'Comprehensive support for visa applications to ensure high success rates.',
+    relocation_title: 'Relocation & Settlement',
+    relocation_desc: 'Smooth transition support from your home country to your study destination.',
+    concierge_title: 'Premium Concierge',
+    concierge_desc: 'All-inclusive VIP support for a stress-free educational journey.',
+    meta_title: 'Education Services - Kuro Education',
+    meta_description: 'From university admissions to visa support and relocation, Kuro Education Consultancy offers end-to-end services for international students.'
+  },
+  process: {
+    page_heading: 'Your Journey Roadmap',
+    page_intro: "We've broken down the complex study abroad journey into 6 clear, manageable steps.",
+    step_1_title: 'Initial Consultation & Eligibility',
+    step_1_description: 'We assess your academic background, financial readiness, and career goals to identify the best study options for you.',
+    step_2_title: 'University & Program Selection',
+    step_2_description: 'Based on your profile, we select universities with the highest acceptance probability and best program fit.',
+    step_3_title: 'Application Preparation',
+    step_3_description: 'We help you craft compelling SOPs, organize transcripts, and submit error-free applications to chosen institutions.',
+    step_4_title: 'Admission & Acceptance',
+    step_4_description: 'Once offers arrive, we help you choose the best one, pay deposits, and secure your official acceptance letter.',
+    step_5_title: 'Visa Application',
+    step_5_description: 'Our experts guide you through the complex visa process, financial proofing, and interview preparation.',
+    step_6_title: 'Relocation & Support',
+    step_6_description: "We don't stop at the visa. We assist with flights, accommodation, and settling into your new life.",
+    meta_title: 'Our Process - Kuro Education',
+    meta_description: 'A transparent, step-by-step 6-stage process to guide you from consultation to arriving at your dream university.'
+  },
+  why_kuro: {
+    page_heading: 'Why Choose Kuro?',
+    page_intro: "We don't just process applications; we build futures. Our student-first approach ensures transparency, compliance, and success.",
+    benefit_1_title: 'Global Network',
+    benefit_1_description: 'Partnerships with 50+ universities across Europe, UK, USA, Canada, and Australia.',
+    benefit_2_title: 'Compliance First',
+    benefit_2_description: 'Strict adherence to visa regulations ensures high approval rates and peace of mind.',
+    benefit_3_title: 'Dedicated Support',
+    benefit_3_description: 'From the first call to your first day on campus, we are with you every step.',
+    benefit_4_title: 'Proven Success',
+    benefit_4_description: 'Hundreds of successful placements and happy students worldwide.',
+    meta_title: 'Why Choose Kuro - Kuro Education',
+    meta_description: 'Discover why students trust Kuro Education Consultancy for their study abroad dreams.'
+  },
+  faqs: {
+    page_heading: 'Frequently Asked Questions',
+    page_intro: "Got questions? We have answers. If you don't see your question here, contact us directly.",
+    meta_title: 'Frequently Asked Questions - Kuro Education',
+    meta_description: 'Find answers to common questions about studying abroad, visa processes, costs, and our services.'
+  },
+  contact: {
+    page_heading: 'Get in Touch',
+    page_intro: "Have questions about studying abroad? We're here to help you every step of the way.",
+    form_title: 'Send us a Message',
+    form_subtitle: "Fill out the form below and we'll get back to you shortly.",
+    success_message: "Message Sent! We'll get back to you shortly.",
+    meta_title: 'Contact Us - Kuro Education',
+    meta_description: 'Get in touch with Kuro Education Consultancy. We are here to help you with your study abroad journey.'
+  },
+  eligibility: {
+    page_heading: 'Eligibility Assessment',
+    page_intro: 'Get a professional assessment of your study abroad chances. Includes official PDF report and expert tier classification.',
+    form_title: 'Start Assessment',
+    form_subtitle: 'Please provide your details',
+    success_message: 'Assessment Saved. Please complete payment to view your results.',
+    meta_title: 'Check Eligibility - Kuro Education',
+    meta_description: 'Free initial eligibility assessment for studying abroad. Fill out the form to get expert feedback on your chances.'
+  }
+};

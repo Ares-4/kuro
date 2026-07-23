@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply | Kuro Education Consultancy</title>
+<meta name="description" content="Start your study abroad application with Kuro Education Consultancy.">
+<link rel="preconnect" href="https://images.unsplash.com">
+<style>
+  :root {
+    --background: #020617;
+    --surface: #0f172a;
+    --surface-soft: rgba(15, 23, 42, 0.72);
+    --surface-raised: #111827;
+    --border: #1e293b;
+    --border-strong: #334155;
+    --foreground: #f8fafc;
+    --muted: #94a3b8;
+    --muted-strong: #cbd5e1;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-soft: rgba(37, 99, 235, 0.2);
+    --primary-line: rgba(59, 130, 246, 0.3);
+    --success: #4ade80;
+    --danger: #f87171;
+    --shadow: 0 24px 70px rgba(2, 6, 23, 0.45);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--foreground);
+    background: var(--background);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .site-shell {
+    min-height: 100vh;
+    background: var(--background);
+  }
+
+  .navbar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 20;
+    height: 80px;
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-inner {
+    max-width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    color: #60a5fa;
+  }
+
+  .brand-mark svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-name {
+    display: block;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+  }
+
+  .brand-sub {
+    display: block;
+    margin-top: 3px;
+    color: #60a5fa;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    color: #cbd5e1;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .nav-links a {
+    transition: color 160ms ease;
+  }
+
+  .nav-links a:hover,
+  .nav-links .active {
+    color: #60a5fa;
+  }
+
+  .nav-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+    color: #60a5fa;
+    font-weight: 700;
+    transition: background 160ms ease, color 160ms ease;
+  }
+
+  .nav-action:hover {
+    background: rgba(37, 99, 235, 0.1);
+    color: #93c5fd;
+  }
+
+  .hero {
+    position: relative;
+    min-height: 520px;
+    padding: 176px 24px 96px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(2, 6, 23, 0.58), rgba(2, 6, 23, 0.68), #020617),
+      linear-gradient(to right, rgba(2, 6, 23, 0.74), rgba(2, 6, 23, 0.28)),
+      url("https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1600&q=80") center/cover;
+    transform: scale(1.02);
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.22);
+    backdrop-filter: blur(2px);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 1180px);
+    margin: 0 auto;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    margin-bottom: 24px;
+    padding: 7px 16px;
+    border: 1px solid var(--primary-line);
+    border-radius: 999px;
+    background: var(--primary-soft);
+    color: #60a5fa;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    max-width: 900px;
+    margin: 0 0 24px;
+    color: #fff;
+    font-size: clamp(42px, 7vw, 72px);
+    line-height: 1.02;
+    font-weight: 850;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-copy {
+    max-width: 720px;
+    margin: 0;
+    color: #cbd5e1;
+    font-size: clamp(18px, 2.1vw, 22px);
+    line-height: 1.65;
+  }
+
+  .main-band {
+    background: var(--background);
+  }
+
+  .form-section {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+    padding: 72px 24px 88px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.35fr);
+    gap: 48px;
+    align-items: start;
+  }
+
+  .intro-panel {
+    position: sticky;
+    top: 112px;
+  }
+
+  .intro-panel h2 {
+    margin: 0 0 18px;
+    color: #fff;
+    font-size: clamp(30px, 4vw, 48px);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+  }
+
+  .intro-panel p {
+    margin: 0 0 28px;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  .process-list {
+    display: grid;
+    gap: 16px;
+  }
+
+  .process-item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  .process-num {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(30, 41, 59, 0.8);
+    color: #60a5fa;
+    font-weight: 800;
+  }
+
+  .process-item strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .process-item span {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 28px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15, 23, 42, 0.74);
+  }
+
+  .card-header h2 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .card-header p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .form-body {
+    padding: 32px;
+  }
+
+  .section-label {
+    margin: 32px 0 18px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: #60a5fa;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-label:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .field-row.full {
+    grid-template-columns: 1fr;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted-strong);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 13px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: #020617;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 16px;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #64748b;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.24);
+    background: #030712;
+  }
+
+  textarea {
+    min-height: 92px;
+    resize: vertical;
+  }
+
+  select option {
+    background: #0f172a;
+    color: var(--foreground);
+  }
+
+  .submit-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 28px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 14px 34px rgba(30, 64, 175, 0.28);
+    transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 18px 42px rgba(30, 64, 175, 0.36);
+  }
+
+  button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+    transform: none;
+  }
+
+  .msg {
+    color: var(--muted-strong);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .msg.ok {
+    color: var(--success);
+  }
+
+  .msg.err {
+    color: var(--danger);
+  }
+
+  .privacy {
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .footer {
+    border-top: 1px solid var(--border);
+    background: var(--background);
+    padding: 56px 24px 32px;
+  }
+
+  .footer-inner {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.2fr repeat(3, 0.7fr);
+    gap: 40px;
+  }
+
+  .footer h3 {
+    margin: 0 0 16px;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .footer p,
+  .footer li,
+  .footer a {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+
+  .footer a:hover {
+    color: #60a5fa;
+  }
+
+  .copyright {
+    width: min(100%, 1180px);
+    margin: 40px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  @media (max-width: 1040px) {
+    .nav-links {
+      display: none;
+    }
+
+    .form-section {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .intro-panel {
+      position: static;
+    }
+
+    .footer-inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 700px) {
+    .navbar {
+      height: 64px;
+    }
+
+    .nav-inner {
+      padding: 0 16px;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+    }
+
+    .brand-mark svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .brand-name {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 17px;
+    }
+
+    .brand-sub,
+    .nav-action {
+      display: none;
+    }
+
+    .hero {
+      min-height: 460px;
+      padding: 132px 18px 72px;
+    }
+
+    .badge {
+      font-size: 11px;
+      white-space: normal;
+    }
+
+    .form-section {
+      padding: 48px 18px 64px;
+    }
+
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+
+    .card-header,
+    .form-body {
+      padding: 24px 18px;
+    }
+
+    .process-item {
+      grid-template-columns: 38px 1fr;
+      padding: 16px;
+    }
+
+    .process-num {
+      width: 38px;
+      height: 38px;
+    }
+
+    button {
+      width: 100%;
+    }
+
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="site-shell">
+  <nav class="navbar" aria-label="Primary navigation">
+    <div class="nav-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </span>
+        <span>
+          <span class="brand-name">Kuro Education</span>
+          <span class="brand-sub">CONSULTANCY</span>
+        </span>
+      </a>
+      <div class="nav-links" aria-label="Main links">
+        <a href="/">Home</a>
+        <a href="/destinations">Destinations</a>
+        <a href="/services">Services</a>
+        <a href="/process">Process</a>
+        <a href="/why-kuro">Why Kuro</a>
+        <a href="/faqs">FAQs</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <a class="nav-action" href="/login">Login</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="badge">October 2026 Intake</div>
+      <h1>Start your study abroad application</h1>
+      <p class="hero-copy">Tell us about yourself and Kuro will follow up on your placement, language certificate, recognition paperwork, and next steps.</p>
+    </div>
+  </header>
+
+  <main class="main-band">
+    <section class="form-section">
+      <aside class="intro-panel" aria-label="Application process summary">
+        <h2>A simple path into your next institution.</h2>
+        <p>Share the details Kuro needs to assess your profile and move your application forward. No payment is collected on this page.</p>
+        <div class="process-list">
+          <div class="process-item">
+            <div class="process-num">1</div>
+            <div>
+              <strong>Submit your details</strong>
+              <span>Send your personal, academic, and document status information.</span>
+            </div>
+          </div>
+          <div class="process-item">
+            <div class="process-num">2</div>
+            <div>
+              <strong>Profile review</strong>
+              <span>Kuro checks fit, missing paperwork, and the best available route.</span>
+            </div>
+          </div>
+          <div class="process-item">
+            <div class="process-num">3</div>
+            <div>
+              <strong>Next steps</strong>
+              <span>The team follows up with admissions, visa, and relocation guidance.</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Application details</h2>
+          <p>Complete the form below using the same details shown on your passport and academic documents.</p>
+        </div>
+
+        <div class="form-body">
+          <div class="section-label">Family details</div>
+          <div class="field-row">
+            <div>
+              <label for="f_father">Father's name</label>
+              <input id="f_father" type="text" placeholder="Full name">
+            </div>
+            <div>
+              <label for="f_mother">Mother's name</label>
+              <input id="f_mother" type="text" placeholder="Full name">
+            </div>
+          </div>
+
+          <div class="section-label">Applicant details</div>
+          <div class="field-row">
+            <div>
+              <label for="f_name">Candidate's full name</label>
+              <input id="f_name" type="text" placeholder="As on passport">
+            </div>
+            <div>
+              <label for="f_email">Email</label>
+              <input id="f_email" type="email" placeholder="you@example.com">
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="f_phone">Phone / WhatsApp</label>
+              <input id="f_phone" type="text" placeholder="+263...">
+            </div>
+            <div>
+              <label for="f_passport">Passport number</label>
+              <input id="f_passport" type="text" placeholder="e.g. AB1234567">
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="f_country">Country of residence</label>
+              <input id="f_country" type="text" placeholder="e.g. Zimbabwe">
+            </div>
+            <div>
+              <label for="f_edu">Highest education completed</label>
+              <select id="f_edu">
+                <option value="">Select...</option>
+                <option>High school / A-Level</option>
+                <option>Diploma</option>
+                <option>Bachelor's degree</option>
+                <option>Master's degree</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-label">Study plans</div>
+          <div class="field-row">
+            <div>
+              <label for="f_field">Desired field of study</label>
+              <input id="f_field" type="text" placeholder="e.g. Computer Science">
+            </div>
+            <div>
+              <label for="f_uni">Preferred university</label>
+              <select id="f_uni">
+                <option value="">Select...</option>
+                <option>Akademia Tarnowska (UTA)</option>
+                <option>Open to Kuro's recommendation</option>
+                <option>Other (specify in notes)</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="f_intake">Target intake</label>
+              <select id="f_intake">
+                <option>October 2026</option>
+                <option>Future intake (unspecified)</option>
+              </select>
+            </div>
+            <div></div>
+          </div>
+
+          <div class="section-label">Paperwork status</div>
+          <div class="field-row">
+            <div>
+              <label for="f_ielts">IELTS status</label>
+              <select id="f_ielts">
+                <option value="">Select...</option>
+                <option>Already have it</option>
+                <option>In progress</option>
+                <option>Don't have it yet</option>
+              </select>
+            </div>
+            <div>
+              <label for="f_nawa">NAWA recognition statement</label>
+              <select id="f_nawa">
+                <option value="">Select...</option>
+                <option>Already have it</option>
+                <option>In progress</option>
+                <option>Don't have it yet</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row full">
+            <div>
+              <label for="f_notes">Anything else Kuro should know</label>
+              <textarea id="f_notes" placeholder="Optional"></textarea>
+            </div>
+          </div>
+
+          <div class="submit-row">
+            <button id="submitBtn" onclick="submitCandidate()">Submit details</button>
+            <div id="submitMsg" class="msg" aria-live="polite"></div>
+          </div>
+          <p class="privacy">Your details go directly to Kuro's candidate list. No payment is collected here.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <h3>Kuro Education Consultancy</h3>
+        <p>Empowering African students to achieve their dreams of studying abroad with admissions, visa, and settlement guidance.</p>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <ul>
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/destinations">Destinations</a></li>
+          <li><a href="/services">Our Services</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="/resources">Blog</a></li>
+          <li><a href="/readiness-check">Readiness Check</a></li>
+          <li><a href="/faqs">FAQs</a></li>
+          <li><a href="/process">Study Process</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Support</h3>
+        <ul>
+          <li><a href="/contact">Contact Kuro</a></li>
+          <li><a href="/privacy-policy">Privacy Policy</a></li>
+          <li><a href="/terms-of-service">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">© 2026 Kuro Education Consultancy. All rights reserved.</div>
+  </footer>
+</div>
+
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxXnCWOvUtuQX7udnG_CJuy831o6RY2p89BSanKO1Rv58vSxE9ixwPY_Cm02w_diVB0Hw/exec";
+
+function required(id){ return document.getElementById(id).value.trim(); }
+
+async function submitCandidate(){
+  const name = required('f_name');
+  const email = required('f_email');
+  const msgEl = document.getElementById('submitMsg');
+  if(!name || !email){
+    msgEl.className = 'msg err';
+    msgEl.textContent = 'Candidate name and email are required.';
+    return;
+  }
+  const record = {
+    fatherName: required('f_father'),
+    motherName: required('f_mother'),
+    name, email,
+    phone: required('f_phone'),
+    passport: required('f_passport'),
+    country: required('f_country'),
+    education: required('f_edu'),
+    field: required('f_field'),
+    university: required('f_uni'),
+    intake: required('f_intake'),
+    ielts: required('f_ielts'),
+    nawa: required('f_nawa'),
+    notes: required('f_notes'),
+    submittedAt: new Date().toISOString()
+  };
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try{
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify(record)
+    });
+  }catch(e){}
+
+  msgEl.className = 'msg ok';
+  msgEl.textContent = 'Submitted - thank you. Kuro will be in touch.';
+  document.querySelectorAll('.card input, .card select, .card textarea').forEach(el => el.value = '');
+  document.getElementById('f_intake').value = 'October 2026';
+  btn.disabled = false;
+  btn.textContent = 'Submit details';
+}
+</script>
+</body>
+</html>
+

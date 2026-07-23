@@ -345,45 +345,10 @@ end;
 $$;
 
 -- ─────────────────────────────────────────
--- SEED: Vistula University programs (Poland)
+-- SEED: Vistula University / German universities
+-- MOVED to 20260723010000_full_schema_gap_fill.sql — the live `programs`
+-- table predates this file and never had university_id/name/level/tuition_eur
+-- columns (it uses a denormalized program_name/university/tuition_fee shape
+-- instead), so these inserts failed with "column does not exist". The
+-- corrected seed runs after that migration adds the real columns.
 -- ─────────────────────────────────────────
-insert into universities (name, is_active, website)
-select 'Vistula University', true, 'https://vistula.edu.pl'
-where not exists (select 1 from universities where name ilike 'Vistula%');
-
-insert into programs (university_id, name, level, tuition_eur, is_active)
-select u.id, p.name, p.level, p.tuition, true
-from universities u
-cross join (values
-  ('Business Administration',       'Undergraduate', 3200),
-  ('Computer Science',              'Undergraduate', 3500),
-  ('International Relations',       'Masters',       3800),
-  ('MBA',                           'Masters',       5500),
-  ('Finance and Accounting',        'Undergraduate', 3200),
-  ('Logistics and Supply Chain',    'Masters',       3800)
-) as p(name, level, tuition)
-where u.name = 'Vistula University'
-  and not exists (select 1 from programs pr where pr.university_id = u.id and pr.name = p.name);
-
--- ─────────────────────────────────────────
--- SEED: German universities
--- ─────────────────────────────────────────
-insert into universities (name, is_active, website)
-select u.name, true, u.website
-from (values
-  ('Hochschule Bonn-Rhein-Sieg (H-BRS)', 'https://www.h-brs.de'),
-  ('SRH University Heidelberg',           'https://www.srh-university.de'),
-  ('Berlin International University',     'https://www.berlininternational.de')
-) as u(name, website)
-where not exists (select 1 from universities where name = u.name);
-
-insert into programs (university_id, name, level, tuition_eur, is_active)
-select u.id, p.name, p.level, p.tuition, true
-from universities u
-cross join (values
-  ('Applied Computer Science',       'Masters',       1500),
-  ('Business Management',            'Masters',       2800),
-  ('Data Science',                   'Masters',       2000)
-) as p(name, level, tuition)
-where u.name = 'Hochschule Bonn-Rhein-Sieg (H-BRS)'
-  and not exists (select 1 from programs pr where pr.university_id = u.id and pr.name = p.name);

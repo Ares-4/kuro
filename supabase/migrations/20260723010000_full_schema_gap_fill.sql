@@ -227,6 +227,38 @@ end;
 $$;
 
 -- ─────────────────────────────────────────
+-- SEED: Vistula University / German universities programs.
+-- Moved from 20260418000000_kuro_schema.sql — that file's seed assumed a
+-- normalized programs shape (university_id/name/level/tuition_eur) that
+-- doesn't match the live table. Using the real denormalized columns added
+-- above instead.
+-- ─────────────────────────────────────────
+insert into programs (program_name, university, country, degree_level, tuition_fee, currency, is_active)
+select p.name, 'Vistula University', 'Poland', p.level, p.tuition, 'EUR', true
+from (values
+  ('Business Administration',       'Undergraduate', '3200'),
+  ('Computer Science',              'Undergraduate', '3500'),
+  ('International Relations',       'Masters',       '3800'),
+  ('MBA',                           'Masters',       '5500'),
+  ('Finance and Accounting',        'Undergraduate', '3200'),
+  ('Logistics and Supply Chain',    'Masters',       '3800')
+) as p(name, level, tuition)
+where not exists (
+  select 1 from programs pr where pr.university = 'Vistula University' and pr.program_name = p.name
+);
+
+insert into programs (program_name, university, country, degree_level, tuition_fee, currency, is_active)
+select p.name, 'Hochschule Bonn-Rhein-Sieg (H-BRS)', 'Germany', p.level, p.tuition, 'EUR', true
+from (values
+  ('Applied Computer Science',       'Masters',       '1500'),
+  ('Business Management',            'Masters',       '2800'),
+  ('Data Science',                   'Masters',       '2000')
+) as p(name, level, tuition)
+where not exists (
+  select 1 from programs pr where pr.university = 'Hochschule Bonn-Rhein-Sieg (H-BRS)' and pr.program_name = p.name
+);
+
+-- ─────────────────────────────────────────
 -- DESTINATIONS: cost fields shown on DestinationDetailPage/DestinationTemplatePage,
 -- edited in src/components/admin/AdminDestinations.jsx.
 -- ─────────────────────────────────────────

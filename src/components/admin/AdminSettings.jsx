@@ -121,7 +121,7 @@ const AdminSettings = () => {
         key: 'main_config',
         value: settings,
         updated_at: new Date()
-      });
+      }, { onConflict: 'key' });
 
       if (error) throw error;
       toast({ title: "Settings Saved", description: "System configuration updated." });

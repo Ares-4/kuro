@@ -69,6 +69,36 @@ create table if not exists system_settings (
 );
 
 -- ─────────────────────────────────────────
+-- ADMIN SETTINGS (key/value — a THIRD settings table, distinct from
+-- system_settings and site_settings). src/components/admin/AdminSettings.jsx
+-- and src/components/dashboard/StudentHub.jsx use this one, storing
+-- 'main_config' and 'advisor_config'. Was already partially documented in
+-- supabase/RUN_IN_SUPABASE_EDITOR.sql (an older ad-hoc fix file that was
+-- run directly against the live DB and never folded into a migration) but
+-- never added here — this create is a no-op if it already exists live.
+-- ─────────────────────────────────────────
+create table if not exists admin_settings (
+  key        text primary key,
+  value      jsonb not null default '{}',
+  updated_at timestamptz not null default now()
+);
+
+-- ─────────────────────────────────────────
+-- ADMIN PROFILES (per-admin-account profile, distinct from admin_users).
+-- src/components/admin/settings/ProfileSettings.jsx.
+-- ─────────────────────────────────────────
+create table if not exists admin_profiles (
+  id         uuid primary key default uuid_generate_v4(),
+  user_id    uuid unique references auth.users(id) on delete cascade,
+  full_name  text,
+  phone      text,
+  avatar_url text,
+  role       text not null default 'admin',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- ─────────────────────────────────────────
 -- NOTICES (student-facing announcements)
 -- src/components/admin/AdminNotices.jsx (write), src/components/dashboard/NoticeView.jsx (read).
 -- ─────────────────────────────────────────

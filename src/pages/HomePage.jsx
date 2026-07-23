@@ -14,6 +14,7 @@ import AdUnit from '@/components/AdUnit';
 import { ADSENSE_SLOTS } from '@/config/adsenseSlots';
 import { supabase } from '@/lib/customSupabaseClient';
 import TestimonialsSection from '@/components/TestimonialsSection';
+import CredibilityBlock from '@/components/CredibilityBlock';
 
 /* ---- animation helpers ---- */
 const ease = [0.16, 1, 0.3, 1];
@@ -242,6 +243,8 @@ const HomePage = ({ contentOverride }) => {
         </section>
 
         <AdUnit slotId={ADSENSE_SLOTS.homeTop} />
+
+        <CredibilityBlock />
 
         {/* ── How it works ── */}
         <section className="relative py-28 border-t border-white/5">

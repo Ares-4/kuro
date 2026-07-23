@@ -223,6 +223,15 @@ begin
   if not exists (select 1 from information_schema.columns where table_name = 'programs' and column_name = 'application_fee') then
     alter table programs add column application_fee text default '€50';
   end if;
+
+  -- Baseline's CREATE TABLE (fresh-install path only) makes `name` NOT NULL
+  -- with no default. The seed below (and CourseEditor.jsx in the app) only
+  -- ever populates `program_name`, so relax this or the insert fails on a
+  -- brand-new project. No-op on your live DB, which never had this column
+  -- under that constraint in the first place.
+  if exists (select 1 from information_schema.columns where table_name = 'programs' and column_name = 'name') then
+    alter table programs alter column name drop not null;
+  end if;
 end;
 $$;
 

@@ -40,11 +40,24 @@ export const AdminAuthProvider = ({ children }) => {
         setAdminUser(null);
         setIsAuthenticated(false);
       } else {
-        // 3. Valid Admin Session
-        // Backward Compatibility: We accept ANY authenticated user who successfully
-        // logged in through the Admin Portal (setting the fingerprint).
-        setAdminUser(session.user);
-        setIsAuthenticated(true);
+        // 3. Verify this account is an actual admin (matches the `admins`
+        // table check used by RLS policies). The fingerprint alone only
+        // proves they went through the admin login form - it does not
+        // prove they're an admin, since that form accepted any valid
+        // Supabase credentials.
+        const { data: adminRow } = await supabase
+          .from('admins')
+          .select('user_id')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        if (adminRow) {
+          setAdminUser(session.user);
+          setIsAuthenticated(true);
+        } else {
+          setAdminUser(null);
+          setIsAuthenticated(false);
+        }
       }
 
     } catch (err) {
@@ -82,17 +95,30 @@ export const AdminAuthProvider = ({ children }) => {
 
       if (error) throw error;
 
-      // 2. Set Admin Session Markers
+      // 2. Verify this account is actually an admin before granting access.
+      // Without this check, ANY registered user (students included) who
+      // entered their own valid credentials here would be treated as admin.
+      const { data: adminRow, error: adminCheckError } = await supabase
+        .from('admins')
+        .select('user_id')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
+
+      if (adminCheckError || !adminRow) {
+        await supabase.auth.signOut();
+        return { success: false, error: 'This account is not authorized for admin access.' };
+      }
+
+      // 3. Set Admin Session Markers
       // Generate and store fingerprint to validate this browser session
       const fingerprint = generateFingerprint();
       sessionStorage.setItem('admin_fingerprint', fingerprint);
       sessionStorage.setItem('admin_token', data.session.access_token);
-      
-      // 3. Update State
-      // Accepting any authenticated user as admin for backward compatibility
+
+      // 4. Update State
       setAdminUser(data.user);
       setIsAuthenticated(true);
-      
+
       return { success: true };
     } catch (error) {
       console.error('Admin login error:', error);

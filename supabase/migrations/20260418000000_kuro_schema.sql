@@ -345,10 +345,10 @@ end;
 $$;
 
 -- ─────────────────────────────────────────
--- SEED: Vistula University / German universities
--- MOVED to 20260723010000_full_schema_gap_fill.sql — the live `programs`
--- table predates this file and never had university_id/name/level/tuition_eur
--- columns (it uses a denormalized program_name/university/tuition_fee shape
--- instead), so these inserts failed with "column does not exist". The
--- corrected seed runs after that migration adds the real columns.
+-- SEED: Vistula University / German universities — REMOVED.
+-- The live `programs` table predates this file, never had this shape
+-- (university_id/name/level/tuition_eur), and has since drifted further via
+-- ad-hoc Studio edits with multiple undocumented NOT NULL columns. Add
+-- course data through the admin Course Editor UI instead, which only ever
+-- targets columns it actually knows about.
 -- ─────────────────────────────────────────

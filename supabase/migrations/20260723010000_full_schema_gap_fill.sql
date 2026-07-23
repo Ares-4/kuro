@@ -236,36 +236,16 @@ end;
 $$;
 
 -- ─────────────────────────────────────────
--- SEED: Vistula University / German universities programs.
--- Moved from 20260418000000_kuro_schema.sql — that file's seed assumed a
--- normalized programs shape (university_id/name/level/tuition_eur) that
--- doesn't match the live table. Using the real denormalized columns added
--- above instead.
+-- NOTE: baseline's Vistula/German-university seed data was removed entirely
+-- (not just moved) rather than reworked again. Every retry surfaced another
+-- live-only NOT NULL column with no default (name, then duration, then
+-- language) that no migration file documents — the live `programs` table
+-- has drifted from every known shape via ad-hoc Studio edits, so hardcoding
+-- a full column list for an INSERT here is inherently unsafe. Add real
+-- course data through the admin Course Editor UI instead, which only ever
+-- targets columns it knows about, or ask for one to be reconstructed once
+-- you've pasted a full `information_schema.columns` dump for programs.
 -- ─────────────────────────────────────────
-insert into programs (program_name, university, country, degree_level, duration, tuition_fee, currency, is_active)
-select p.name, 'Vistula University', 'Poland', p.level, p.duration, p.tuition, 'EUR', true
-from (values
-  ('Business Administration',       'Undergraduate', '3.5 years', '3200'),
-  ('Computer Science',              'Undergraduate', '3.5 years', '3500'),
-  ('International Relations',       'Masters',       '2 years',   '3800'),
-  ('MBA',                           'Masters',       '1.5 years', '5500'),
-  ('Finance and Accounting',        'Undergraduate', '3.5 years', '3200'),
-  ('Logistics and Supply Chain',    'Masters',       '2 years',   '3800')
-) as p(name, level, duration, tuition)
-where not exists (
-  select 1 from programs pr where pr.university = 'Vistula University' and pr.program_name = p.name
-);
-
-insert into programs (program_name, university, country, degree_level, duration, tuition_fee, currency, is_active)
-select p.name, 'Hochschule Bonn-Rhein-Sieg (H-BRS)', 'Germany', p.level, p.duration, p.tuition, 'EUR', true
-from (values
-  ('Applied Computer Science',       'Masters', '2 years', '1500'),
-  ('Business Management',            'Masters', '2 years', '2800'),
-  ('Data Science',                   'Masters', '2 years', '2000')
-) as p(name, level, duration, tuition)
-where not exists (
-  select 1 from programs pr where pr.university = 'Hochschule Bonn-Rhein-Sieg (H-BRS)' and pr.program_name = p.name
-);
 
 -- ─────────────────────────────────────────
 -- DESTINATIONS: cost fields shown on DestinationDetailPage/DestinationTemplatePage,

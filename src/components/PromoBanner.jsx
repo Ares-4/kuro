@@ -7,6 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import FunnelButton from '@/components/FunnelButton';
 import { emailTriggers } from '@/lib/emailService';
+import { notifyAdminOfLead } from '@/lib/pushNotifications';
 import { useLocation } from 'react-router-dom';
 
 const normalizePath = (pathname) => {
@@ -136,6 +137,8 @@ const PromoBanner = ({ variant = 'readiness', className = '' }) => {
         goal: 'guide_download',
         name: 'Guest User'
       });
+
+      notifyAdminOfLead('New guide download', `${email} downloaded the study guide.`, '/admin/leads');
 
       setEmail('');
       setTimeout(() => setIsVisible(false), 1500);

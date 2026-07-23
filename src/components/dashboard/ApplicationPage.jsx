@@ -354,8 +354,8 @@ const ApplicationPage = () => {
 
     setProcessingPayment(true);
     try {
-      const feeString = application.programs?.application_fee || '250';
-      const amount = parseFloat(String(feeString).replace(/[^0-9.]/g, '')) || 250;
+      const feeString = application.programs?.application_fee || '50';
+      const amount = parseFloat(String(feeString).replace(/[^0-9.]/g, '')) || 50;
 
       const { data, error } = await supabase.functions.invoke('process-payment', {
         body: JSON.stringify({
@@ -759,7 +759,7 @@ const ApplicationPage = () => {
                   <div className="p-6 text-center border-2 border-dashed border-slate-700 rounded-lg bg-slate-900/30">
                     <CreditCard className="w-12 h-12 text-slate-500 mx-auto mb-3" />
                     <h3 className="text-white font-medium mb-1">Application Fee</h3>
-                    <p className="text-3xl font-bold text-white mb-6">{application.programs?.application_fee || '€250'}</p>
+                    <p className="text-3xl font-bold text-white mb-6">{application.programs?.application_fee || '€50'}</p>
 
                     {isPaid ? (
                       <div className="flex flex-col items-center gap-2">

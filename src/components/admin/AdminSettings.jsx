@@ -8,12 +8,40 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/components/ui/use-toast';
+import { subscribeAdminToPush, unsubscribeAdminFromPush, isPushSubscribed } from '@/lib/pushNotifications';
 
 const AdminSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savingAdvisor, setSavingAdvisor] = useState(false);
+  const [pushSubscribed, setPushSubscribed] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    isPushSubscribed().then(setPushSubscribed);
+  }, []);
+
+  const handleTogglePush = async () => {
+    setPushLoading(true);
+    try {
+      if (pushSubscribed) {
+        await unsubscribeAdminFromPush();
+        setPushSubscribed(false);
+        toast({ title: "Push notifications disabled on this device" });
+      } else {
+        const sub = await subscribeAdminToPush();
+        if (sub) {
+          setPushSubscribed(true);
+          toast({ title: "Push notifications enabled", description: "You'll get alerts on this device when someone submits their details." });
+        } else {
+          toast({ variant: "destructive", title: "Couldn't enable push", description: "Permission was denied or this browser doesn't support push. On iPhone, add this site to your Home Screen first." });
+        }
+      }
+    } finally {
+      setPushLoading(false);
+    }
+  };
 
   const [advisor, setAdvisor] = useState({
     enabled: true,
@@ -190,6 +218,20 @@ const AdminSettings = () => {
 
         {/* Notifications */}
         <TabsContent value="notifications" className="mt-4 space-y-4">
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-white">Push Notifications</CardTitle>
+              <CardDescription className="text-slate-400">
+                Get an instant alert on this device whenever someone submits a contact form, signup, application, or lead capture. On iPhone, add the site to your Home Screen first, then enable here from that app icon.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <Label className="text-slate-300">Enable on this device</Label>
+                <Switch checked={pushSubscribed} disabled={pushLoading} onCheckedChange={handleTogglePush} />
+              </div>
+            </CardContent>
+          </Card>
           <Card className="bg-slate-900 border-slate-800">
              <CardHeader>
               <CardTitle className="text-white">Email Alerts</CardTitle>

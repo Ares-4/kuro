@@ -7,6 +7,7 @@ import { MessageSquare, X, Send, User, Bot, Minimize2, Loader2, Phone, ExternalL
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { notifyAdminOfLead } from '@/lib/pushNotifications';
 
 const STOP_WORDS = new Set(['a','an','the','is','are','was','were','i','my','what','how','do','does','can','will','would','could','should','in','on','at','to','for','of','and','or','but','not','be','have','has','it','this','that','with','about','from']);
 
@@ -114,6 +115,7 @@ const KuroChatWidget = () => {
       setMessages(prev => [...prev, { role: 'assistant', content: step.nextPrompt, id: `lead-${leadStep + 2}` }]);
     } else {
       await supabase.from('leads').insert([{ ...updated, intake_form: 'Chat Widget' }]);
+      notifyAdminOfLead('New chat lead', `${updated.name} (${updated.whatsapp}) wants help with: ${updated.goal}`, '/admin/leads');
       setMessages(prev => [...prev, { role: 'assistant', content: "Your request has been received. Our team will reach out via WhatsApp within 24 hours.", id: 'lead-done' }]);
       setMode('chat');
     }

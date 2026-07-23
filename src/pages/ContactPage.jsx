@@ -12,6 +12,7 @@ import { getPageContent } from '@/lib/contentService';
 import { DEFAULT_CONTENT } from '@/lib/defaultContent';
 import AdUnit from '@/components/AdUnit';
 import { ADSENSE_SLOTS } from '@/config/adsenseSlots';
+import { notifyAdminOfLead } from '@/lib/pushNotifications';
 
 const fadeUp = { hidden: { opacity: 0, y: 22 }, show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] } }) };
 
@@ -46,6 +47,7 @@ const ContactPage = ({ contentOverride }) => {
         score: scoringResult.score, tier: scoringResult.tier, scored_at: scoringResult.scored_at,
       }]);
       if (error) throw error;
+      notifyAdminOfLead('New contact message', `${formData.name} (${formData.email}) sent a message.`, '/admin/leads');
       toast({ title: "Message sent", description: content.success_message, className: "bg-green-600 text-white border-none" });
       setFormData({ name: '', email: '', whatsapp: '', message: '' });
     } catch {

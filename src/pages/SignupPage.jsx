@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { GraduationCap, Mail, Lock, User, Phone, MapPin, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { notifyAdminOfLead } from '@/lib/pushNotifications';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ const SignupPage = () => {
         });
       }
 
+      notifyAdminOfLead('New student signup', `${formData.fullName} (${formData.email}) created an account.`, '/admin/applications');
       toast({
         title: "Account created!",
         description: "Please check your email to confirm your account.",

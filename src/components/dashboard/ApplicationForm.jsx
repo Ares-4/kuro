@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { notifyAdminOfLead } from '@/lib/pushNotifications';
 import { 
   Building2, 
   MapPin, 
@@ -169,6 +170,7 @@ const ApplicationForm = () => {
 
       if (insertError) throw insertError;
 
+      notifyAdminOfLead('New application started', `${user?.email || 'A student'} started an application for ${program?.program_name || 'a program'}.`, `/admin/applications`);
       toast({
         title: "Application Started! 🚀",
         description: "Please upload your required documents to complete the submission.",
@@ -325,7 +327,7 @@ const ApplicationForm = () => {
               <div className="flex justify-between items-center text-sm p-3 bg-slate-900/50 rounded-lg border border-slate-700/50">
                 <span className="text-slate-400">Application Fee</span>
                 <span className="text-white font-mono font-bold text-lg">
-                  {program.application_fee || '€250'}
+                  {program.application_fee || '€50'}
                 </span>
               </div>
               <div className="flex justify-between items-center text-sm p-3 bg-slate-900/50 rounded-lg border border-slate-700/50">

@@ -25,7 +25,7 @@ const COL2_LINKS = [
   { label: 'Deadlines',      to: '/deadlines' },
   { label: 'Readiness check', to: '/readiness-check' },
   { label: 'Blog & guides',  to: '/resources' },
-  { label: 'FAQs',           to: '/faq' },
+  { label: 'FAQs',           to: '/faqs' },
 ];
 
 const SOCIAL_ICONS = { facebook: Facebook, twitter: Twitter, instagram: Instagram, linkedin: Linkedin };

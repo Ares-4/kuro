@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { createCheckoutSession } from '@/lib/paymentService';
 import { supabase } from '@/lib/customSupabaseClient';
 import { calculateLeadScore } from '@/lib/leadScoringService';
+import { notifyAdminOfLead } from '@/lib/pushNotifications';
 
 // ── Poland-specific question set (Syrena / Zimbabwe) ─────────────────────
 
@@ -530,6 +531,8 @@ const ReadinessCheckModal = ({ isOpen, onClose }) => {
         scored_at: scoringResult.scored_at,
         intake_form: JSON.stringify(formData),
       });
+
+      notifyAdminOfLead('New readiness check', `${formData.email} completed a ${formData.plan} readiness check for ${formData.destination || 'unspecified destination'}.`, '/admin/leads');
 
       const session = await createCheckoutSession({
         applicationId: crypto.randomUUID(),

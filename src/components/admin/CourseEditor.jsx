@@ -54,7 +54,7 @@ const CourseEditor = ({ course, onSave, onCancel }) => {
     requirements: [],
     image_url: '',
     processing_time: '2-4 Weeks',
-    application_fee: '€250',
+    application_fee: '€50',
     is_active: true,
   });
   
@@ -139,7 +139,7 @@ const CourseEditor = ({ course, onSave, onCancel }) => {
         ...course,
         requirements: course.requirements || [],
         image_url: course.image_url || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop',
-        application_fee: course.application_fee || '€250',
+        application_fee: course.application_fee || '€50',
         processing_time: course.processing_time || '2-4 Weeks',
         // Ensure currency has a fallback if undefined in existing records
         currency: course.currency || 'EUR', 

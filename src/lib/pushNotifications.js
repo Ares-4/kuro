@@ -59,3 +59,52 @@ export async function isPushSubscribed() {
   const sub = await reg.pushManager.getSubscription();
   return !!sub;
 }
+
+export async function subscribeAdminToPush() {
+  if (!VAPID_PUBLIC_KEY) {
+    console.warn('VITE_VAPID_PUBLIC_KEY not set — push notifications disabled');
+    return null;
+  }
+  const reg = await registerServiceWorker();
+  if (!reg) return null;
+
+  let subscription = await reg.pushManager.getSubscription();
+  if (!subscription) {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return null;
+    subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    });
+  }
+
+  const { endpoint, keys } = subscription.toJSON();
+  await supabase.from('push_subscriptions').upsert(
+    { is_admin: true, endpoint, p256dh: keys.p256dh, auth: keys.auth },
+    { onConflict: 'endpoint' }
+  );
+  return subscription;
+}
+
+export async function unsubscribeAdminFromPush() {
+  if (!('serviceWorker' in navigator)) return;
+  const reg = await navigator.serviceWorker.getRegistration('/sw.js');
+  if (!reg) return;
+  const sub = await reg.pushManager.getSubscription();
+  if (!sub) return;
+  const { endpoint } = sub.toJSON();
+  await sub.unsubscribe();
+  await supabase.from('push_subscriptions').delete().eq('endpoint', endpoint);
+}
+
+/**
+ * Fires a push notification to every subscribed admin device.
+ * Safe to call from public, unauthenticated pages (contact form, apply page, etc).
+ */
+export async function notifyAdminOfLead(title, body, url) {
+  try {
+    await supabase.functions.invoke('send-push', { body: { title, body, url } });
+  } catch (err) {
+    console.warn('notifyAdminOfLead failed:', err);
+  }
+}

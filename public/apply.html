@@ -132,6 +132,12 @@
     color: #60a5fa;
   }
 
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
   .nav-action {
     display: inline-flex;
     align-items: center;
@@ -148,6 +154,70 @@
   .nav-action:hover {
     background: rgba(37, 99, 235, 0.1);
     color: #93c5fd;
+  }
+
+  .nav-action.solid {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .nav-action.solid:hover {
+    background: var(--primary-hover);
+    color: #fff;
+  }
+
+  .nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: transparent;
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    inset: 80px 0 auto;
+    z-index: 19;
+    background: rgba(15, 23, 42, 0.98);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px 20px;
+  }
+
+  .mobile-menu.open {
+    display: block;
+  }
+
+  .mobile-menu a {
+    display: block;
+    padding: 12px 8px;
+    color: #cbd5e1;
+    font-weight: 600;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  .mobile-menu a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+  }
+
+  .mobile-menu .mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .mobile-menu .nav-action {
+    width: 100%;
   }
 
   .hero {
@@ -509,8 +579,13 @@
   }
 
   @media (max-width: 1040px) {
-    .nav-links {
+    .nav-links,
+    .nav-actions {
       display: none;
+    }
+
+    .nav-toggle {
+      display: inline-flex;
     }
 
     .form-section {
@@ -553,8 +628,7 @@
       font-size: 17px;
     }
 
-    .brand-sub,
-    .nav-action {
+    .brand-sub {
       display: none;
     }
 
@@ -627,9 +701,31 @@
         <a href="/faqs">FAQs</a>
         <a href="/contact">Contact</a>
       </div>
-      <a class="nav-action" href="/login">Login</a>
+      <div class="nav-actions">
+        <a class="nav-action" href="/login">Sign in</a>
+        <a class="nav-action solid" href="/signup">Get started</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
     </div>
   </nav>
+
+  <div class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
+    <a href="/">Home</a>
+    <a href="/destinations">Destinations</a>
+    <a href="/services">Services</a>
+    <a href="/process">Process</a>
+    <a href="/why-kuro">Why Kuro</a>
+    <a href="/faqs">FAQs</a>
+    <a href="/contact">Contact</a>
+    <div class="mobile-actions">
+      <a class="nav-action" href="/login">Sign in</a>
+      <a class="nav-action solid" href="/signup">Get started</a>
+    </div>
+  </div>
 
   <header class="hero">
     <div class="hero-inner">
@@ -796,43 +892,79 @@
     <div class="footer-inner">
       <div>
         <h3>Kuro Education Consultancy</h3>
-        <p>Empowering African students to achieve their dreams of studying abroad with admissions, visa, and settlement guidance.</p>
+        <p>Empowering African students to achieve their dreams of studying abroad. Comprehensive guidance for admissions, visas, and settlement in Europe and beyond.</p>
       </div>
       <div>
         <h3>Company</h3>
         <ul>
-          <li><a href="/about">About Us</a></li>
+          <li><a href="/about">About us</a></li>
           <li><a href="/destinations">Destinations</a></li>
-          <li><a href="/services">Our Services</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/process">How it works</a></li>
+          <li><a href="/why-kuro">Why Kuro</a></li>
           <li><a href="/contact">Contact</a></li>
         </ul>
       </div>
       <div>
         <h3>Resources</h3>
         <ul>
-          <li><a href="/resources">Blog</a></li>
-          <li><a href="/readiness-check">Readiness Check</a></li>
+          <li><a href="/scholarships">Scholarships</a></li>
+          <li><a href="/deadlines">Deadlines</a></li>
+          <li><a href="/readiness-check">Readiness check</a></li>
+          <li><a href="/resources">Blog &amp; guides</a></li>
           <li><a href="/faqs">FAQs</a></li>
-          <li><a href="/process">Study Process</a></li>
         </ul>
       </div>
       <div>
-        <h3>Support</h3>
+        <h3>Contact</h3>
         <ul>
-          <li><a href="/contact">Contact Kuro</a></li>
-          <li><a href="/privacy-policy">Privacy Policy</a></li>
-          <li><a href="/terms-of-service">Terms of Service</a></li>
+          <li><a href="mailto:info@kuro.com">info@kuro.com</a></li>
+          <li><a href="https://wa.me/263771234567">+263 77 123 4567</a></li>
+          <li>Harare, Zimbabwe</li>
         </ul>
       </div>
     </div>
-    <div class="copyright">© 2026 Kuro Education Consultancy. All rights reserved.</div>
+    <div class="copyright" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <span>© 2026 Kuro Education Consultancy. All rights reserved.</span>
+      <span style="display:flex; gap:16px;">
+        <a href="/privacy-policy">Privacy policy</a>
+        <a href="/terms-of-service">Terms of service</a>
+      </span>
+    </div>
   </footer>
 </div>
 
 <script>
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxXnCWOvUtuQX7udnG_CJuy831o6RY2p89BSanKO1Rv58vSxE9ixwPY_Cm02w_diVB0Hw/exec";
+const SUPABASE_URL = "https://akrbfwmqhnbopqlvawhw.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrcmJmd21xaG5ib3BxbHZhd2h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2MjgwMzksImV4cCI6MjA4MTIwNDAzOX0.-rJYbnfNV-0vwCqKpFcCQKUG3sskZZgDCi7zsWuTPk8";
+
+const navToggle = document.getElementById('navToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+navToggle.addEventListener('click', () => {
+  const open = mobileMenu.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', String(open));
+});
 
 function required(id){ return document.getElementById(id).value.trim(); }
+
+async function notifyAdmin(name, email){
+  try{
+    await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
+        title: 'New application (Apply page)',
+        body: `${name} (${email}) submitted the apply form.`,
+        url: '/admin/leads'
+      })
+    });
+  }catch(e){}
+}
 
 async function submitCandidate(){
   const name = required('f_name');
@@ -872,6 +1004,8 @@ async function submitCandidate(){
       body: JSON.stringify(record)
     });
   }catch(e){}
+
+  notifyAdmin(name, email);
 
   msgEl.className = 'msg ok';
   msgEl.textContent = 'Submitted - thank you. Kuro will be in touch.';

@@ -9,8 +9,8 @@ const PaymentView = ({ application, onPaymentComplete }) => {
   const [loading, setLoading] = useState(false);
 
   // Dynamic fee from database
-  const applicationFeeString = application?.programs?.application_fee || "€250";
-  const applicationFeeAmount = parseFloat(applicationFeeString.replace(/[^0-9.]/g, '')) || 250;
+  const applicationFeeString = application?.programs?.application_fee || "€50";
+  const applicationFeeAmount = parseFloat(applicationFeeString.replace(/[^0-9.]/g, '')) || 50;
   
   const isPaid = application?.payment_status === 'paid';
 

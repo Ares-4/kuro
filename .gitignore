@@ -8,3 +8,5 @@ out/
 *.zip
 *.log
 supabase/.temp/
+
+.vercel

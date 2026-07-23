@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Target, Users, ShieldCheck } from 'lucide-react';
 import SEO from '@/components/SEO';
+import AdSlot from '@/components/ads/AdSlot';
 
 const fadeUp = { hidden: { opacity: 0, y: 22 }, show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] } }) };
 
@@ -12,6 +13,7 @@ const AboutPage = () => {
     <>
       <SEO title="About Kuro Education Consultancy" description="Our mission is to guide international students through the study abroad journey with expert advice and support." />
       <div className="text-slate-50">
+        <AdSlot page="/about" slot="top" className="max-w-4xl mx-auto px-4 pt-6" />
 
         {/* Hero */}
         <section className="relative pt-28 pb-16 border-b border-white/5">
@@ -91,6 +93,7 @@ const AboutPage = () => {
           </div>
         </section>
 
+        <AdSlot page="/about" slot="bottom" className="max-w-4xl mx-auto px-4 pb-6" />
       </div>
     </>
   );

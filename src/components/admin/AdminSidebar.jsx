@@ -6,6 +6,7 @@ import {
   BookOpen, Globe, Edit3, Megaphone, LayoutTemplate, Activity,
   Settings, LogOut, X, ChevronDown, BarChart3, LayoutDashboard,
   Navigation, Plane, BrainCircuit, Radio, CalendarClock,
+  HelpCircle, Image, Mail, MessageSquare, TrendingUp,
 } from 'lucide-react';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 
@@ -32,23 +33,28 @@ const NAV_GROUPS = [
     ],
   },
   {
-    label: 'Community',
-    items: [
-      { label: 'Groups', icon: Users, path: '/admin/groups' },
-      { label: 'Moderators', icon: Shield, path: '/admin/moderators' },
-    ],
-  },
-  {
     label: 'Content & Marketing',
     items: [
       { label: 'Blog', icon: BookOpen, path: '/admin/blog' },
+      { label: 'FAQs', icon: HelpCircle, path: '/admin/faqs' },
       { label: 'Public content', icon: Globe, path: '/admin/public-content' },
       { label: 'Website builder', icon: LayoutDashboard, path: '/admin/builder' },
       { label: 'Content manager', icon: Edit3, path: '/admin/content' },
+      { label: 'Media library', icon: Image, path: '/admin/media' },
+      { label: 'Email templates', icon: Mail, path: '/admin/email-templates' },
       { label: 'Promotions', icon: Megaphone, path: '/admin/promos' },
       { label: 'Promo placement', icon: LayoutTemplate, path: '/admin/promos/placement' },
       { label: 'Promo diagnostics', icon: Activity, path: '/admin/promos/diagnostics' },
       { label: 'Knowledge base', icon: BrainCircuit, path: '/admin/knowledge-base' },
+      { label: 'Content analytics', icon: TrendingUp, path: '/admin/content-analytics' },
+    ],
+  },
+  {
+    label: 'Community',
+    items: [
+      { label: 'Groups', icon: Users, path: '/admin/groups' },
+      { label: 'Moderators', icon: Shield, path: '/admin/moderators' },
+      { label: 'Moderation queue', icon: MessageSquare, path: '/admin/community-moderation' },
     ],
   },
   {

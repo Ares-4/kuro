@@ -15,6 +15,7 @@ import { ADSENSE_SLOTS } from '@/config/adsenseSlots';
 import { supabase } from '@/lib/customSupabaseClient';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import CredibilityBlock from '@/components/CredibilityBlock';
+import AdSlot from '@/components/ads/AdSlot';
 
 /* ---- animation helpers ---- */
 const ease = [0.16, 1, 0.3, 1];
@@ -243,6 +244,7 @@ const HomePage = ({ contentOverride }) => {
         </section>
 
         <AdUnit slotId={ADSENSE_SLOTS.homeTop} />
+        <AdSlot page="/" slot="top" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" />
 
         <CredibilityBlock />
 
@@ -443,6 +445,7 @@ const HomePage = ({ contentOverride }) => {
           </Section>
         </section>
 
+        <AdSlot page="/" slot="bottom" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" />
         <AdUnit slotId={ADSENSE_SLOTS.homeBottom} />
       </div>
     </>

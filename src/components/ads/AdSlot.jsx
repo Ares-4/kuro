@@ -3,11 +3,15 @@ import { getPromoBanners } from '@/lib/settingsStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useAdPlacementContext } from '@/contexts/AdPlacementContext';
+import AdSlotPlaceholder from './AdSlotPlaceholder';
 
 const AdSlot = ({ page, slot, className = '' }) => {
   const [banner, setBanner] = useState(null);
+  const ctx = useAdPlacementContext();
 
   useEffect(() => {
+    if (ctx?.isEditorMode) return; // editor mode reads from context instead, below
     let isMounted = true;
 
     const fetchAndFilterBanner = async () => {
@@ -53,7 +57,27 @@ const AdSlot = ({ page, slot, className = '' }) => {
 
     fetchAndFilterBanner();
     return () => { isMounted = false; };
-  }, [page, slot]);
+  }, [page, slot, ctx?.isEditorMode]);
+
+  if (ctx?.isEditorMode) {
+    const promos = ctx.promos || {};
+    const matched = Object.entries(promos).find(([, p]) =>
+      Array.isArray(p.zones) && p.zones.includes(slot) &&
+      (p.pages?.includes('all') || p.pages?.includes(page))
+    );
+    const [matchedId, matchedPromo] = matched || [];
+
+    return (
+      <AdSlotPlaceholder
+        page={page}
+        slot={slot}
+        currentPlacement={!!matchedId}
+        promoDetails={matchedPromo ? { type: matchedPromo.isActive === false ? 'inactive' : 'promo', title: matchedPromo.title, text: matchedPromo.description } : null}
+        onDrop={(p, s, promoId) => ctx.onPlacementUpdate?.(p, s, promoId)}
+        onRemove={() => ctx.onPlacementUpdate?.(page, slot, null, matchedId)}
+      />
+    );
+  }
 
   if (!banner) return null;
 

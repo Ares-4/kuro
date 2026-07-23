@@ -30,6 +30,11 @@ import AdminKnowledgeBase from '@/components/admin/AdminKnowledgeBase';
 import AdminCountryUpdates from '@/components/admin/AdminCountryUpdates';
 import AdminScholarships from '@/components/admin/AdminScholarships';
 import AdminDeadlines from '@/components/admin/AdminDeadlines';
+import FaqManager from '@/components/admin/content/FaqManager';
+import MediaManager from '@/components/admin/content/MediaManager';
+import EmailTemplateManager from '@/components/admin/content/EmailTemplateManager';
+import ContentAnalytics from '@/components/admin/content/ContentAnalytics';
+import CommunityModeration from '@/components/admin/content/CommunityModeration';
 
 const AdminDashboard = () => {
   const { logoutAdmin } = useAdminAuth();
@@ -90,6 +95,11 @@ const AdminDashboard = () => {
               <Route path="/knowledge-base"         element={<AdminKnowledgeBase />} />
               <Route path="/scholarships"           element={<AdminScholarships />} />
               <Route path="/deadlines"              element={<AdminDeadlines />} />
+              <Route path="/faqs"                   element={<FaqManager />} />
+              <Route path="/media"                  element={<MediaManager />} />
+              <Route path="/email-templates"        element={<EmailTemplateManager />} />
+              <Route path="/content-analytics"      element={<ContentAnalytics />} />
+              <Route path="/community-moderation"   element={<CommunityModeration />} />
               <Route path="/settings"               element={<AdminSettings />} />
               <Route path="*" element={<div className="p-8 text-center" style={{ color: 'var(--fg-4)' }}>Page not found</div>} />
             </Routes>

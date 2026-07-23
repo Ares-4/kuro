@@ -7,6 +7,7 @@ import { Calendar, HelpCircle, BookOpen, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import AdUnit from '@/components/AdUnit';
+import AdSlot from '@/components/ads/AdSlot';
 
 const ResourcesPage = () => {
   const [blogs, setBlogs] = useState([]);
@@ -62,6 +63,7 @@ const ResourcesPage = () => {
         </div>
 
         <AdUnit slotId="2525252525" />
+        <AdSlot page="/resources" slot="top" />
 
         <Tabs defaultValue="blog" className="space-y-8">
           <div className="flex justify-center">
@@ -142,6 +144,7 @@ const ResourcesPage = () => {
           </TabsContent>
         </Tabs>
 
+        <AdSlot page="/resources" slot="bottom" />
         <AdUnit slotId="2626262626" />
         <AdUnit slotId="2727272727" />
 

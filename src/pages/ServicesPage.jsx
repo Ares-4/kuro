@@ -8,6 +8,7 @@ import { getPageContent } from '@/lib/contentService';
 import { DEFAULT_CONTENT } from '@/lib/defaultContent';
 import AdUnit from '@/components/AdUnit';
 import { ADSENSE_SLOTS } from '@/config/adsenseSlots';
+import AdSlot from '@/components/ads/AdSlot';
 
 const fadeUp = { hidden: { opacity: 0, y: 22 }, show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] } }) };
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.09 } } };
@@ -52,6 +53,7 @@ const ServicesPage = ({ contentOverride }) => {
         <section className="py-20">
           <div style={{ width: 'var(--container)', marginInline: 'auto', padding: '0 1rem' }}>
             <AdUnit slotId={ADSENSE_SLOTS.servicesTop} />
+            <AdSlot page="/services" slot="top" />
 
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }}
               variants={stagger} className="grid md:grid-cols-2 xl:grid-cols-4 gap-5 mt-8">
@@ -89,6 +91,7 @@ const ServicesPage = ({ contentOverride }) => {
               ))}
             </motion.div>
 
+            <AdSlot page="/services" slot="bottom" />
             <AdUnit slotId={ADSENSE_SLOTS.servicesBottom} />
           </div>
         </section>

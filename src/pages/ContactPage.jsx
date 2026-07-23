@@ -13,6 +13,7 @@ import { DEFAULT_CONTENT } from '@/lib/defaultContent';
 import AdUnit from '@/components/AdUnit';
 import { ADSENSE_SLOTS } from '@/config/adsenseSlots';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';
+import AdSlot from '@/components/ads/AdSlot';
 
 const fadeUp = { hidden: { opacity: 0, y: 22 }, show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] } }) };
 
@@ -80,6 +81,7 @@ const ContactPage = ({ contentOverride }) => {
         <section className="py-20">
           <div style={{ width: 'var(--container)', marginInline: 'auto', padding: '0 1rem' }}>
             <AdUnit slotId={ADSENSE_SLOTS.contactTop} />
+            <AdSlot page="/contact" slot="top" />
 
             <div className="grid md:grid-cols-2 gap-12 mt-8">
               {/* Contact info */}
@@ -139,6 +141,7 @@ const ContactPage = ({ contentOverride }) => {
               </motion.div>
             </div>
 
+            <AdSlot page="/contact" slot="bottom" />
             <AdUnit slotId={ADSENSE_SLOTS.contactBottom} />
           </div>
         </section>

@@ -6,7 +6,7 @@ export const useAdPlacementContext = () => {
   return useContext(AdPlacementContext);
 };
 
-export const AdPlacementProvider = ({ children, isEditorMode = false, placements, onPlacementUpdate, promos }) => {
+export const AdPlacementProvider = ({ children, isEditorMode = false, placements, onPlacementUpdate, promos, manageZonesMode = false }) => {
   const [draggedPromo, setDraggedPromo] = useState(null);
 
   const value = {
@@ -14,6 +14,7 @@ export const AdPlacementProvider = ({ children, isEditorMode = false, placements
     placements, // The editor passes its local state of placements here
     promos, // The editor passes available promos
     onPlacementUpdate, // Function to update placements in the editor
+    manageZonesMode,
     draggedPromo,
     setDraggedPromo
   };

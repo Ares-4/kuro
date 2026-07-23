@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Loader2, Image, List, CheckCircle2, Globe, Users, Eye, EyeOff } from 'lucide-react';
+import { Save, Loader2, Image, Users, Eye, EyeOff, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,12 +22,15 @@ const AdminContentManager = () => {
       title: "Global Study & Relocation Support",
       subtitle: "Your trusted partner for admissions, visa support, and relocation to top universities worldwide.",
       cta_label: "Start Your Journey"
-    },
-    faqs: [
-      { q: "How much does it cost?", a: "Costs vary by destination and program." },
-      { q: "Do you guarantee visas?", a: "We maximize your chances but cannot guarantee issuance." }
-    ]
+    }
   });
+
+  const [metrics, setMetrics] = useState({
+    students_placed: '2,400+',
+    visa_success: '91%',
+    partner_unis: '50+',
+  });
+  const [savingMetrics, setSavingMetrics] = useState(false);
 
   const [team, setTeam] = useState({
     team_heading: '',
@@ -57,14 +60,32 @@ const AdminContentManager = () => {
       }
       if (teamData) setTeam(prev => ({ ...prev, ...teamData }));
 
-      const { data: setting } = await supabase
-        .from('site_settings').select('value').eq('key', 'show_expert_team_section').maybeSingle();
-      if (setting !== null && setting?.value === false) setShowTeam(false);
+      const [{ data: teamSetting }, { data: metricsSetting }] = await Promise.all([
+        supabase.from('site_settings').select('value').eq('key', 'show_expert_team_section').maybeSingle(),
+        supabase.from('site_settings').select('value').eq('key', 'site_metrics').maybeSingle(),
+      ]);
+      if (teamSetting !== null && teamSetting?.value === false) setShowTeam(false);
+      if (metricsSetting?.value) setMetrics(prev => ({ ...prev, ...metricsSetting.value }));
 
       setLoading(false);
     };
     load();
   }, []);
+
+  const handleSaveMetrics = async () => {
+    setSavingMetrics(true);
+    try {
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert({ key: 'site_metrics', value: metrics, updated_at: new Date() }, { onConflict: 'key' });
+      if (error) throw error;
+      toast({ title: 'Metrics updated', description: 'Changes are live on the homepage.' });
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Error', description: error.message });
+    } finally {
+      setSavingMetrics(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -128,7 +149,7 @@ const AdminContentManager = () => {
         <TabsList className="bg-slate-800 border-slate-700 w-full justify-start overflow-x-auto">
           <TabsTrigger value="hero"><Image className="w-4 h-4 mr-2" /> Hero Section</TabsTrigger>
           <TabsTrigger value="team"><Users className="w-4 h-4 mr-2" /> Expert Team</TabsTrigger>
-          <TabsTrigger value="faqs"><CheckCircle2 className="w-4 h-4 mr-2" /> FAQs</TabsTrigger>
+          <TabsTrigger value="metrics"><TrendingUp className="w-4 h-4 mr-2" /> Site Metrics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="hero" className="space-y-4 mt-4">
@@ -224,58 +245,46 @@ const AdminContentManager = () => {
           ))}
         </TabsContent>
 
-        <TabsContent value="faqs" className="space-y-4 mt-4">
-          {content.faqs.map((faq, index) => (
-            <Card key={index} className="bg-slate-900 border-slate-800 mb-4">
-              <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle className="text-white text-base">FAQ {index + 1}</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    const newFaqs = content.faqs.filter((_, i) => i !== index);
-                    setContent(prev => ({ ...prev, faqs: newFaqs }));
-                  }}
-                  className="text-red-400 hover:text-red-300"
-                >
-                  Delete
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-4">
+        <TabsContent value="metrics" className="space-y-4 mt-4">
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-white">Homepage Stats</CardTitle>
+              <CardDescription className="text-slate-400">
+                These are the numbers shown in the credibility strip on the homepage (e.g. "2,400+ Students placed").
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Question</Label>
+                  <Label className="text-slate-300">Students Placed</Label>
                   <Input
-                    value={faq.q}
-                    onChange={(e) => {
-                      const newFaqs = [...content.faqs];
-                      newFaqs[index].q = e.target.value;
-                      setContent(prev => ({ ...prev, faqs: newFaqs }));
-                    }}
+                    value={metrics.students_placed}
+                    onChange={(e) => setMetrics(p => ({ ...p, students_placed: e.target.value }))}
                     className="bg-slate-950 border-slate-800 text-white"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Answer</Label>
-                  <Textarea
-                    value={faq.a}
-                    onChange={(e) => {
-                      const newFaqs = [...content.faqs];
-                      newFaqs[index].a = e.target.value;
-                      setContent(prev => ({ ...prev, faqs: newFaqs }));
-                    }}
+                  <Label className="text-slate-300">Visa Success Rate</Label>
+                  <Input
+                    value={metrics.visa_success}
+                    onChange={(e) => setMetrics(p => ({ ...p, visa_success: e.target.value }))}
                     className="bg-slate-950 border-slate-800 text-white"
                   />
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-          <Button
-            variant="outline"
-            onClick={() => setContent(prev => ({ ...prev, faqs: [...prev.faqs, { q: "", a: "" }] }))}
-            className="w-full border-dashed border-slate-700 text-slate-400 hover:text-white"
-          >
-            + Add FAQ
-          </Button>
+                <div className="space-y-2">
+                  <Label className="text-slate-300">Partner Universities</Label>
+                  <Input
+                    value={metrics.partner_unis}
+                    onChange={(e) => setMetrics(p => ({ ...p, partner_unis: e.target.value }))}
+                    className="bg-slate-950 border-slate-800 text-white"
+                  />
+                </div>
+              </div>
+              <Button onClick={handleSaveMetrics} disabled={savingMetrics} className="bg-green-600 hover:bg-green-700">
+                {savingMetrics ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />} Save Metrics
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

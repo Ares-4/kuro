@@ -15,21 +15,62 @@
 
 -- ─────────────────────────────────────────
 -- APPLICATIONS
--- Used by src/components/dashboard/ApplicationForm.jsx, ApplicationPage.jsx,
--- src/components/admin/AdminApplications.jsx, AdminOverview.jsx, DashboardHome.jsx.
--- Was not defined anywhere — every application submission was writing to a
--- table that didn't exist.
+-- Confirmed against a real information_schema.columns dump from the live
+-- project (2026-07-23) — this is the verified shape, not inferred from
+-- app code. Used by ApplicationForm.jsx, ApplicationPage.jsx,
+-- AdminApplications.jsx, AdminOverview.jsx, DashboardHome.jsx.
 -- ─────────────────────────────────────────
 create table if not exists applications (
-  id             uuid primary key default uuid_generate_v4(),
-  student_id     uuid references students(id) on delete cascade,
-  program_id     uuid references programs(id) on delete set null,
-  status         text not null default 'draft',
-  progress_step  int not null default 0,
-  payment_status text not null default 'pending',
-  documents      jsonb not null default '{}',
-  admin_notes    text,
-  created_at     timestamptz not null default now()
+  id                 uuid primary key default gen_random_uuid(),
+  student_id         uuid references students(id) on delete cascade,
+  program_id         uuid references programs(id) on delete set null,
+  status             text default 'pending',
+  payment_status     text default 'unpaid',
+  payment_intent_id  text,
+  documents          jsonb default '[]',
+  submitted_at       timestamptz,
+  created_at         timestamptz default now(),
+  updated_at         timestamptz default now(),
+  progress_step      int default 1,
+  paid_at            timestamptz,
+  stripe_session_id  text,
+  admin_notes        text
+);
+
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'applications' and column_name = 'payment_intent_id') then
+    alter table applications add column payment_intent_id text;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'applications' and column_name = 'submitted_at') then
+    alter table applications add column submitted_at timestamptz;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'applications' and column_name = 'updated_at') then
+    alter table applications add column updated_at timestamptz default now();
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'applications' and column_name = 'paid_at') then
+    alter table applications add column paid_at timestamptz;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'applications' and column_name = 'stripe_session_id') then
+    alter table applications add column stripe_session_id text;
+  end if;
+end;
+$$;
+
+-- ─────────────────────────────────────────
+-- APPLICATION NOTES (structured admin notes per application, separate from
+-- applications.admin_notes — this one supports per-note student visibility).
+-- src/components/dashboard/ApplicationPage.jsx fetchAdminNotes().
+-- Confirmed against the live schema dump.
+-- ─────────────────────────────────────────
+create table if not exists application_notes (
+  id                     uuid primary key default gen_random_uuid(),
+  application_id         uuid references applications(id) on delete cascade,
+  admin_id               uuid,
+  note_text              text not null,
+  is_visible_to_student  boolean default true,
+  created_at             timestamptz default timezone('utc'::text, now()),
+  updated_at             timestamptz default timezone('utc'::text, now())
 );
 
 -- ─────────────────────────────────────────
@@ -72,31 +113,49 @@ create table if not exists system_settings (
 -- ADMIN SETTINGS (key/value — a THIRD settings table, distinct from
 -- system_settings and site_settings). src/components/admin/AdminSettings.jsx
 -- and src/components/dashboard/StudentHub.jsx use this one, storing
--- 'main_config' and 'advisor_config'. Was already partially documented in
--- supabase/RUN_IN_SUPABASE_EDITOR.sql (an older ad-hoc fix file that was
--- run directly against the live DB and never folded into a migration) but
--- never added here — this create is a no-op if it already exists live.
+-- 'main_config' and 'advisor_config'. Confirmed against the live schema
+-- dump: PK is `id`, not `key` — `key` only has a separate unique
+-- constraint, which is exactly why AdminSettings.jsx's .upsert() with no
+-- onConflict was colliding (it matched on the PK `id`, always a fresh
+-- value, instead of `key`; fixed separately in application code).
 -- ─────────────────────────────────────────
 create table if not exists admin_settings (
-  key        text primary key,
-  value      jsonb not null default '{}',
-  updated_at timestamptz not null default now()
+  id         uuid primary key default gen_random_uuid(),
+  key        text not null unique,
+  value      jsonb not null,
+  updated_at timestamptz default now(),
+  updated_by uuid
 );
 
 -- ─────────────────────────────────────────
 -- ADMIN PROFILES (per-admin-account profile, distinct from admin_users).
--- src/components/admin/settings/ProfileSettings.jsx.
+-- src/components/admin/settings/ProfileSettings.jsx. Confirmed against the
+-- live schema dump. NOTE: ProfileSettings.jsx upserts with
+-- `{ onConflict: 'user_id' }`, which requires a unique constraint on
+-- user_id — the live dump's column list doesn't show one. Adding it here;
+-- if it's genuinely missing live, this is the fix for that save failing.
 -- ─────────────────────────────────────────
 create table if not exists admin_profiles (
   id         uuid primary key default uuid_generate_v4(),
-  user_id    uuid unique references auth.users(id) on delete cascade,
+  user_id    uuid references auth.users(id) on delete cascade,
   full_name  text,
-  phone      text,
   avatar_url text,
-  role       text not null default 'admin',
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  phone      text,
+  role       text default 'admin',
+  created_at timestamptz default timezone('utc'::text, now()),
+  updated_at timestamptz default timezone('utc'::text, now())
 );
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'admin_profiles_user_id_key' and conrelid = 'admin_profiles'::regclass
+  ) then
+    alter table admin_profiles add constraint admin_profiles_user_id_key unique (user_id);
+  end if;
+end;
+$$;
 
 -- ─────────────────────────────────────────
 -- NOTICES (student-facing announcements)
@@ -183,13 +242,29 @@ on conflict (destination) do nothing;
 -- ADMIN USERS / MODERATORS / ACTIVITY LOG
 -- src/components/admin/settings/UserManagement.jsx, AdminModerators.jsx.
 -- ─────────────────────────────────────────
+-- Confirmed against the live schema dump — matches exactly, just adding the
+-- two columns (avatar_url, phone) it revealed that weren't inferred from
+-- app code.
 create table if not exists admin_users (
-  id         uuid primary key default uuid_generate_v4(),
-  user_id    uuid unique references auth.users(id) on delete cascade,
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid references auth.users(id) on delete cascade,
+  email      text not null,
+  created_at timestamptz default now(),
+  avatar_url text,
   full_name  text,
-  email      text,
-  created_at timestamptz not null default now()
+  phone      text
 );
+
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'admin_users' and column_name = 'avatar_url') then
+    alter table admin_users add column avatar_url text;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'admin_users' and column_name = 'phone') then
+    alter table admin_users add column phone text;
+  end if;
+end;
+$$;
 
 create table if not exists moderators (
   id         uuid primary key default uuid_generate_v4(),

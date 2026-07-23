@@ -82,20 +82,33 @@ create table if not exists application_notes (
 -- Settings was silently failing, and Navbar/Footer always fell back to
 -- hardcoded defaults.
 -- ─────────────────────────────────────────
+-- Shape confirmed against the full live information_schema dump
+-- (2026-07-23): default site_name 'Kuro Educational', is_active defaults
+-- false (GeneralSettings.jsx always explicitly sets true on save, so this
+-- doesn't bite in practice), no separate created_at column, and a
+-- favicon_url column the admin UI doesn't expose yet.
 create table if not exists site_identity (
   id             uuid primary key default uuid_generate_v4(),
-  site_name      text,
+  site_name      text default 'Kuro Educational',
   description    text,
   logo_url       text,
+  favicon_url    text,
+  meta_keywords  text,
   contact_email  text,
   contact_phone  text,
   address        text,
-  meta_keywords  text,
-  social_links   jsonb not null default '{}',
-  is_active      boolean not null default true,
-  created_at     timestamptz not null default now(),
-  updated_at     timestamptz not null default now()
+  social_links   jsonb default '{}',
+  updated_at     timestamptz default timezone('utc'::text, now()),
+  is_active      boolean default false
 );
+
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'site_identity' and column_name = 'favicon_url') then
+    alter table site_identity add column favicon_url text;
+  end if;
+end;
+$$;
 
 -- ─────────────────────────────────────────
 -- SYSTEM SETTINGS (key/value, mirrors site_settings)
@@ -104,9 +117,9 @@ create table if not exists site_identity (
 -- ─────────────────────────────────────────
 create table if not exists system_settings (
   key        text primary key,
-  value      jsonb not null,
-  updated_by uuid references auth.users(id) on delete set null,
-  updated_at timestamptz not null default now()
+  value      jsonb not null default '{}',
+  updated_at timestamptz default now(),
+  updated_by uuid references auth.users(id) on delete set null
 );
 
 -- ─────────────────────────────────────────
@@ -178,14 +191,23 @@ create table if not exists notices (
 -- src/components/chat/KuroChatWidget.jsx (public read).
 -- ─────────────────────────────────────────
 create table if not exists knowledge_base (
-  id         uuid primary key default uuid_generate_v4(),
+  id         uuid primary key default gen_random_uuid(),
   question   text not null,
   answer     text not null,
-  tags       text[] not null default '{}',
+  tags       text[] default '{}',
   page_link  text,
-  is_active  boolean not null default true,
-  created_at timestamptz not null default now()
+  is_active  boolean default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
+
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'knowledge_base' and column_name = 'updated_at') then
+    alter table knowledge_base add column updated_at timestamptz default now();
+  end if;
+end;
+$$;
 
 -- ─────────────────────────────────────────
 -- DYNAMIC PAGES + PAGE SECTIONS (admin page builder)
@@ -193,21 +215,39 @@ create table if not exists knowledge_base (
 -- src/pages/DynamicPage.jsx (public read via /page/:slug).
 -- ─────────────────────────────────────────
 create table if not exists dynamic_pages (
-  id               uuid primary key default uuid_generate_v4(),
-  title            text not null,
+  id               uuid primary key default gen_random_uuid(),
   slug             text unique not null,
+  title            text not null,
   meta_description text,
-  is_published     boolean not null default false,
-  created_at       timestamptz not null default now()
+  is_published     boolean default false,
+  created_at       timestamptz default now(),
+  updated_at       timestamptz default now()
 );
 
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'dynamic_pages' and column_name = 'updated_at') then
+    alter table dynamic_pages add column updated_at timestamptz default now();
+  end if;
+end;
+$$;
+
 create table if not exists page_sections (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   page_id     uuid references dynamic_pages(id) on delete cascade,
   type        text not null,
-  content     jsonb not null default '{}',
-  order_index int not null default 0
+  content     jsonb not null,
+  order_index int not null,
+  created_at  timestamptz default now()
 );
+
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'page_sections' and column_name = 'created_at') then
+    alter table page_sections add column created_at timestamptz default now();
+  end if;
+end;
+$$;
 
 -- ─────────────────────────────────────────
 -- PUBLIC CONTENT HISTORY (edit audit trail for the CMS content editor)
@@ -229,9 +269,13 @@ create table if not exists public_content_history (
 -- src/lib/leadScoringService.js — falls back to weight 10 for every
 -- destination when this table is missing, silently degrading lead scoring.
 -- ─────────────────────────────────────────
+-- Corrected against the live dump: weight is integer (not numeric), and
+-- there's a status column and created_at that my first guess missed.
 create table if not exists destination_weights (
   destination text primary key,
-  weight      numeric not null default 10
+  weight      int not null,
+  status      text default 'active',
+  created_at  timestamptz default timezone('utc'::text, now())
 );
 
 insert into destination_weights (destination, weight) values
@@ -317,17 +361,25 @@ begin
     alter table programs add column description text;
   end if;
   if not exists (select 1 from information_schema.columns where table_name = 'programs' and column_name = 'requirements') then
-    alter table programs add column requirements jsonb not null default '[]';
+    alter table programs add column requirements text[];
   end if;
   if not exists (select 1 from information_schema.columns where table_name = 'programs' and column_name = 'image_url') then
     alter table programs add column image_url text;
   end if;
   if not exists (select 1 from information_schema.columns where table_name = 'programs' and column_name = 'processing_time') then
-    alter table programs add column processing_time text default '2-4 Weeks';
+    alter table programs add column processing_time text;
   end if;
   if not exists (select 1 from information_schema.columns where table_name = 'programs' and column_name = 'application_fee') then
     alter table programs add column application_fee text default '€50';
   end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'programs' and column_name = 'updated_at') then
+    alter table programs add column updated_at timestamptz default now();
+  end if;
+
+  -- The €200/€250 default fee task: the JS-side fallback defaults were
+  -- already changed to €50 earlier, but the DB column itself still
+  -- defaulted to €250 (confirmed live) for any insert that omits it.
+  alter table programs alter column application_fee set default '€50';
 
   -- Baseline's CREATE TABLE (fresh-install path only) makes `name` NOT NULL
   -- with no default. The seed below (and CourseEditor.jsx in the app) only
@@ -428,10 +480,13 @@ begin
     alter table public_content add column content text;
   end if;
   if not exists (select 1 from information_schema.columns where table_name = 'public_content' and column_name = 'content_type') then
-    alter table public_content add column content_type text;
+    alter table public_content add column content_type text default 'text';
   end if;
   if not exists (select 1 from information_schema.columns where table_name = 'public_content' and column_name = 'section') then
-    alter table public_content add column section text;
+    alter table public_content add column section text default 'general';
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'public_content' and column_name = 'version') then
+    alter table public_content add column version int default 1;
   end if;
   if not exists (select 1 from information_schema.columns where table_name = 'public_content' and column_name = 'is_active') then
     alter table public_content add column is_active boolean not null default true;
@@ -443,3 +498,48 @@ end;
 $$;
 
 create unique index if not exists public_content_page_field_name_key on public_content (page, field_name);
+
+-- ─────────────────────────────────────────
+-- BLOG POSTS: columns the live table has that the baseline migration never
+-- defined. blog_posts already existed pre-baseline (same pattern as
+-- programs/leads), so baseline's simpler CREATE TABLE was a no-op there.
+-- ─────────────────────────────────────────
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'blog_posts' and column_name = 'tags') then
+    alter table blog_posts add column tags text[];
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'blog_posts' and column_name = 'author_id') then
+    alter table blog_posts add column author_id uuid references auth.users(id) on delete set null;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'blog_posts' and column_name = 'views') then
+    alter table blog_posts add column views int default 0;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'blog_posts' and column_name = 'updated_at') then
+    alter table blog_posts add column updated_at timestamptz default now();
+  end if;
+end;
+$$;
+
+-- ─────────────────────────────────────────
+-- UNIVERSITIES: columns the live table has beyond baseline's simpler shape.
+-- ─────────────────────────────────────────
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'universities' and column_name = 'description') then
+    alter table universities add column description text;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'universities' and column_name = 'programs') then
+    alter table universities add column programs jsonb;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'universities' and column_name = 'admission_requirements') then
+    alter table universities add column admission_requirements text[];
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'universities' and column_name = 'ranking') then
+    alter table universities add column ranking int;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_name = 'universities' and column_name = 'image_url') then
+    alter table universities add column image_url text;
+  end if;
+end;
+$$;

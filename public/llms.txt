@@ -1,0 +1,10 @@
+## Pages
+- [- Kuro Educational](/blogdetail): No description available
+- [- Kuro Educational](/dynamic): No description available
+- [at  | Apply Now](/coursedetail): No description available
+- [Kuro Educational Consultancy - Study Abroad in Europe](/landing): Study in Europe with Kuro Educational Consultancy. Expert guidance for students from Southern Africa applying to Poland, Latvia, Lithuania, Germany, and Hungary.
+- [Login - Kuro Educational Consultancy](/login): Login to your Kuro Educational Consultancy student account
+- [Privacy Policy - Kuro Educational Consultancy](/privacypolicy): Privacy Policy for Kuro Educational Consultancy (Zimbabwe) including GDPR notice, GA4 analytics, and payment processing transparency.
+- [Sign Up - Kuro Educational Consultancy](/signup): Create your Kuro Educational Consultancy student account
+- [Student Portal — Kuro Education](/studentdashboard): No description available
+- [Terms of Service - Kuro Educational Consultancy](/termsofservice): Terms of Service for Kuro Educational Consultancy (Zimbabwe) including Basic/Premium readiness reports and payment terms.

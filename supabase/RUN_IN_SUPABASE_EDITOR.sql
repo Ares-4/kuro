@@ -134,3 +134,14 @@ create policy "admin read own profile"
 drop policy if exists "public read portal_branding" on system_settings;
 create policy "public read portal_branding"
   on system_settings for select using (key = 'portal_branding');
+
+-- student-documents storage bucket: no policy existed anywhere for this
+-- bucket, meaning list/upload work but delete silently fails (students
+-- can't clear a document even though the UI lets them click delete).
+-- Grants each student full access to only their own folder, matching the
+-- app's `${user.id}/${filename}` path convention.
+drop policy if exists "Students manage own documents" on storage.objects;
+create policy "Students manage own documents"
+  on storage.objects for all
+  using (bucket_id = 'student-documents' and (storage.foldername(name))[1] = auth.uid()::text)
+  with check (bucket_id = 'student-documents' and (storage.foldername(name))[1] = auth.uid()::text);

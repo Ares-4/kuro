@@ -409,12 +409,20 @@ const StudentSettings = () => {
 
   const deleteDocument = async (fileName) => {
     try {
-      const { error } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from('student-documents')
         .remove([`${user.id}/${fileName}`]);
 
       if (error) throw error;
-      
+
+      // RLS silently matching 0 rows isn't an error — Postgres just
+      // reports success with nothing removed. Surface that distinctly
+      // instead of showing a false "Deleted" toast.
+      if (!data || data.length === 0) {
+        toast({ variant: 'destructive', title: "Delete didn't take effect", description: "The file wasn't removed — this usually means a storage permission is missing. Contact support if this keeps happening." });
+        return;
+      }
+
       toast({ title: "Document deleted" });
       fetchDocuments();
     } catch (error) {

@@ -108,3 +108,16 @@ export async function notifyAdminOfLead(title, body, url) {
     console.warn('notifyAdminOfLead failed:', err);
   }
 }
+
+/**
+ * Fires a push notification to a specific student's subscribed devices
+ * (e.g. application status change, new notice). No-op if they never
+ * subscribed or have no devices registered.
+ */
+export async function notifyStudent(studentId, title, body, url) {
+  try {
+    await supabase.functions.invoke('send-push', { body: { title, body, url, studentId } });
+  } catch (err) {
+    console.warn('notifyStudent failed:', err);
+  }
+}

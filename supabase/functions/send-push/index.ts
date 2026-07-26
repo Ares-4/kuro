@@ -26,7 +26,7 @@ serve(async (req) => {
   }
 
   try {
-    const { title, body, url } = await req.json();
+    const { title, body, url, studentId } = await req.json();
     if (!title || !body) {
       return new Response(JSON.stringify({ error: 'title and body are required' }), {
         status: 400,
@@ -39,14 +39,14 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    const { data: subs, error } = await supabase
-      .from('push_subscriptions')
-      .select('id, endpoint, p256dh, auth')
-      .eq('is_admin', true);
+    // studentId targets one student's devices; otherwise broadcast to admins.
+    let query = supabase.from('push_subscriptions').select('id, endpoint, p256dh, auth');
+    query = studentId ? query.eq('student_id', studentId) : query.eq('is_admin', true);
+    const { data: subs, error } = await query;
 
     if (error) throw error;
 
-    const payload = JSON.stringify({ title, body, url: url ?? '/admin/leads' });
+    const payload = JSON.stringify({ title, body, url: url ?? (studentId ? '/dashboard' : '/admin/leads') });
     const staleIds: string[] = [];
 
     await Promise.all((subs ?? []).map(async (sub) => {

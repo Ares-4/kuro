@@ -24,6 +24,16 @@ import { AdminTable } from '@/components/admin/ui/AdminTable'; // New Import
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Save } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const AdminCourses = () => {
   const { toast } = useToast();
@@ -37,6 +47,8 @@ const AdminCourses = () => {
   // own Application Fee blank)
   const [defaultFee, setDefaultFee] = useState('');
   const [defaultFeeSaving, setDefaultFeeSaving] = useState(false);
+  const [showApplyDialog, setShowApplyDialog] = useState(false);
+  const [applyingFee, setApplyingFee] = useState(false);
 
   useEffect(() => {
     getSiteSetting('default_application_fee').then((value) => setDefaultFee(value || '€50'));
@@ -48,8 +60,35 @@ const AdminCourses = () => {
     setDefaultFeeSaving(false);
     if (ok) {
       toast({ title: 'Default fee saved', description: 'Applies to any program without its own Application Fee set.' });
+      setShowApplyDialog(true);
     } else {
       toast({ variant: 'destructive', title: 'Save failed', description: 'Could not save the default application fee.' });
+    }
+  };
+
+  // Optionally stamps the new default onto existing program rows, either
+  // only the ones with no fee set, or every program (overriding any
+  // per-program fee they already had).
+  const handleApplyFeeToPrograms = async (mode) => {
+    setApplyingFee(true);
+    try {
+      const value = defaultFee.trim() || '€50';
+      let query = supabase.from('programs').update({ application_fee: value }).select('id');
+
+      query = mode === 'blank'
+        ? query.or('application_fee.is.null,application_fee.eq.')
+        : query; // 'all' — no filter, touches every row
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      toast({ title: 'Programs updated', description: `Applied ${value} to ${data?.length ?? 0} program${data?.length === 1 ? '' : 's'}.` });
+      setShowApplyDialog(false);
+      fetchInitialData();
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Could not update programs', description: error.message });
+    } finally {
+      setApplyingFee(false);
     }
   };
 
@@ -278,6 +317,40 @@ const AdminCourses = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={showApplyDialog} onOpenChange={setShowApplyDialog}>
+        <AlertDialogContent className="bg-slate-900 border-slate-800 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Apply this fee to existing programs?</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-400">
+              The new default ({defaultFee.trim() || '€50'}) only affects programs with no fee of their own.
+              You can also stamp it directly onto existing program rows now, or skip this and leave them as-is.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel disabled={applyingFee} className="bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
+              Skip
+            </AlertDialogCancel>
+            <Button
+              variant="outline"
+              disabled={applyingFee}
+              onClick={() => handleApplyFeeToPrograms('blank')}
+              className="border-slate-600 text-slate-200 hover:bg-slate-800"
+            >
+              {applyingFee ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Only programs with no fee set
+            </Button>
+            <AlertDialogAction
+              disabled={applyingFee}
+              onClick={() => handleApplyFeeToPrograms('all')}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {applyingFee ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              All programs (overrides existing)
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-4 md:space-y-0 md:flex items-center gap-4 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">

@@ -180,27 +180,9 @@ export const AuthProvider = ({ children }) => {
     [toast]
   );
 
-  // Sends a 6-digit sign-in code to the given email (no password needed).
-  const signInWithOtp = useCallback(
-    async (email) => {
-      const { error } = await supabase.auth.signInWithOtp({ email });
-
-      if (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Could not send sign-in code',
-          description: error?.message || 'Something went wrong',
-        });
-      }
-
-      return { error };
-    },
-    [toast]
-  );
-
   // Verifies a 6-digit code from any of the auth emails (signup, recovery,
-  // magic link / "email" for sign-in, email_change). On success this
-  // establishes a session, same as clicking the equivalent link would.
+  // email_change). On success this establishes a session, same as clicking
+  // the equivalent link would.
   const verifyOtp = useCallback(
     async (email, token, type) => {
       const { data, error } = await supabase.auth.verifyOtp({ email, token, type });
@@ -267,7 +249,6 @@ export const AuthProvider = ({ children }) => {
       signOut,
       resetPasswordForEmail,
       updatePassword,
-      signInWithOtp,
       verifyOtp,
       changeEmail,
     }),
@@ -280,7 +261,6 @@ export const AuthProvider = ({ children }) => {
       signOut,
       resetPasswordForEmail,
       updatePassword,
-      signInWithOtp,
       verifyOtp,
       changeEmail,
     ]

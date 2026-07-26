@@ -68,20 +68,28 @@ const AdminCourses = () => {
 
   // Optionally stamps the new default onto existing program rows, either
   // only the ones with no fee set, or every program (overriding any
-  // per-program fee they already had).
+  // per-program fee they already had). Targets ids computed from the
+  // already-loaded list + `.in('id', ids)` rather than a raw filter string —
+  // PostgREST was rejecting the .or()/.not() filter combo on UPDATE.
   const handleApplyFeeToPrograms = async (mode) => {
+    const targetIds = (mode === 'blank' ? allCourses.filter(c => !c.application_fee?.trim()) : allCourses)
+      .map(c => c.id);
+
+    if (targetIds.length === 0) {
+      toast({ title: 'Nothing to update', description: 'No programs matched.' });
+      setShowApplyDialog(false);
+      return;
+    }
+
     setApplyingFee(true);
     try {
       const value = defaultFee.trim() || '€50';
-      let query = supabase.from('programs').update({ application_fee: value }).select('id');
+      const { data, error } = await supabase
+        .from('programs')
+        .update({ application_fee: value })
+        .in('id', targetIds)
+        .select('id');
 
-      // Postgres/PostgREST requires a WHERE clause on UPDATE — `.not('id', 'is', null)`
-      // matches every row (id is never null) while still satisfying that requirement.
-      query = mode === 'blank'
-        ? query.or('application_fee.is.null,application_fee.eq.')
-        : query.not('id', 'is', null);
-
-      const { data, error } = await query;
       if (error) throw error;
 
       toast({ title: 'Programs updated', description: `Applied ${value} to ${data?.length ?? 0} program${data?.length === 1 ? '' : 's'}.` });
@@ -334,7 +342,7 @@ const AdminCourses = () => {
               variant="outline"
               disabled={applyingFee}
               onClick={() => handleApplyFeeToPrograms('blank')}
-              className="w-full whitespace-normal border-slate-600 text-slate-200 hover:bg-slate-800"
+              className="w-full h-auto py-3 whitespace-normal text-center leading-snug border-slate-600 text-slate-200 hover:bg-slate-800"
             >
               {applyingFee ? <Loader2 className="w-4 h-4 mr-2 shrink-0 animate-spin" /> : null}
               Only programs with no fee set
@@ -342,7 +350,7 @@ const AdminCourses = () => {
             <Button
               disabled={applyingFee}
               onClick={() => handleApplyFeeToPrograms('all')}
-              className="w-full whitespace-normal bg-blue-600 hover:bg-blue-700"
+              className="w-full h-auto py-3 whitespace-normal text-center leading-snug bg-blue-600 hover:bg-blue-700"
             >
               {applyingFee ? <Loader2 className="w-4 h-4 mr-2 shrink-0 animate-spin" /> : null}
               All programs (overrides existing)

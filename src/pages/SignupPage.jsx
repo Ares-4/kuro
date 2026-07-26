@@ -6,13 +6,13 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/customSupabaseClient';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { GraduationCap, Mail, Lock, User, Phone, MapPin, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, Phone, MapPin, ArrowLeft, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp, verifyOtp } = useAuth();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     fullName: '',
@@ -26,6 +26,8 @@ const SignupPage = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [step, setStep] = useState('form'); // 'form' | 'verify'
+  const [code, setCode] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -77,13 +79,26 @@ const SignupPage = () => {
 
       notifyAdminOfLead('New student signup', `${formData.fullName} (${formData.email}) created an account.`, '/admin/applications');
       toast({
-        title: "Account created!",
-        description: "Please check your email to confirm your account.",
+        title: "Check your email",
+        description: "Enter the 6-digit code we sent you to confirm your account.",
       });
-      navigate('/login');
+      setStep('verify');
     }
 
     setLoading(false);
+  };
+
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await verifyOtp(formData.email, code.trim(), 'signup');
+    setLoading(false);
+
+    if (!error) {
+      toast({ title: 'Account confirmed!', description: 'Welcome to Kuro Education Consultancy.' });
+      navigate('/dashboard');
+    }
   };
 
   return (
@@ -114,6 +129,42 @@ const SignupPage = () => {
               <span className="text-2xl font-bold text-white">Kuro Educational</span>
             </div>
 
+            {step === 'verify' ? (
+              <>
+                <h1 className="text-3xl font-bold text-white text-center mb-2">Confirm Your Email</h1>
+                <p className="text-slate-300 text-center mb-8">
+                  Enter the 6-digit code sent to <span className="text-white font-medium">{formData.email}</span>.
+                </p>
+
+                <form onSubmit={handleVerify} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Code</label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 tracking-[0.3em] font-mono"
+                        placeholder="123456"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
+                  >
+                    {loading ? 'Confirming...' : 'Confirm Account'}
+                  </Button>
+                </form>
+              </>
+            ) : (
+            <>
             <h1 className="text-3xl font-bold text-white text-center mb-2">Create Account</h1>
             <p className="text-slate-300 text-center mb-8">Start your journey to study abroad</p>
 
@@ -270,6 +321,8 @@ const SignupPage = () => {
                 {loading ? 'Creating account...' : 'Create Account'}
               </Button>
             </form>
+            </>
+            )}
 
             <div className="mt-6 text-center">
               <p className="text-slate-300">

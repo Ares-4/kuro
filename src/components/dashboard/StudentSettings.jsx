@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { subscribeToPush, unsubscribeFromPush, isPushSubscribed } from '@/lib/pushNotifications';
-import { Save, Loader2, Upload, Trash2, Shield, Bell, User, FileText, Lock, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { Save, Loader2, Upload, Trash2, Shield, Bell, User, FileText, Lock, AlertCircle, CheckCircle, Eye, EyeOff, Mail, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const StudentSettings = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, changeEmail, verifyOtp } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -60,6 +60,12 @@ const StudentSettings = () => {
   });
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+
+  // Email change state
+  const [emailStep, setEmailStep] = useState('idle'); // 'idle' | 'code'
+  const [newEmail, setNewEmail] = useState('');
+  const [emailCode, setEmailCode] = useState('');
+  const [emailChangeSaving, setEmailChangeSaving] = useState(false);
 
   // Documents State
   const [documents, setDocuments] = useState([]);
@@ -345,6 +351,37 @@ const StudentSettings = () => {
     }
   };
 
+  const handleRequestEmailChange = async (e) => {
+    e.preventDefault();
+    if (!newEmail.trim() || newEmail.trim() === profile.email) {
+      return toast({ variant: 'destructive', title: 'Enter a different email address' });
+    }
+
+    setEmailChangeSaving(true);
+    const { error } = await changeEmail(newEmail.trim());
+    setEmailChangeSaving(false);
+
+    if (!error) {
+      toast({ title: 'Code sent', description: `Check ${newEmail.trim()} for a 6-digit code.` });
+      setEmailStep('code');
+    }
+  };
+
+  const handleConfirmEmailChange = async (e) => {
+    e.preventDefault();
+    setEmailChangeSaving(true);
+    const { error } = await verifyOtp(newEmail.trim(), emailCode.trim(), 'email_change');
+    setEmailChangeSaving(false);
+
+    if (!error) {
+      toast({ title: 'Email updated', description: 'Your account email has been changed.' });
+      setEmailStep('idle');
+      setEmailCode('');
+      setProfile(prev => ({ ...prev, email: newEmail.trim() }));
+      setNewEmail('');
+    }
+  };
+
   const handleDocumentUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -582,6 +619,70 @@ const StudentSettings = () => {
                 </div>
                 <p className="text-xs text-yellow-500/80 mt-2">Coming soon to your region.</p>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-white">Email Address</CardTitle>
+              <CardDescription className="text-slate-400">
+                Change the email address used to sign in. Current: {profile.email || 'N/A'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {emailStep === 'idle' ? (
+                <form onSubmit={handleRequestEmailChange} className="space-y-4 max-w-md">
+                  <div className="space-y-2">
+                    <Label className="text-slate-200">New Email Address</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                      <Input
+                        type="email"
+                        value={newEmail}
+                        onChange={(e) => setNewEmail(e.target.value)}
+                        className="bg-slate-950 border-slate-700 text-white pl-9"
+                        placeholder="new@example.com"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <Button type="submit" disabled={emailChangeSaving} variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white">
+                    {emailChangeSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                    Send Verification Code
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleConfirmEmailChange} className="space-y-4 max-w-md">
+                  <p className="text-sm text-slate-400">
+                    Enter the 6-digit code sent to <span className="text-white font-medium">{newEmail}</span>.
+                  </p>
+                  <div className="space-y-2">
+                    <Label className="text-slate-200">Code</Label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={emailCode}
+                        onChange={(e) => setEmailCode(e.target.value)}
+                        className="bg-slate-950 border-slate-700 text-white pl-9 tracking-[0.3em] font-mono"
+                        placeholder="123456"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={emailChangeSaving} className="bg-blue-600 hover:bg-blue-700">
+                      {emailChangeSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                      Confirm Email Change
+                    </Button>
+                    <Button type="button" variant="ghost" onClick={() => { setEmailStep('idle'); setEmailCode(''); }} className="text-slate-400 hover:text-white">
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              )}
             </CardContent>
           </Card>
 

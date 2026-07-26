@@ -6,7 +6,6 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -17,7 +16,6 @@ const AuthContext = createContext(undefined);
  */
 export const AuthProvider = ({ children }) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
@@ -67,19 +65,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('supabase.auth.token');
       } else {
         handleSession(newSession);
-
-        // Supabase fires this when the URL hash contains a recovery token
-        // (i.e. the user clicked a "reset password" email link). Without
-        // this, they'd just get silently signed in and dropped on the
-        // homepage with a raw access_token hanging in the address bar.
-        if (event === 'PASSWORD_RECOVERY') {
-          navigate('/reset-password', { replace: true });
-        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [handleSession, navigate]);
+  }, [handleSession]);
 
   const signUp = useCallback(
     async (email, password, options = {}) => {
@@ -154,10 +144,10 @@ export const AuthProvider = ({ children }) => {
 
   const resetPasswordForEmail = useCallback(
     async (email) => {
-      const redirectTo = `${window.location.origin}/reset-password`;
-
+      // We only use the emailed 6-digit code (verifyOtp below), not a link,
+      // so redirectTo is irrelevant here — Supabase still requires the call.
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo,
+        redirectTo: `${window.location.origin}/forgot-password`,
       });
 
       if (error) {
@@ -181,6 +171,63 @@ export const AuthProvider = ({ children }) => {
         toast({
           variant: 'destructive',
           title: 'Could not update password',
+          description: error?.message || 'Something went wrong',
+        });
+      }
+
+      return { error };
+    },
+    [toast]
+  );
+
+  // Sends a 6-digit sign-in code to the given email (no password needed).
+  const signInWithOtp = useCallback(
+    async (email) => {
+      const { error } = await supabase.auth.signInWithOtp({ email });
+
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Could not send sign-in code',
+          description: error?.message || 'Something went wrong',
+        });
+      }
+
+      return { error };
+    },
+    [toast]
+  );
+
+  // Verifies a 6-digit code from any of the auth emails (signup, recovery,
+  // magic link / "email" for sign-in, email_change). On success this
+  // establishes a session, same as clicking the equivalent link would.
+  const verifyOtp = useCallback(
+    async (email, token, type) => {
+      const { data, error } = await supabase.auth.verifyOtp({ email, token, type });
+
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Invalid or expired code',
+          description: error?.message || 'Please request a new code and try again.',
+        });
+      }
+
+      return { data, error };
+    },
+    [toast]
+  );
+
+  // Kicks off an email change: Supabase emails a 6-digit code to the new
+  // address for confirmation via verifyOtp(newEmail, code, 'email_change').
+  const changeEmail = useCallback(
+    async (newEmail) => {
+      const { error } = await supabase.auth.updateUser({ email: newEmail });
+
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Could not start email change',
           description: error?.message || 'Something went wrong',
         });
       }
@@ -220,8 +267,23 @@ export const AuthProvider = ({ children }) => {
       signOut,
       resetPasswordForEmail,
       updatePassword,
+      signInWithOtp,
+      verifyOtp,
+      changeEmail,
     }),
-    [user, session, loading, signUp, signIn, signOut, resetPasswordForEmail, updatePassword]
+    [
+      user,
+      session,
+      loading,
+      signUp,
+      signIn,
+      signOut,
+      resetPasswordForEmail,
+      updatePassword,
+      signInWithOtp,
+      verifyOtp,
+      changeEmail,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -31,6 +31,22 @@ export function formatCurrency(amount, currencyCode) {
 }
 
 /**
+ * Resolves the application fee to display/charge for a program: the
+ * program's own fee if set, otherwise the admin-configured global default,
+ * otherwise a final hardcoded fallback.
+ * @param {string|null|undefined} programFee - program.application_fee
+ * @param {string|null|undefined} globalDefaultFee - site_settings['default_application_fee']
+ * @returns {string}
+ */
+export function resolveApplicationFee(programFee, globalDefaultFee) {
+  const own = (programFee || '').toString().trim();
+  if (own) return own;
+
+  const globalFee = (globalDefaultFee || '').toString().trim();
+  return globalFee || '€50';
+}
+
+/**
  * Formats a duration value by appending "Years" if needed.
  * @param {string|number} duration - The duration value.
  * @returns {string} - The formatted duration string (e.g., "3.5 Years").

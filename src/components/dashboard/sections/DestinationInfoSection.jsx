@@ -42,7 +42,9 @@ const DestinationInfoSection = ({ studentId }) => {
       <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center text-center h-full">
         <MapPin className="w-10 h-10 text-slate-500 mb-3" />
         <h3 className="text-lg font-bold text-white mb-2">No Destination Selected</h3>
-        <Button variant="link" className="text-blue-400">Select a Destination</Button>
+        <Button variant="link" className="text-blue-400" asChild>
+          <Link to="/dashboard/countries">Select a Destination</Link>
+        </Button>
       </div>
     );
   }

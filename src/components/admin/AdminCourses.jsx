@@ -18,9 +18,12 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { formatCurrency, formatDuration } from '@/lib/utils';
+import { getSiteSetting, setSiteSetting } from '@/lib/settingsStore';
 import CourseEditor from './CourseEditor';
 import { AdminTable } from '@/components/admin/ui/AdminTable'; // New Import
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Save } from 'lucide-react';
 
 const AdminCourses = () => {
   const { toast } = useToast();
@@ -29,6 +32,26 @@ const AdminCourses = () => {
   const [loading, setLoading] = useState(true);
   const [allCourses, setAllCourses] = useState([]);
   const [universities, setUniversities] = useState([]);
+
+  // Global default application fee (used by any program that leaves its
+  // own Application Fee blank)
+  const [defaultFee, setDefaultFee] = useState('');
+  const [defaultFeeSaving, setDefaultFeeSaving] = useState(false);
+
+  useEffect(() => {
+    getSiteSetting('default_application_fee').then((value) => setDefaultFee(value || '€50'));
+  }, []);
+
+  const handleSaveDefaultFee = async () => {
+    setDefaultFeeSaving(true);
+    const ok = await setSiteSetting('default_application_fee', defaultFee.trim() || '€50');
+    setDefaultFeeSaving(false);
+    if (ok) {
+      toast({ title: 'Default fee saved', description: 'Applies to any program without its own Application Fee set.' });
+    } else {
+      toast({ variant: 'destructive', title: 'Save failed', description: 'Could not save the default application fee.' });
+    }
+  };
 
   // Filtering & Sort States
   const [searchQuery, setSearchQuery] = useState('');
@@ -229,6 +252,32 @@ const AdminCourses = () => {
           <Plus className="w-4 h-4 mr-2" /> Add New Course
         </Button>
       </div>
+
+      <Card className="bg-slate-900 border-slate-800">
+        <CardHeader>
+          <CardTitle className="text-white text-lg">Default Application Fee</CardTitle>
+          <CardDescription className="text-slate-400">
+            Used for any program that doesn't have its own Application Fee set below. Edit a program individually to override it.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-end max-w-md">
+            <div className="space-y-2 flex-1">
+              <Label className="text-slate-200">Global default</Label>
+              <Input
+                value={defaultFee}
+                onChange={(e) => setDefaultFee(e.target.value)}
+                placeholder="e.g. €50"
+                className="bg-slate-950 border-slate-700 text-white"
+              />
+            </div>
+            <Button onClick={handleSaveDefaultFee} disabled={defaultFeeSaving} className="bg-blue-600 hover:bg-blue-700">
+              {defaultFeeSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+              Save
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-4 md:space-y-0 md:flex items-center gap-4 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">

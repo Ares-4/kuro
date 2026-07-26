@@ -3,13 +3,20 @@ import { CreditCard, Lock, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/customSupabaseClient';
+import { getSiteSetting } from '@/lib/settingsStore';
+import { resolveApplicationFee } from '@/lib/utils';
 
 const PaymentView = ({ application, onPaymentComplete }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [defaultFee, setDefaultFee] = useState('');
 
-  // Dynamic fee from database
-  const applicationFeeString = application?.programs?.application_fee || "€50";
+  React.useEffect(() => {
+    getSiteSetting('default_application_fee').then((value) => setDefaultFee(value || ''));
+  }, []);
+
+  // Dynamic fee: program's own fee, else the admin-configured global default
+  const applicationFeeString = resolveApplicationFee(application?.programs?.application_fee, defaultFee);
   const applicationFeeAmount = parseFloat(applicationFeeString.replace(/[^0-9.]/g, '')) || 50;
   
   const isPaid = application?.payment_status === 'paid';

@@ -22,7 +22,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import { cn } from '@/lib/utils';
+import { cn, resolveApplicationFee } from '@/lib/utils';
+import { getSiteSetting } from '@/lib/settingsStore';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // Sub-component to handle signed URLs for documents
@@ -82,6 +83,11 @@ const ApplicationPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [adminNotes, setAdminNotes] = useState([]);
+  const [defaultFee, setDefaultFee] = useState('');
+
+  useEffect(() => {
+    getSiteSetting('default_application_fee').then((value) => setDefaultFee(value || ''));
+  }, []);
 
   const tabStorageKey = `kuro_app_${applicationId}_last_tab`;
 
@@ -354,7 +360,7 @@ const ApplicationPage = () => {
 
     setProcessingPayment(true);
     try {
-      const feeString = application.programs?.application_fee || '50';
+      const feeString = resolveApplicationFee(application.programs?.application_fee, defaultFee);
       const amount = parseFloat(String(feeString).replace(/[^0-9.]/g, '')) || 50;
 
       const { data, error } = await supabase.functions.invoke('process-payment', {
@@ -759,7 +765,7 @@ const ApplicationPage = () => {
                   <div className="p-6 text-center border-2 border-dashed border-slate-700 rounded-lg bg-slate-900/30">
                     <CreditCard className="w-12 h-12 text-slate-500 mx-auto mb-3" />
                     <h3 className="text-white font-medium mb-1">Application Fee</h3>
-                    <p className="text-3xl font-bold text-white mb-6">{application.programs?.application_fee || '€50'}</p>
+                    <p className="text-3xl font-bold text-white mb-6">{resolveApplicationFee(application.programs?.application_fee, defaultFee)}</p>
 
                     {isPaid ? (
                       <div className="flex flex-col items-center gap-2">

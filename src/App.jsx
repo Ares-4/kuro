@@ -32,6 +32,8 @@ import ResourcesPage from '@/pages/ResourcesPage';
 import BlogDetailPage from '@/pages/BlogDetailPage';
 import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
+import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import StudentDashboard from '@/pages/StudentDashboard';
 import AdminDashboard from '@/pages/AdminDashboard';
 import DynamicPage from '@/pages/DynamicPage';
@@ -89,6 +91,8 @@ function App() {
                 {/* Auth Routes */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
                 
                 {/* Admin Login Route */}
                 <Route path="/admin-login" element={<AdminLogin />} />

@@ -54,7 +54,7 @@ const CourseEditor = ({ course, onSave, onCancel }) => {
     requirements: [],
     image_url: '',
     processing_time: '2-4 Weeks',
-    application_fee: '€50',
+    application_fee: '',
     is_active: true,
   });
   
@@ -139,7 +139,7 @@ const CourseEditor = ({ course, onSave, onCancel }) => {
         ...course,
         requirements: course.requirements || [],
         image_url: course.image_url || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop',
-        application_fee: course.application_fee || '€50',
+        application_fee: course.application_fee || '',
         processing_time: course.processing_time || '2-4 Weeks',
         // Ensure currency has a fallback if undefined in existing records
         currency: course.currency || 'EUR', 
@@ -349,7 +349,7 @@ const CourseEditor = ({ course, onSave, onCancel }) => {
                  <CardContent className="space-y-4">
                    <div className="flex justify-between text-sm">
                      <span className="text-slate-400">Application Fee</span>
-                     <span className="text-white font-medium">{data.application_fee}</span>
+                     <span className="text-white font-medium">{data.application_fee || 'Uses global default'}</span>
                    </div>
                    <div className="flex justify-between text-sm">
                      <span className="text-slate-400">Processing Time</span>
@@ -610,11 +610,11 @@ const CourseEditor = ({ course, onSave, onCancel }) => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-white">Application Fee</Label>
-                        <Input 
+                        <Label className="text-white">Application Fee (optional)</Label>
+                        <Input
                           value={formData.application_fee}
                           onChange={(e) => handleChange('application_fee', e.target.value)}
-                          placeholder="e.g. €250"
+                          placeholder="Leave blank to use the global default"
                           className="bg-slate-800 border-slate-700 text-white"
                         />
                       </div>

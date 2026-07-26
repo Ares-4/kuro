@@ -25,6 +25,8 @@ import {
 import { format } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { AdminTable } from '@/components/admin/ui/AdminTable';
+import { getSiteSetting } from '@/lib/settingsStore';
+import { resolveApplicationFee } from '@/lib/utils';
 
 const StatusBadge = ({ status }) => {
   const styles = {
@@ -147,7 +149,12 @@ const AdminApplications = () => {
   const [adminNotes, setAdminNotes] = useState('');
   const [savingNotes, setSavingNotes] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [defaultFee, setDefaultFee] = useState('');
   const { toast } = useToast();
+
+  useEffect(() => {
+    getSiteSetting('default_application_fee').then((value) => setDefaultFee(value || ''));
+  }, []);
 
   const fetchApplications = useCallback(async () => {
     setIsLoading(true);
@@ -240,7 +247,7 @@ const AdminApplications = () => {
       `Level:        ${p.degree_level || 'N/A'}`,
       `Duration:     ${p.duration || 'N/A'}`,
       `Tuition:      ${p.tuition_fee || 'N/A'}`,
-      `App Fee:      ${p.application_fee || 'N/A'}`,
+      `App Fee:      ${resolveApplicationFee(p.application_fee, defaultFee)}`,
       ``,
       `APPLICATION`,
       `ID:           ${selectedApp.id}`,
@@ -455,7 +462,7 @@ const AdminApplications = () => {
                   <InfoRow label="Degree level"  value={selectedApp.programs?.degree_level} />
                   <InfoRow label="Duration"      value={selectedApp.programs?.duration} />
                   <InfoRow label="Tuition fee"   value={selectedApp.programs?.tuition_fee} />
-                  <InfoRow label="Application fee" value={selectedApp.programs?.application_fee} />
+                  <InfoRow label="Application fee" value={resolveApplicationFee(selectedApp.programs?.application_fee, defaultFee)} />
                   <InfoRow label="Submitted"     value={selectedApp.submitted_at ? new Date(selectedApp.submitted_at).toLocaleString() : null} />
                 </div>
               </section>

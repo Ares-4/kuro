@@ -211,7 +211,14 @@ if (window.navigation && window.self !== window.top) {
 const addTransformIndexHtml = {
 	name: 'add-transform-index-html',
 	transformIndexHtml(html) {
-		const tags = [
+		// These scripts postMessage to window.parent for the Horizons dev/preview
+		// iframe (error overlay, runtime errors, fetch logging, nav interception).
+		// They have no purpose on the real deployed site — window.parent === window
+		// there — but were being injected unconditionally, so window.fetch got
+		// monkey-patched in production too, logging a console.error for every
+		// non-ok response (e.g. GA beacons blocked by browser tracking
+		// prevention), spamming visitors' consoles for no reason.
+		const tags = isDev ? [
 			{
 				tag: 'script',
 				attrs: { type: 'module' },
@@ -242,7 +249,7 @@ const addTransformIndexHtml = {
 				children: configNavigationHandler,
 				injectTo: 'head',
 			},
-		];
+		] : [];
 
 		if (!isDev && process.env.TEMPLATE_BANNER_SCRIPT_URL && process.env.TEMPLATE_REDIRECT_URL) {
 			tags.push(

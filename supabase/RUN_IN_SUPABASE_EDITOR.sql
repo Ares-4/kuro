@@ -123,3 +123,14 @@ create policy "public read site_identity"
 drop policy if exists "admin read own profile" on admin_profiles;
 create policy "admin read own profile"
   on admin_profiles for select using (auth.uid() = user_id);
+
+-- system_settings: public needs to read portal_branding (site-wide theme/logo
+-- shown to every visitor via SystemSettingsContext) but NOT system_preferences
+-- or admin_notifications, which stay admin-only via the existing "Admins
+-- manage system_settings" policy. Missing this caused two bugs: branding
+-- silently fell back to defaults for anonymous visitors, and the realtime
+-- subscription for system_settings looped forever with CHANNEL_ERROR
+-- (Realtime enforces RLS, so anon subscribes were rejected).
+drop policy if exists "public read portal_branding" on system_settings;
+create policy "public read portal_branding"
+  on system_settings for select using (key = 'portal_branding');

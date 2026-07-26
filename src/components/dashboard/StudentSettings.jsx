@@ -168,8 +168,12 @@ const StudentSettings = () => {
         setDocuments([]);
         return;
       }
-      
-      setDocuments(data || []);
+
+      // Supabase Storage returns a placeholder row for empty folders
+      // (id: null, no real content) — filter those out so nothing
+      // that isn't an actual uploaded file shows in the list.
+      const realDocs = (data || []).filter(doc => doc.id && doc.name !== '.emptyFolderPlaceholder');
+      setDocuments(realDocs);
     } catch (error) {
       console.error('Unexpected error fetching documents:', error);
       setDocuments([]);

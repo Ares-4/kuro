@@ -19,17 +19,24 @@ import {
 import { Button } from '@/components/ui/button';
 import { BackButton } from '@/components/ui/back-button';
 import { useToast } from '@/components/ui/use-toast';
+import { getSiteSetting } from '@/lib/settingsStore';
+import { resolveApplicationFee } from '@/lib/utils';
 
 const ApplicationForm = () => {
   const { programId } = useParams();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  
+
   const [program, setProgram] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [defaultFee, setDefaultFee] = useState('');
+
+  useEffect(() => {
+    getSiteSetting('default_application_fee').then((value) => setDefaultFee(value || ''));
+  }, []);
 
   useEffect(() => {
     let channel;
@@ -327,7 +334,7 @@ const ApplicationForm = () => {
               <div className="flex justify-between items-center text-sm p-3 bg-slate-900/50 rounded-lg border border-slate-700/50">
                 <span className="text-slate-400">Application Fee</span>
                 <span className="text-white font-mono font-bold text-lg">
-                  {program.application_fee || '€50'}
+                  {resolveApplicationFee(program.application_fee, defaultFee)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-sm p-3 bg-slate-900/50 rounded-lg border border-slate-700/50">

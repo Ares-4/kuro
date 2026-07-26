@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -16,6 +17,7 @@ const AuthContext = createContext(undefined);
  */
 export const AuthProvider = ({ children }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
@@ -65,11 +67,19 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('supabase.auth.token');
       } else {
         handleSession(newSession);
+
+        // Supabase fires this when the URL hash contains a recovery token
+        // (i.e. the user clicked a "reset password" email link). Without
+        // this, they'd just get silently signed in and dropped on the
+        // homepage with a raw access_token hanging in the address bar.
+        if (event === 'PASSWORD_RECOVERY') {
+          navigate('/reset-password', { replace: true });
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [handleSession]);
+  }, [handleSession, navigate]);
 
   const signUp = useCallback(
     async (email, password, options = {}) => {
@@ -142,6 +152,44 @@ export const AuthProvider = ({ children }) => {
     [toast]
   );
 
+  const resetPasswordForEmail = useCallback(
+    async (email) => {
+      const redirectTo = `${window.location.origin}/reset-password`;
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo,
+      });
+
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Could not send reset email',
+          description: error?.message || 'Something went wrong',
+        });
+      }
+
+      return { error };
+    },
+    [toast]
+  );
+
+  const updatePassword = useCallback(
+    async (newPassword) => {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Could not update password',
+          description: error?.message || 'Something went wrong',
+        });
+      }
+
+      return { error };
+    },
+    [toast]
+  );
+
   const signOut = useCallback(async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -170,8 +218,10 @@ export const AuthProvider = ({ children }) => {
       signUp,
       signIn,
       signOut,
+      resetPasswordForEmail,
+      updatePassword,
     }),
-    [user, session, loading, signUp, signIn, signOut]
+    [user, session, loading, signUp, signIn, signOut, resetPasswordForEmail, updatePassword]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

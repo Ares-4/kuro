@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/customSupabaseClient';
-import { MapPin, FileText, CheckCircle2, Loader2, AlertTriangle } from 'lucide-react';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useToast } from '@/components/ui/use-toast';
+import { MapPin, FileText, CheckCircle2, Loader2, AlertTriangle, ArrowRight, Star } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -12,9 +15,13 @@ import { BackButton } from '@/components/ui/back-button';
 import { Button } from '@/components/ui/button';
 
 const CountriesView = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [myCountry, setMyCountry] = useState('');
+  const [settingCountry, setSettingCountry] = useState('');
 
   // Fallback data in case DB is empty or fails
   const fallbackCountries = [
@@ -52,7 +59,33 @@ const CountriesView = () => {
 
   useEffect(() => {
     fetchCountries();
-  }, []);
+    if (user) fetchMyCountry();
+  }, [user]);
+
+  const fetchMyCountry = async () => {
+    const { data } = await supabase.from('students').select('country').eq('user_id', user.id).maybeSingle();
+    setMyCountry(data?.country || '');
+  };
+
+  const handleSetDestination = async (countryName) => {
+    if (!user) return;
+    setSettingCountry(countryName);
+    try {
+      const { data: existing } = await supabase.from('students').select('id').eq('user_id', user.id).maybeSingle();
+      const dbError = existing
+        ? (await supabase.from('students').update({ country: countryName }).eq('user_id', user.id)).error
+        : (await supabase.from('students').insert({ user_id: user.id, email: user.email, country: countryName })).error;
+
+      if (dbError) throw dbError;
+
+      setMyCountry(countryName);
+      toast({ title: 'Destination set', description: `${countryName} is now your target destination.` });
+    } catch (err) {
+      toast({ variant: 'destructive', title: 'Could not set destination', description: err.message });
+    } finally {
+      setSettingCountry('');
+    }
+  };
 
   const fetchCountries = async () => {
     try {
@@ -121,7 +154,7 @@ const CountriesView = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden"
+            className={`bg-slate-800/50 border rounded-xl overflow-hidden ${myCountry?.toLowerCase() === country.name.toLowerCase() ? 'border-blue-500/50' : 'border-slate-700'}`}
           >
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value={`item-${index}`} className="border-0">
@@ -131,7 +164,14 @@ const CountriesView = () => {
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-white">{country.name}</h3>
+                      <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                        {country.name}
+                        {myCountry?.toLowerCase() === country.name.toLowerCase() && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30 uppercase tracking-wide">
+                            Your destination
+                          </span>
+                        )}
+                      </h3>
                       <p className="text-sm text-slate-400 font-normal">Click to explore requirements</p>
                     </div>
                   </div>
@@ -178,6 +218,27 @@ const CountriesView = () => {
                           <p className="text-slate-500 italic text-sm">Contact support for document list.</p>
                         )}
                       </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t border-slate-800">
+                      <Button
+                        onClick={() => handleSetDestination(country.name)}
+                        disabled={settingCountry === country.name || myCountry?.toLowerCase() === country.name.toLowerCase()}
+                        className="sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60"
+                      >
+                        {settingCountry === country.name ? (
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Setting...</>
+                        ) : myCountry?.toLowerCase() === country.name.toLowerCase() ? (
+                          <><Star className="w-4 h-4 mr-2" /> Current destination</>
+                        ) : (
+                          'Set as My Destination'
+                        )}
+                      </Button>
+                      <Button variant="outline" className="sm:flex-1 border-slate-700 hover:bg-slate-800" asChild>
+                        <Link to={`/destinations/${country.name.toLowerCase()}`}>
+                          View Full Guide <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
+                      </Button>
                     </div>
                   </div>
                 </AccordionContent>

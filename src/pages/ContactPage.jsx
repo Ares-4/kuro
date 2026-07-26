@@ -14,20 +14,25 @@ import AdUnit from '@/components/AdUnit';
 import { ADSENSE_SLOTS } from '@/config/adsenseSlots';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';
 import AdSlot from '@/components/ads/AdSlot';
+import { usePublicSiteSettings } from '@/contexts/PublicSiteSettingsContext';
 
 const fadeUp = { hidden: { opacity: 0, y: 22 }, show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] } }) };
 
-const CONTACT_ITEMS = [
-  { icon: Mail,    color: 'text-blue-400',    bg: 'rgba(37,99,235,0.08)',   label: 'Email us',          value: 'info@kuro.com' },
-  { icon: Phone,   color: 'text-emerald-400', bg: 'rgba(52,211,153,0.08)', label: 'WhatsApp / call',   value: '+263 77 123 4567' },
-  { icon: MapPin,  color: 'text-violet-400',  bg: 'rgba(139,92,246,0.08)', label: 'Visit us',          value: 'Harare, Zimbabwe' },
-];
-
 const ContactPage = ({ contentOverride }) => {
   const { toast } = useToast();
+  const { identity } = usePublicSiteSettings();
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState(DEFAULT_CONTENT.contact);
   const [formData, setFormData] = useState({ name: '', email: '', whatsapp: '', message: '' });
+
+  // Pulled from Admin → Settings → General → Contact Information
+  // (site_identity table), not hardcoded — these used to always show
+  // placeholder values regardless of what was actually configured.
+  const CONTACT_ITEMS = [
+    { icon: Mail,   color: 'text-blue-400',    bg: 'rgba(37,99,235,0.08)',  label: 'Email us',        value: identity?.contact_email || 'Not set — add in Admin Settings' },
+    { icon: Phone,  color: 'text-emerald-400', bg: 'rgba(52,211,153,0.08)', label: 'WhatsApp / call', value: identity?.contact_phone || 'Not set — add in Admin Settings' },
+    { icon: MapPin, color: 'text-violet-400',  bg: 'rgba(139,92,246,0.08)', label: 'Visit us',        value: identity?.address || 'Not set — add in Admin Settings' },
+  ];
 
   useEffect(() => {
     if (contentOverride) { setContent({ ...DEFAULT_CONTENT.contact, ...contentOverride }); return; }

@@ -75,9 +75,11 @@ const AdminCourses = () => {
       const value = defaultFee.trim() || '€50';
       let query = supabase.from('programs').update({ application_fee: value }).select('id');
 
+      // Postgres/PostgREST requires a WHERE clause on UPDATE — `.not('id', 'is', null)`
+      // matches every row (id is never null) while still satisfying that requirement.
       query = mode === 'blank'
         ? query.or('application_fee.is.null,application_fee.eq.')
-        : query; // 'all' — no filter, touches every row
+        : query.not('id', 'is', null);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -319,7 +321,7 @@ const AdminCourses = () => {
       </Card>
 
       <AlertDialog open={showApplyDialog} onOpenChange={setShowApplyDialog}>
-        <AlertDialogContent className="bg-slate-900 border-slate-800 text-white">
+        <AlertDialogContent className="bg-slate-900 border-slate-800 text-white max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle>Apply this fee to existing programs?</AlertDialogTitle>
             <AlertDialogDescription className="text-slate-400">
@@ -327,27 +329,27 @@ const AdminCourses = () => {
               You can also stamp it directly onto existing program rows now, or skip this and leave them as-is.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-            <AlertDialogCancel disabled={applyingFee} className="bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
-              Skip
-            </AlertDialogCancel>
+          <AlertDialogFooter className="flex-col gap-2 sm:space-x-0">
             <Button
               variant="outline"
               disabled={applyingFee}
               onClick={() => handleApplyFeeToPrograms('blank')}
-              className="border-slate-600 text-slate-200 hover:bg-slate-800"
+              className="w-full whitespace-normal border-slate-600 text-slate-200 hover:bg-slate-800"
             >
-              {applyingFee ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              {applyingFee ? <Loader2 className="w-4 h-4 mr-2 shrink-0 animate-spin" /> : null}
               Only programs with no fee set
             </Button>
-            <AlertDialogAction
+            <Button
               disabled={applyingFee}
               onClick={() => handleApplyFeeToPrograms('all')}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="w-full whitespace-normal bg-blue-600 hover:bg-blue-700"
             >
-              {applyingFee ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              {applyingFee ? <Loader2 className="w-4 h-4 mr-2 shrink-0 animate-spin" /> : null}
               All programs (overrides existing)
-            </AlertDialogAction>
+            </Button>
+            <AlertDialogCancel disabled={applyingFee} className="w-full mt-0 bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
+              Skip
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

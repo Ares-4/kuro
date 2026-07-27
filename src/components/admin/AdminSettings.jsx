@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/components/ui/use-toast';
 import { subscribeAdminToPush, unsubscribeAdminFromPush, isPushSubscribed } from '@/lib/pushNotifications';
+import GeneralSettings from '@/components/admin/settings/GeneralSettings';
 
 const AdminSettings = () => {
   const [loading, setLoading] = useState(true);
@@ -54,12 +55,6 @@ const AdminSettings = () => {
   });
 
   const [settings, setSettings] = useState({
-    global: {
-      companyName: "Kuro Education",
-      contactEmail: "admin@kuro.com",
-      phone: "+123456789",
-      address: "Harare, Zimbabwe"
-    },
     destinations: {
       enableNewDestinations: true,
       showComingSoon: false
@@ -154,33 +149,17 @@ const AdminSettings = () => {
         </Button>
       </div>
 
-      <Tabs defaultValue="global" className="w-full">
+      <Tabs defaultValue="general" className="w-full">
         <TabsList className="bg-slate-800 border-slate-700 w-full justify-start flex-wrap h-auto">
-          <TabsTrigger value="global"><Globe className="w-4 h-4 mr-2" /> Global</TabsTrigger>
+          <TabsTrigger value="general"><Globe className="w-4 h-4 mr-2" /> General</TabsTrigger>
           <TabsTrigger value="scoring"><Sliders className="w-4 h-4 mr-2" /> Lead Scoring</TabsTrigger>
           <TabsTrigger value="notifications"><Bell className="w-4 h-4 mr-2" /> Notifications</TabsTrigger>
           <TabsTrigger value="advisor"><UserCircle2 className="w-4 h-4 mr-2" /> Advisor Card</TabsTrigger>
         </TabsList>
 
-        {/* Global Settings */}
-        <TabsContent value="global" className="mt-4 space-y-4">
-          <Card className="bg-slate-900 border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-white">Company Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Company Name</Label>
-                  <Input value={settings.global.companyName} onChange={e => updateSection('global', 'companyName', e.target.value)} className="bg-slate-950 border-slate-800 text-white" />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Contact Email</Label>
-                  <Input value={settings.global.contactEmail} onChange={e => updateSection('global', 'contactEmail', e.target.value)} className="bg-slate-950 border-slate-800 text-white" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* General Settings — site identity, contact info, social links (site_identity table) */}
+        <TabsContent value="general" className="mt-4 space-y-4">
+          <GeneralSettings />
         </TabsContent>
 
         {/* Lead Scoring */}

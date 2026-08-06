@@ -1,4 +1,30 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "kuro-rose.vercel.app" }],
+      "destination": "https://kuroeduconsultancy.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "kuro-arszyne-2065s-projects.vercel.app" }],
+      "destination": "https://kuroeduconsultancy.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "kuro-git-main-arszyne-2065s-projects.vercel.app" }],
+      "destination": "https://kuroeduconsultancy.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.kuroeduconsultancy.com" }],
+      "destination": "https://kuroeduconsultancy.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",

@@ -21,6 +21,7 @@ import PromoManager from '@/components/admin/PromoManager';
 import PromoPlacementEditor from '@/components/admin/PromoPlacementEditor';
 import PromoDiagnostics from '@/components/admin/PromoDiagnostics';
 import AdminLeads from '@/components/admin/AdminLeads';
+import AdminApplicants from '@/components/admin/AdminApplicants';
 import AdminModerators from '@/components/admin/AdminModerators';
 import AdminGroups from '@/components/admin/AdminGroups';
 import PublicContentPage from '@/pages/admin/PublicContentPage';
@@ -75,6 +76,7 @@ const AdminDashboard = () => {
               <Route path="/overview"               element={<AdminOverview />} />
               <Route path="/applications"           element={<AdminApplications />} />
               <Route path="/leads"                  element={<AdminLeads />} />
+              <Route path="/applicants"             element={<AdminApplicants />} />
               <Route path="/notices"                element={<AdminNotices />} />
               <Route path="/destinations"           element={<AdminDestinations />} />
               <Route path="/universities"           element={<AdminUniversities />} />

@@ -1024,13 +1024,13 @@ async function submitCandidate(){
   msgEl.className = 'msg';
   msgEl.textContent = '';
 
-  const leadId = crypto.randomUUID();
+  const applicantId = crypto.randomUUID();
   let documents;
   try{
     const [passport, transcript, ielts] = await Promise.all([
-      uploadDoc('f_doc_passport', leadId, 'passport'),
-      uploadDoc('f_doc_transcript', leadId, 'transcript'),
-      uploadDoc('f_doc_ielts', leadId, 'ielts')
+      uploadDoc('f_doc_passport', applicantId, 'passport'),
+      uploadDoc('f_doc_transcript', applicantId, 'transcript'),
+      uploadDoc('f_doc_ielts', applicantId, 'ielts')
     ]);
     documents = { passport, transcript, ielts };
   }catch(e){
@@ -1061,23 +1061,29 @@ async function submitCandidate(){
     submittedAt: new Date().toISOString()
   };
 
-  const { error: leadError } = await supabaseClient.from('leads').insert({
-    id: leadId,
+  const { error: applicantError } = await supabaseClient.from('applicants').insert({
+    id: applicantId,
     name,
     email,
     whatsapp: record.phone,
-    origin_country: record.country,
-    target_destination: record.university,
-    study_level: record.education,
-    goal: record.field,
-    intake_month: record.intake,
-    source: 'apply_page',
-    intake_form: JSON.stringify(record)
+    father_name: record.fatherName,
+    mother_name: record.motherName,
+    passport_number: record.passport,
+    country: record.country,
+    education: record.education,
+    field: record.field,
+    university: record.university,
+    intake: record.intake,
+    ielts_status: record.ielts,
+    nawa_status: record.nawa,
+    notes: record.notes,
+    documents,
+    source: 'apply_page'
   });
 
-  if(leadError){
+  if(applicantError){
     msgEl.className = 'msg err';
-    msgEl.textContent = `Could not save your application: ${leadError.message}`;
+    msgEl.textContent = `Could not save your application: ${applicantError.message}`;
     btn.disabled = false;
     btn.textContent = 'Submit details';
     return;

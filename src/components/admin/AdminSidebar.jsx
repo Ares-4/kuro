@@ -6,7 +6,7 @@ import {
   BookOpen, Globe, Edit3, Megaphone, LayoutTemplate, Activity,
   Settings, LogOut, X, ChevronDown, BarChart3, LayoutDashboard,
   Navigation, Plane, BrainCircuit, Radio, CalendarClock,
-  HelpCircle, Image, Mail, MessageSquare, TrendingUp,
+  HelpCircle, Image, Mail, MessageSquare, TrendingUp, UserPlus,
 } from 'lucide-react';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 
@@ -15,6 +15,7 @@ const NAV_GROUPS = [
     label: 'Operations',
     items: [
       { label: 'Applications', icon: FileText, path: '/admin/applications' },
+      { label: 'Applicants', icon: UserPlus, path: '/admin/applicants' },
       { label: 'Leads', icon: Users, path: '/admin/leads' },
       { label: 'Notices', icon: Bell, path: '/admin/notices' },
     ],

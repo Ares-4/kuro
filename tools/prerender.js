@@ -30,7 +30,7 @@ async function launchBrowser() {
 
 const DIST_DIR = path.join(process.cwd(), 'dist');
 const PORT = 4321;
-const CONCURRENCY = 5;
+const CONCURRENCY = 3;
 
 function startServer() {
   return new Promise((resolve) => {
@@ -47,9 +47,16 @@ function startServer() {
   });
 }
 
-async function prerenderRoute(browser, route, attempt = 1) {
-  const context = await browser.newContext();
+// browserHolder is a mutable { current } box, not a raw browser reference —
+// if the browser process itself dies mid-run (as sparticuz's chromium did
+// under concurrency on Vercel's build container), we relaunch it in place
+// so the rest of the routes still get prerendered instead of the one crash
+// taking down the whole build (and, before this fix, the whole process:
+// newContext() used to be called outside the try/catch here).
+async function prerenderRoute(browserHolder, route, attempt = 1) {
+  let context;
   try {
+    context = await browserHolder.current.newContext();
     const page = await context.newPage();
     await page.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'networkidle', timeout: 30000 });
     const html = await page.content();
@@ -59,8 +66,12 @@ async function prerenderRoute(browser, route, attempt = 1) {
     fs.writeFileSync(path.join(outDir, 'index.html'), html, 'utf8');
     console.log(`prerendered ${route.path}`);
   } catch (error) {
-    await context.close().catch(() => {});
-    if (attempt < 2) return prerenderRoute(browser, route, attempt + 1);
+    if (context) await context.close().catch(() => {});
+    if (!browserHolder.current.isConnected()) {
+      console.warn(`browser disconnected, relaunching (was processing ${route.path})`);
+      browserHolder.current = await launchBrowser();
+    }
+    if (attempt < 2) return prerenderRoute(browserHolder, route, attempt + 1);
     console.warn(`skipped ${route.path}: ${error.message}`);
     return;
   }
@@ -88,12 +99,12 @@ async function main() {
   console.log(`prerendering ${routes.length} routes...`);
 
   const server = await startServer();
-  const browser = await launchBrowser();
+  const browserHolder = { current: await launchBrowser() };
 
   try {
-    await runPool(routes, CONCURRENCY, (route) => prerenderRoute(browser, route));
+    await runPool(routes, CONCURRENCY, (route) => prerenderRoute(browserHolder, route));
   } finally {
-    await browser.close();
+    await browserHolder.current.close().catch(() => {});
     server.close();
   }
 }

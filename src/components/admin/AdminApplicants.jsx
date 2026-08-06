@@ -70,6 +70,17 @@ const AdminApplicants = () => {
   const documents = selected?.documents && typeof selected.documents === 'object' ? selected.documents : {};
   const docEntries = Object.entries(documents).filter(([, doc]) => doc?.url);
 
+  const groups = [];
+  for (const applicant of applicants) {
+    const monthLabel = new Date(applicant.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    let group = groups.find(g => g.monthLabel === monthLabel);
+    if (!group) {
+      group = { monthLabel, applicants: [] };
+      groups.push(group);
+    }
+    group.applicants.push(applicant);
+  }
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -100,33 +111,42 @@ const AdminApplicants = () => {
                 <TableCell colSpan={6} className="text-center py-12 text-slate-500">No applicants yet.</TableCell>
               </TableRow>
             ) : (
-              applicants.map((applicant) => (
-                <TableRow key={applicant.id} className="border-b border-slate-800 hover:bg-slate-800/50 cursor-pointer" onClick={() => openDetail(applicant)}>
-                  <TableCell className="text-slate-300 text-xs">{new Date(applicant.created_at).toLocaleDateString()}</TableCell>
-                  <TableCell className="font-medium text-white">
-                    {applicant.name}
-                    <div className="text-xs text-slate-500 font-normal mt-0.5">{applicant.email}</div>
-                  </TableCell>
-                  <TableCell className="text-slate-300 text-sm">{applicant.country || '-'}</TableCell>
-                  <TableCell className="text-slate-300 text-sm">
-                    {applicant.field || '-'}
-                    <div className="text-xs text-slate-500 mt-0.5">{applicant.university || '-'}</div>
-                  </TableCell>
-                  <TableCell className="text-slate-300 text-sm">{applicant.intake || '-'}</TableCell>
-                  <TableCell onClick={e => e.stopPropagation()}>
-                    <Select defaultValue={applicant.status || 'New'} onValueChange={(val) => updateStatus(applicant.id, val)}>
-                      <SelectTrigger className={`w-28 h-7 text-xs border-none ${getStatusColor(applicant.status)}`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="New">New</SelectItem>
-                        <SelectItem value="Contacted">Contacted</SelectItem>
-                        <SelectItem value="Converted">Converted</SelectItem>
-                        <SelectItem value="Rejected">Rejected</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                </TableRow>
+              groups.map((group) => (
+                <React.Fragment key={group.monthLabel}>
+                  <TableRow className="border-b border-slate-800 bg-slate-950/60 hover:bg-slate-950/60">
+                    <TableCell colSpan={6} className="text-xs font-bold text-slate-400 uppercase tracking-wider py-2">
+                      {group.monthLabel} <span className="text-slate-600 font-normal">({group.applicants.length})</span>
+                    </TableCell>
+                  </TableRow>
+                  {group.applicants.map((applicant) => (
+                    <TableRow key={applicant.id} className="border-b border-slate-800 hover:bg-slate-800/50 cursor-pointer" onClick={() => openDetail(applicant)}>
+                      <TableCell className="text-slate-300 text-xs">{new Date(applicant.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell className="font-medium text-white">
+                        {applicant.name}
+                        <div className="text-xs text-slate-500 font-normal mt-0.5">{applicant.email}</div>
+                      </TableCell>
+                      <TableCell className="text-slate-300 text-sm">{applicant.country || '-'}</TableCell>
+                      <TableCell className="text-slate-300 text-sm">
+                        {applicant.field || '-'}
+                        <div className="text-xs text-slate-500 mt-0.5">{applicant.university || '-'}</div>
+                      </TableCell>
+                      <TableCell className="text-slate-300 text-sm">{applicant.intake || '-'}</TableCell>
+                      <TableCell onClick={e => e.stopPropagation()}>
+                        <Select defaultValue={applicant.status || 'New'} onValueChange={(val) => updateStatus(applicant.id, val)}>
+                          <SelectTrigger className={`w-28 h-7 text-xs border-none ${getStatusColor(applicant.status)}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="New">New</SelectItem>
+                            <SelectItem value="Contacted">Contacted</SelectItem>
+                            <SelectItem value="Converted">Converted</SelectItem>
+                            <SelectItem value="Rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </React.Fragment>
               ))
             )}
           </TableBody>

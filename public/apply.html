@@ -878,6 +878,25 @@
             </div>
           </div>
 
+          <div class="section-label">Documents</div>
+          <div class="field-row">
+            <div>
+              <label for="f_doc_passport">Passport copy <span style="color:var(--danger)">*</span></label>
+              <input id="f_doc_passport" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+            </div>
+            <div>
+              <label for="f_doc_transcript">Academic transcripts / certificates <span style="color:var(--danger)">*</span></label>
+              <input id="f_doc_transcript" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+            </div>
+          </div>
+          <div class="field-row full">
+            <div>
+              <label for="f_doc_ielts">IELTS certificate (optional — only if you already have it)</label>
+              <input id="f_doc_ielts" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+            </div>
+          </div>
+          <p class="privacy" style="margin-top:-6px;">Accepted formats: PDF, JPG, PNG, DOC, DOCX. Max 5MB per file.</p>
+
           <div class="submit-row">
             <button id="submitBtn" onclick="submitCandidate()">Submit details</button>
             <div id="submitMsg" class="msg" aria-live="polite"></div>
@@ -934,10 +953,13 @@
   </footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxXnCWOvUtuQX7udnG_CJuy831o6RY2p89BSanKO1Rv58vSxE9ixwPY_Cm02w_diVB0Hw/exec";
 const SUPABASE_URL = "https://akrbfwmqhnbopqlvawhw.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrcmJmd21xaG5ib3BxbHZhd2h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2MjgwMzksImV4cCI6MjA4MTIwNDAzOX0.-rJYbnfNV-0vwCqKpFcCQKUG3sskZZgDCi7zsWuTPk8";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const MAX_DOC_SIZE = 5 * 1024 * 1024;
 
 const navToggle = document.getElementById('navToggle');
 const mobileMenu = document.getElementById('mobileMenu');
@@ -947,6 +969,21 @@ navToggle.addEventListener('click', () => {
 });
 
 function required(id){ return document.getElementById(id).value.trim(); }
+
+async function uploadDoc(inputId, leadId, docKey){
+  const input = document.getElementById(inputId);
+  const file = input.files?.[0];
+  if(!file) return null;
+  if(file.size > MAX_DOC_SIZE){
+    throw new Error(`${file.name} is larger than 5MB.`);
+  }
+  const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
+  const path = `${leadId}/${docKey}.${ext}`;
+  const { error } = await supabaseClient.storage.from('apply-documents').upload(path, file, { upsert: true });
+  if(error) throw new Error(`Could not upload ${file.name}: ${error.message}`);
+  const { data } = supabaseClient.storage.from('apply-documents').getPublicUrl(path);
+  return { name: file.name, url: data.publicUrl, uploaded_at: new Date().toISOString() };
+}
 
 async function notifyAdmin(name, email){
   try{
@@ -975,6 +1012,37 @@ async function submitCandidate(){
     msgEl.textContent = 'Candidate name and email are required.';
     return;
   }
+  if(!document.getElementById('f_doc_passport').files?.[0] || !document.getElementById('f_doc_transcript').files?.[0]){
+    msgEl.className = 'msg err';
+    msgEl.textContent = 'Passport copy and academic transcripts are required.';
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading documents...';
+  msgEl.className = 'msg';
+  msgEl.textContent = '';
+
+  const leadId = crypto.randomUUID();
+  let documents;
+  try{
+    const [passport, transcript, ielts] = await Promise.all([
+      uploadDoc('f_doc_passport', leadId, 'passport'),
+      uploadDoc('f_doc_transcript', leadId, 'transcript'),
+      uploadDoc('f_doc_ielts', leadId, 'ielts')
+    ]);
+    documents = { passport, transcript, ielts };
+  }catch(e){
+    msgEl.className = 'msg err';
+    msgEl.textContent = e.message || 'Document upload failed. Please try again.';
+    btn.disabled = false;
+    btn.textContent = 'Submit details';
+    return;
+  }
+
+  btn.textContent = 'Submitting...';
+
   const record = {
     fatherName: required('f_father'),
     motherName: required('f_mother'),
@@ -989,12 +1057,31 @@ async function submitCandidate(){
     ielts: required('f_ielts'),
     nawa: required('f_nawa'),
     notes: required('f_notes'),
+    documents,
     submittedAt: new Date().toISOString()
   };
 
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
+  const { error: leadError } = await supabaseClient.from('leads').insert({
+    id: leadId,
+    name,
+    email,
+    whatsapp: record.phone,
+    origin_country: record.country,
+    target_destination: record.university,
+    study_level: record.education,
+    goal: record.field,
+    intake_month: record.intake,
+    source: 'apply_page',
+    intake_form: JSON.stringify(record)
+  });
+
+  if(leadError){
+    msgEl.className = 'msg err';
+    msgEl.textContent = `Could not save your application: ${leadError.message}`;
+    btn.disabled = false;
+    btn.textContent = 'Submit details';
+    return;
+  }
 
   try{
     await fetch(SHEET_URL, {

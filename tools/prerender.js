@@ -30,7 +30,16 @@ async function launchBrowser() {
 
 const DIST_DIR = path.join(process.cwd(), 'dist');
 const PORT = 4321;
-const CONCURRENCY = 3;
+// sparticuz/chromium's single-process build disconnected on nearly every
+// route on Vercel even at concurrency 3 (fine locally with a normal system
+// Chrome). Worse: each disconnect had multiple in-flight workers race to
+// relaunch a replacement browser, and only the last one ever got saved to
+// browserHolder — the others leaked as orphaned Chromium processes that
+// piled up over 100+ routes and hung the build. Serial execution removes
+// the race entirely (only one route in flight, so only one relaunch ever
+// happens at a time) at the cost of some wall-clock time, which is cheap
+// against Vercel's 45-minute cap.
+const CONCURRENCY = 1;
 
 // The real cause of the build timing out: third-party scripts (chat widget,
 // reviews widget, analytics, Stripe) never stop chattering, so `networkidle`
@@ -93,6 +102,7 @@ async function prerenderRoute(browserHolder, route, attempt = 1) {
     if (!browserHolder.current.isConnected()) {
       console.warn(`browser disconnected, relaunching (was processing ${route.path})`);
       browserHolder.current = await launchBrowser();
+      browserHolder.all.push(browserHolder.current);
     }
     if (attempt < 2) return prerenderRoute(browserHolder, route, attempt + 1);
     console.warn(`skipped ${route.path}: ${error.message}`);
@@ -122,12 +132,17 @@ async function main() {
   console.log(`prerendering ${routes.length} routes...`);
 
   const server = await startServer();
-  const browserHolder = { current: await launchBrowser() };
+  const firstBrowser = await launchBrowser();
+  const browserHolder = { current: firstBrowser, all: [firstBrowser] };
 
   try {
     await runPool(routes, CONCURRENCY, (route) => prerenderRoute(browserHolder, route));
   } finally {
-    await browserHolder.current.close().catch(() => {});
+    // Every browser this run ever launched, not just the current one — a
+    // relaunch replaces browserHolder.current but the previous instance
+    // still needs closing explicitly.
+    await Promise.all(browserHolder.all.map((b) => b.close().catch(() => {})));
+    server.closeAllConnections?.();
     server.close();
   }
 }

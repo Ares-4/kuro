@@ -32,6 +32,28 @@ const DIST_DIR = path.join(process.cwd(), 'dist');
 const PORT = 4321;
 const CONCURRENCY = 3;
 
+// The real cause of the build timing out: third-party scripts (chat widget,
+// reviews widget, analytics, Stripe) never stop chattering, so `networkidle`
+// almost never fires and most routes hit the 30s timeout. None of that adds
+// anything to a crawler snapshot — block it. Images/fonts are blocked too;
+// only the DOM/meta-tags end up in the saved HTML, pixels don't matter here.
+const BLOCKED_HOSTS = [
+  'tawk.to', 'trustpilot.com', 'googletagmanager.com', 'google-analytics.com',
+  'js.stripe.com', 'unsplash.com',
+];
+const BLOCKED_RESOURCE_TYPES = new Set(['image', 'media', 'font']);
+
+async function blockNonEssentialRequests(context) {
+  await context.route('**/*', (route) => {
+    const request = route.request();
+    const url = request.url();
+    if (url.includes('/_vercel/speed-insights/')) return route.abort();
+    if (BLOCKED_RESOURCE_TYPES.has(request.resourceType())) return route.abort();
+    if (BLOCKED_HOSTS.some((host) => url.includes(host))) return route.abort();
+    return route.continue();
+  });
+}
+
 function startServer() {
   return new Promise((resolve) => {
     const serveOptions = {
@@ -57,8 +79,9 @@ async function prerenderRoute(browserHolder, route, attempt = 1) {
   let context;
   try {
     context = await browserHolder.current.newContext();
+    await blockNonEssentialRequests(context);
     const page = await context.newPage();
-    await page.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'networkidle', timeout: 15000 });
     const html = await page.content();
 
     const outDir = route.path === '/' ? DIST_DIR : path.join(DIST_DIR, route.path);

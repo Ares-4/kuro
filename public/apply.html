@@ -979,7 +979,7 @@ async function uploadDoc(inputId, leadId, docKey){
   }
   const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
   const path = `${leadId}/${docKey}.${ext}`;
-  const { error } = await supabaseClient.storage.from('apply-documents').upload(path, file, { upsert: true });
+  const { error } = await supabaseClient.storage.from('apply-documents').upload(path, file);
   if(error) throw new Error(`Could not upload ${file.name}: ${error.message}`);
   const { data } = supabaseClient.storage.from('apply-documents').getPublicUrl(path);
   return { name: file.name, url: data.publicUrl, uploaded_at: new Date().toISOString() };

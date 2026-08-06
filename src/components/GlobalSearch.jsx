@@ -119,9 +119,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
                   {results.universities.map(uni => (
                     <div
                       key={uni.id}
-                      // For universities, we navigate to destination page but ideally we'd filter. 
-                      // For now, let's go to destination page as that's where they are listed.
-                      onClick={() => handleSelect(`/destinations/${uni.destinations?.name?.toLowerCase() || ''}`)}
+                      onClick={() => handleSelect(`/universities/${uni.id}`)}
                       className="flex items-center px-3 py-2 text-sm text-slate-200 hover:bg-slate-800 rounded-md cursor-pointer group"
                     >
                       <Building2 className="w-4 h-4 mr-3 text-blue-400 group-hover:text-blue-300" />

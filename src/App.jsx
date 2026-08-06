@@ -43,6 +43,8 @@ import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
 import ScholarshipsPage from '@/pages/ScholarshipsPage';
 import ScholarshipDetailPage from '@/pages/ScholarshipDetailPage';
+import UniversitiesPage from '@/pages/UniversitiesPage';
+import UniversityDetailPage from '@/pages/UniversityDetailPage';
 import DeadlinesPage from '@/pages/DeadlinesPage';
 
 const PageLoader = () => (
@@ -86,6 +88,8 @@ function App() {
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/scholarships" element={<ScholarshipsPage />} />
                   <Route path="/scholarships/:id" element={<ScholarshipDetailPage />} />
+                  <Route path="/universities" element={<UniversitiesPage />} />
+                  <Route path="/universities/:id" element={<UniversityDetailPage />} />
                   <Route path="/deadlines" element={<DeadlinesPage />} />
                 </Route>
 

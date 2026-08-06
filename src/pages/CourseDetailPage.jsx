@@ -17,6 +17,7 @@ const CourseDetailPage = () => {
   const { toast } = useToast();
   
   const [course, setCourse] = useState(null);
+  const [universityId, setUniversityId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
 
@@ -31,6 +32,11 @@ const CourseDetailPage = () => {
 
         if (error) throw error;
         setCourse(data);
+
+        if (data?.university) {
+          const { data: uni } = await supabase.from('universities').select('id').ilike('name', data.university.trim()).maybeSingle();
+          setUniversityId(uni?.id || null);
+        }
       } catch (error) {
         console.error("Error fetching course:", error);
         toast({ variant: "destructive", title: "Error", description: "Course not found." });
@@ -147,7 +153,11 @@ const CourseDetailPage = () => {
              <div className="flex flex-wrap items-center gap-6 text-slate-300">
                 <div className="flex items-center gap-2">
                    <Building2 className="w-5 h-5 text-blue-400" />
-                   <span className="font-medium text-lg">{course.university}</span>
+                   {universityId ? (
+                     <Link to={`/universities/${universityId}`} className="font-medium text-lg hover:text-blue-400 transition-colors">{course.university}</Link>
+                   ) : (
+                     <span className="font-medium text-lg">{course.university}</span>
+                   )}
                 </div>
                 <div className="flex items-center gap-2">
                    <MapPin className="w-5 h-5 text-blue-400" />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { CheckCircle2, DollarSign, GraduationCap, Plane, AlertTriangle, ShieldCheck, ExternalLink, CalendarCheck, Clock, FileText, ChevronRight, Radio } from 'lucide-react';
+import { CheckCircle2, DollarSign, GraduationCap, Plane, AlertTriangle, ShieldCheck, ExternalLink, CalendarCheck, Clock, FileText, ChevronRight, Radio, Building2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import SEO from '@/components/SEO';
@@ -33,6 +33,7 @@ const DestinationDetailPage = () => {
   const [dbDest, setDbDest] = useState(null);
   const [countryUpdates, setCountryUpdates] = useState([]);
   const [faqs, setFaqs] = useState([]);
+  const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,6 +55,13 @@ const DestinationDetailPage = () => {
       setCountryUpdates(u.data || []);
       setFaqs(f.data || []);
       setLoading(false);
+
+      const destId = d.data?.id;
+      if (destId) {
+        supabase.from('universities').select('id, name, image_url, ranking')
+          .eq('destination_id', destId).eq('is_active', true).order('ranking', { ascending: true, nullsLast: true })
+          .then(({ data }) => setUniversities(data || []));
+      }
     });
   }, [slug]);
 
@@ -137,6 +145,33 @@ const DestinationDetailPage = () => {
                   </div>
                 )}
               </div>
+            </div>
+          </section>
+        )}
+
+        {/* Universities in this destination */}
+        {universities.length > 0 && (
+          <section className="py-16 container mx-auto px-4">
+            <h2 className="text-3xl font-bold mb-10 text-center flex items-center justify-center gap-3">
+              <Building2 className="w-7 h-7 text-blue-500" /> Universities in {displayName}
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+              {universities.map(u => (
+                <Link key={u.id} to={`/universities/${u.id}`}
+                  className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-blue-500/30 transition-colors flex flex-col gap-3">
+                  <div className="aspect-video rounded-xl bg-slate-800 overflow-hidden flex items-center justify-center">
+                    {u.image_url ? (
+                      <img src={u.image_url} alt={u.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <Building2 className="w-8 h-8 text-slate-600" />
+                    )}
+                  </div>
+                  <h3 className="font-semibold text-white text-sm leading-snug">{u.name}</h3>
+                  {u.ranking && (
+                    <span className="flex items-center gap-1 text-xs text-amber-400"><Star className="w-3 h-3" /> Ranked #{u.ranking}</span>
+                  )}
+                </Link>
+              ))}
             </div>
           </section>
         )}

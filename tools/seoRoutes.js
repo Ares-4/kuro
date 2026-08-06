@@ -11,7 +11,7 @@ export const SITE_ORIGIN = 'https://kuroeduconsultancy.com';
 export const STATIC_ROUTES = [
   '/', '/about', '/destinations', '/services', '/process', '/why-kuro',
   '/faqs', '/eligibility', '/readiness-check', '/resources', '/contact',
-  '/scholarships', '/deadlines', '/privacy-policy', '/terms-of-service',
+  '/scholarships', '/universities', '/deadlines', '/privacy-policy', '/terms-of-service',
 ];
 
 // Not prerendered, not in the sitemap, disallowed in robots.txt.
@@ -24,12 +24,13 @@ export async function getRoutes() {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const routes = STATIC_ROUTES.map((path) => ({ path, lastmod: null }));
 
-  const [destinations, programs, blogPosts, dynamicPages, scholarships] = await Promise.all([
+  const [destinations, programs, blogPosts, dynamicPages, scholarships, universities] = await Promise.all([
     supabase.from('destinations').select('slug, created_at').eq('is_active', true),
     supabase.from('programs').select('id, updated_at').eq('is_active', true),
     supabase.from('blog_posts').select('slug, updated_at').eq('status', 'published'),
     supabase.from('dynamic_pages').select('slug, updated_at').eq('is_published', true),
     supabase.from('scholarships').select('id, created_at').eq('is_active', true),
+    supabase.from('universities').select('id, created_at').eq('is_active', true),
   ]);
 
   for (const row of destinations.data || []) {
@@ -46,6 +47,9 @@ export async function getRoutes() {
   }
   for (const row of scholarships.data || []) {
     routes.push({ path: `/scholarships/${row.id}`, lastmod: row.created_at });
+  }
+  for (const row of universities.data || []) {
+    routes.push({ path: `/universities/${row.id}`, lastmod: row.created_at });
   }
 
   return routes;

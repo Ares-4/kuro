@@ -42,6 +42,7 @@ import PaymentSuccess from '@/pages/PaymentSuccess';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
 import ScholarshipsPage from '@/pages/ScholarshipsPage';
+import ScholarshipDetailPage from '@/pages/ScholarshipDetailPage';
 import DeadlinesPage from '@/pages/DeadlinesPage';
 
 const PageLoader = () => (
@@ -84,6 +85,7 @@ function App() {
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/scholarships" element={<ScholarshipsPage />} />
+                  <Route path="/scholarships/:id" element={<ScholarshipDetailPage />} />
                   <Route path="/deadlines" element={<DeadlinesPage />} />
                 </Route>
 

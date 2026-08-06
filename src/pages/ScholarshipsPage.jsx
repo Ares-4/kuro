@@ -26,7 +26,7 @@ const ScholarshipCard = ({ s, subscribed, onToggle }) => (
   <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-slate-700 transition-colors flex flex-col gap-3">
     <div className="flex items-start justify-between gap-3">
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-white text-sm leading-snug">{s.title}</h3>
+        <Link to={`/scholarships/${s.id}`} className="font-semibold text-white text-sm leading-snug hover:text-blue-400 transition-colors">{s.title}</Link>
         <p className="text-xs text-slate-400 mt-0.5">{s.provider}</p>
       </div>
       {s.amount && (

@@ -8,8 +8,25 @@ import fs from 'fs';
 import path from 'path';
 import http from 'http';
 import handler from 'serve-handler';
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-core';
 import { getRoutes } from './seoRoutes.js';
+
+// Vercel's build container has no system Chromium libs (libnspr4.so etc.),
+// so a normal Playwright-downloaded browser fails to launch there — swap in
+// @sparticuz/chromium's statically-linked, serverless-safe binary when
+// actually building on Vercel. Locally, just use the dev machine's own
+// installed Chrome — nothing to download, nothing to keep in sync.
+async function launchBrowser() {
+  if (process.env.VERCEL) {
+    const sparticuzChromium = (await import('@sparticuz/chromium')).default;
+    return chromium.launch({
+      executablePath: await sparticuzChromium.executablePath(),
+      args: sparticuzChromium.args,
+      headless: true,
+    });
+  }
+  return chromium.launch({ channel: 'chrome' });
+}
 
 const DIST_DIR = path.join(process.cwd(), 'dist');
 const PORT = 4321;
@@ -30,10 +47,10 @@ function startServer() {
   });
 }
 
-async function prerenderRoute(browser, route) {
+async function prerenderRoute(browser, route, attempt = 1) {
   const context = await browser.newContext();
-  const page = await context.newPage();
   try {
+    const page = await context.newPage();
     await page.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'networkidle', timeout: 30000 });
     const html = await page.content();
 
@@ -42,10 +59,12 @@ async function prerenderRoute(browser, route) {
     fs.writeFileSync(path.join(outDir, 'index.html'), html, 'utf8');
     console.log(`prerendered ${route.path}`);
   } catch (error) {
+    await context.close().catch(() => {});
+    if (attempt < 2) return prerenderRoute(browser, route, attempt + 1);
     console.warn(`skipped ${route.path}: ${error.message}`);
-  } finally {
-    await context.close();
+    return;
   }
+  await context.close().catch(() => {});
 }
 
 async function runPool(items, size, worker) {
@@ -69,7 +88,7 @@ async function main() {
   console.log(`prerendering ${routes.length} routes...`);
 
   const server = await startServer();
-  const browser = await chromium.launch();
+  const browser = await launchBrowser();
 
   try {
     await runPool(routes, CONCURRENCY, (route) => prerenderRoute(browser, route));

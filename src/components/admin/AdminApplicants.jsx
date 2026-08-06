@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, RefreshCw, FileText, X, Mail, Phone, MapPin, Globe, GraduationCap, BookOpen } from 'lucide-react';
+import { Loader2, RefreshCw, FileText, X, Mail, Phone, MapPin, Globe, GraduationCap, BookOpen, Copy, ClipboardCheck } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -14,6 +14,7 @@ const AdminApplicants = () => {
   const [selected, setSelected] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [savingFeedback, setSavingFeedback] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -54,6 +55,44 @@ const AdminApplicants = () => {
   const openDetail = (applicant) => {
     setSelected(applicant);
     setFeedback(applicant.admin_feedback || '');
+  };
+
+  const copyForPortal = () => {
+    if (!selected) return;
+    const text = [
+      `=== APPLICANT SUBMISSION INFO ===`,
+      ``,
+      `APPLICANT DETAILS`,
+      `Full Name:      ${selected.name || 'N/A'}`,
+      `Email:          ${selected.email || 'N/A'}`,
+      `WhatsApp:       ${selected.whatsapp || 'N/A'}`,
+      `Father's Name:  ${selected.father_name || 'N/A'}`,
+      `Mother's Name:  ${selected.mother_name || 'N/A'}`,
+      `Passport No.:   ${selected.passport_number || 'N/A'}`,
+      `Country:        ${selected.country || 'N/A'}`,
+      ``,
+      `STUDY PLANS`,
+      `Education:      ${selected.education || 'N/A'}`,
+      `Field:          ${selected.field || 'N/A'}`,
+      `University:     ${selected.university || 'N/A'}`,
+      `Intake:         ${selected.intake || 'N/A'}`,
+      ``,
+      `PAPERWORK STATUS`,
+      `IELTS:          ${selected.ielts_status || 'N/A'}`,
+      `NAWA:           ${selected.nawa_status || 'N/A'}`,
+      ``,
+      `NOTES`,
+      `${selected.notes || 'N/A'}`,
+      ``,
+      `APPLICATION`,
+      `ID:             ${selected.id}`,
+      `Submitted:      ${selected.created_at ? new Date(selected.created_at).toLocaleString() : 'N/A'}`,
+      `Status:         ${selected.status || 'New'}`,
+    ].join('\n');
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast({ title: 'Copied to clipboard' });
   };
 
   const saveFeedback = async () => {
@@ -188,7 +227,14 @@ const AdminApplicants = () => {
                 ) : null)}
               </div>
 
-              <Badge className={getStatusColor(selected.status)}>{selected.status || 'New'}</Badge>
+              <div className="flex items-center gap-3">
+                <Badge className={getStatusColor(selected.status)}>{selected.status || 'New'}</Badge>
+                <button onClick={copyForPortal}
+                  className="ml-auto flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 hover:border-blue-500 hover:text-blue-400 transition-colors">
+                  {copied ? <ClipboardCheck className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? 'Copied!' : 'Copy for portal'}
+                </button>
+              </div>
 
               {selected.notes && (
                 <div>

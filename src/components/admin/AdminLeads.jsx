@@ -119,9 +119,31 @@ const AdminLeads = () => {
   const openDetail = async (lead) => {
     setSelectedLead(lead);
     setFeedback(lead.admin_feedback || '');
-    const { data } = await supabase.storage.from('student-documents')
-      .list(lead.id, { limit: 20 });
-    setLeadDocs(data || []);
+
+    // apply.html leads embed public document URLs directly in intake_form
+    // (the apply-documents bucket grants anon insert-only, no list/select,
+    // so there's nothing to list via the Storage API for these).
+    let docs = [];
+    try {
+      const intake = lead.intake_form ? JSON.parse(lead.intake_form) : null;
+      if (intake?.documents) {
+        docs = Object.entries(intake.documents)
+          .filter(([, doc]) => doc?.url)
+          .map(([key, doc]) => ({ label: `${key} — ${doc.name}`, url: doc.url }));
+      }
+    } catch (_) {
+      // intake_form isn't JSON (or has no documents) — fall back below
+    }
+
+    if (docs.length === 0) {
+      const { data } = await supabase.storage.from('student-documents').list(lead.id, { limit: 20 });
+      docs = (data || []).map((doc) => ({
+        label: doc.name,
+        url: supabase.storage.from('student-documents').getPublicUrl(`${lead.id}/${doc.name}`).data.publicUrl,
+      }));
+    }
+
+    setLeadDocs(docs);
   };
 
   const saveFeedback = async () => {
@@ -271,16 +293,13 @@ const AdminLeads = () => {
                 <div>
                   <h3 className="text-sm font-semibold text-slate-300 mb-3">Uploaded Documents</h3>
                   <div className="space-y-2">
-                    {leadDocs.map(doc => {
-                      const { data: { publicUrl } } = supabase.storage.from('student-documents').getPublicUrl(`${selectedLead.id}/${doc.name}`);
-                      return (
-                        <a key={doc.name} href={publicUrl} target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm text-blue-400 hover:text-blue-300 hover:bg-slate-700 transition-colors">
-                          <FileText className="w-4 h-4 shrink-0" />
-                          <span className="truncate">{doc.name}</span>
-                        </a>
-                      );
-                    })}
+                    {leadDocs.map(doc => (
+                      <a key={doc.url} href={doc.url} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm text-blue-400 hover:text-blue-300 hover:bg-slate-700 transition-colors">
+                        <FileText className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{doc.label}</span>
+                      </a>
+                    ))}
                   </div>
                 </div>
               )}

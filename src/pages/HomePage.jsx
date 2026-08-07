@@ -51,9 +51,9 @@ const SERVICES = [
 ];
 
 const HERO_DESTINATIONS = [
-  { flag: '🇬🇧', name: 'United Kingdom', tag: '24 active applications' },
-  { flag: '🇨🇦', name: 'Canada',         tag: '18 active applications' },
-  { flag: '🇦🇺', name: 'Australia',      tag: '12 active applications' },
+  { flag: '🇬🇧', name: 'United Kingdom', slug: 'uk',        tag: '24 active applications' },
+  { flag: '🇨🇦', name: 'Canada',         slug: 'canada',    tag: '18 active applications' },
+  { flag: '🇦🇺', name: 'Australia',      slug: 'australia', tag: '12 active applications' },
 ];
 
 const DEST_GRID = ['Canada', 'UK', 'Austria', 'Australia', 'USA', 'Poland'];
@@ -188,7 +188,7 @@ const HomePage = ({ contentOverride }) => {
                     {HERO_DESTINATIONS.map((d) => (
                       <Link
                         key={d.name}
-                        to={`/destinations/${d.name.toLowerCase()}`}
+                        to={`/destinations/${d.slug}`}
                         className="flex items-center justify-between p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-blue-500/40 hover:-translate-y-0.5 transition-all group"
                       >
                         <div className="flex items-center gap-4">

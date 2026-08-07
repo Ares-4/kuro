@@ -23,9 +23,18 @@ const nameMap = {
   austria: "Austria",  at: "Austria",
 };
 
+// Some links use full country names instead of the canonical short slug
+// (e.g. HomePage's hero destinations list) - normalize those here so every
+// data lookup below (roadmap, visa info, universities, FAQs) hits the same slug.
+const SLUG_ALIASES = {
+  'united kingdom': 'uk', 'great britain': 'uk', 'england': 'uk',
+  'united states': 'usa', 'united states of america': 'usa', 'america': 'usa',
+};
+
 const DestinationDetailPage = () => {
   const params = useParams();
-  const slug = (params?.country || '').toLowerCase().trim();
+  const rawSlug = (params?.country || '').toLowerCase().trim();
+  const slug = SLUG_ALIASES[rawSlug] || rawSlug;
   const name = nameMap[slug];
 
   const [roadmap, setRoadmap] = useState(null);

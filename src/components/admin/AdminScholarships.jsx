@@ -98,7 +98,7 @@ const AdminScholarships = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const payload = { ...form, deadline: form.deadline || null, updated_at: new Date() };
+    const payload = { ...form, deadline: form.deadline || null };
     let error;
     if (form.id) ({ error } = await supabase.from('scholarships').update(payload).eq('id', form.id));
     else          ({ error } = await supabase.from('scholarships').insert([{ ...payload, id: undefined }]));

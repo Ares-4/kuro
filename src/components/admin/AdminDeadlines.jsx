@@ -72,10 +72,10 @@ const AdminDeadlines = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const payload = { ...form, deadline_date: form.deadline_date || null, updated_at: new Date() };
+    const { id, ...payload } = { ...form, deadline_date: form.deadline_date || null, updated_at: new Date() };
     let error;
     if (form.id) ({ error } = await supabase.from('university_deadlines').update(payload).eq('id', form.id));
-    else          ({ error } = await supabase.from('university_deadlines').insert([{ ...payload, id: undefined }]));
+    else          ({ error } = await supabase.from('university_deadlines').insert([payload]));
     setSaving(false);
     if (error) toast({ variant: 'destructive', title: 'Save failed', description: error.message });
     else { toast({ title: 'Deadline saved' }); setEditing(null); load(); }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 import { AuthProvider } from '@/contexts/SupabaseAuthContext';
@@ -46,6 +46,7 @@ import ScholarshipDetailPage from '@/pages/ScholarshipDetailPage';
 import UniversitiesPage from '@/pages/UniversitiesPage';
 import UniversityDetailPage from '@/pages/UniversityDetailPage';
 import DeadlinesPage from '@/pages/DeadlinesPage';
+import NotFoundPage from '@/pages/NotFoundPage';
 
 const PageLoader = () => (
   <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -91,6 +92,7 @@ function App() {
                   <Route path="/universities" element={<UniversitiesPage />} />
                   <Route path="/universities/:id" element={<UniversityDetailPage />} />
                   <Route path="/deadlines" element={<DeadlinesPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
                 </Route>
 
                 {/* Auth Routes */}
@@ -121,7 +123,6 @@ function App() {
                   }
                 />
 
-                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </React.Suspense>
 

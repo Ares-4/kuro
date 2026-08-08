@@ -7,6 +7,7 @@ import SEO from '@/components/SEO';
 import { getCountryImageUrl } from '@/lib/imageUtils';
 import { supabase } from '@/lib/customSupabaseClient';
 import CountryUpdateCard from '@/components/CountryUpdateCard';
+import UniversityMark from '@/components/UniversityMark';
 
 const nameMap = {
   poland: "Poland",    pl: "Poland",
@@ -168,13 +169,7 @@ const DestinationDetailPage = () => {
               {universities.map(u => (
                 <Link key={u.id} to={`/universities/${u.id}`}
                   className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-blue-500/30 transition-colors flex flex-col gap-3">
-                  <div className="aspect-video rounded-xl bg-slate-800 overflow-hidden flex items-center justify-center">
-                    {u.image_url ? (
-                      <img src={u.image_url} alt={u.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <Building2 className="w-8 h-8 text-slate-600" />
-                    )}
-                  </div>
+                  <UniversityMark name={u.name} imageUrl={u.image_url} className="aspect-video rounded-xl" />
                   <h3 className="font-semibold text-white text-sm leading-snug">{u.name}</h3>
                   {u.ranking && (
                     <span className="flex items-center gap-1 text-xs text-amber-400"><Star className="w-3 h-3" /> Ranked #{u.ranking}</span>

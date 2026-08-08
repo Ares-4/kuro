@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/lib/customSupabaseClient';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
-import { Loader2, Building2, MapPin, Globe, Star, CheckCircle2, ArrowLeft, GraduationCap, ChevronRight } from 'lucide-react';
+import { Loader2, MapPin, Globe, Star, CheckCircle2, ArrowLeft, GraduationCap, ChevronRight } from 'lucide-react';
+import UniversityMark from '@/components/UniversityMark';
 
 const UniversityDetailPage = () => {
   const { id } = useParams();
@@ -71,15 +72,7 @@ const UniversityDetailPage = () => {
           </Link>
 
           <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden mb-8">
-            <div className="aspect-[3/1] bg-slate-800 relative">
-              {u.image_url ? (
-                <img src={u.image_url} alt={u.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-600">
-                  <Building2 className="w-16 h-16" />
-                </div>
-              )}
-            </div>
+            <UniversityMark name={u.name} imageUrl={u.image_url} className="aspect-[3/1]" wrapperPadding="p-10 sm:p-14 md:p-16" />
             <div className="p-6 sm:p-8">
               <h1 className="text-2xl md:text-4xl font-bold text-white mb-3">{u.name}</h1>
               <div className="flex flex-wrap items-center gap-4 text-slate-300">

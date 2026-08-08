@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/customSupabaseClient';
 import SEO from '@/components/SEO';
 import { Building2, MapPin, Star, Loader2, Search } from 'lucide-react';
+import UniversityMark from '@/components/UniversityMark';
 
 const UniversitiesPage = () => {
   const [universities, setUniversities] = useState([]);
@@ -83,13 +84,7 @@ const UniversitiesPage = () => {
             {filtered.map(u => (
               <Link key={u.id} to={`/universities/${u.id}`}
                 className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-slate-700 transition-colors flex flex-col gap-3">
-                <div className="aspect-video rounded-xl bg-slate-800 overflow-hidden flex items-center justify-center">
-                  {u.image_url ? (
-                    <img src={u.image_url} alt={u.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <Building2 className="w-8 h-8 text-slate-600" />
-                  )}
-                </div>
+                <UniversityMark name={u.name} imageUrl={u.image_url} className="aspect-video rounded-xl" />
                 <h3 className="font-semibold text-white text-sm leading-snug">{u.name}</h3>
                 <div className="flex items-center justify-between text-xs text-slate-400">
                   {u.destinations?.name && (

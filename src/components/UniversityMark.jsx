@@ -51,6 +51,11 @@ const UniversityMark = ({ name, imageUrl, className = '', wrapperPadding = 'p-3 
               className="max-w-full max-h-full w-auto h-auto object-contain"
               loading="lazy"
               onError={() => setErrored(true)}
+              onLoad={(e) => {
+                // Some external SVGs load "successfully" but render at 0x0
+                // (missing width/height/viewBox) - treat that as a failure too.
+                if (e.target.naturalWidth === 0) setErrored(true);
+              }}
             />
           </div>
         </div>

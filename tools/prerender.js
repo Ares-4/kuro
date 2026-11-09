@@ -41,6 +41,17 @@ const PORT = 4321;
 // against Vercel's 45-minute cap.
 const CONCURRENCY = 1;
 
+// Hard limits so a wedged headless browser can never hang the deploy:
+// page.goto() has its own timeout, but newContext()/content()/launch() do not.
+const ROUTE_TIMEOUT_MS = 40_000;
+const TOTAL_BUDGET_MS = 8 * 60_000; // after this, stop prerendering and ship what we have
+
+const withTimeout = (promise, ms, label) =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms).unref()),
+  ]);
+
 // The real cause of the build timing out: third-party scripts (chat widget,
 // reviews widget, analytics, Stripe) never stop chattering, so `networkidle`
 // almost never fires and most routes hit the 30s timeout. None of that adds
@@ -87,11 +98,11 @@ function startServer() {
 async function prerenderRoute(browserHolder, route, attempt = 1) {
   let context;
   try {
-    context = await browserHolder.current.newContext();
+    context = await withTimeout(browserHolder.current.newContext(), 15_000, 'newContext');
     await blockNonEssentialRequests(context);
     const page = await context.newPage();
     await page.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'networkidle', timeout: 15000 });
-    const html = await page.content();
+    const html = await withTimeout(page.content(), 10_000, 'page.content');
 
     const outDir = route.path === '/' ? DIST_DIR : path.join(DIST_DIR, route.path);
     fs.mkdirSync(outDir, { recursive: true });
@@ -99,9 +110,10 @@ async function prerenderRoute(browserHolder, route, attempt = 1) {
     console.log(`prerendered ${route.path}`);
   } catch (error) {
     if (context) await context.close().catch(() => {});
-    if (!browserHolder.current.isConnected()) {
-      console.warn(`browser disconnected, relaunching (was processing ${route.path})`);
-      browserHolder.current = await launchBrowser();
+    if (!browserHolder.current.isConnected() || /timed out/.test(error.message)) {
+      console.warn(`browser unhealthy, relaunching (was processing ${route.path}): ${error.message}`);
+      browserHolder.current.close().catch(() => {});
+      browserHolder.current = await withTimeout(launchBrowser(), 30_000, 'launchBrowser');
       browserHolder.all.push(browserHolder.current);
     }
     if (attempt < 2) return prerenderRoute(browserHolder, route, attempt + 1);
@@ -111,10 +123,15 @@ async function prerenderRoute(browserHolder, route, attempt = 1) {
   await context.close().catch(() => {});
 }
 
-async function runPool(items, size, worker) {
+async function runPool(items, size, worker, deadline) {
   let cursor = 0;
   async function next() {
     if (cursor >= items.length) return;
+    if (Date.now() > deadline) {
+      console.warn(`prerender time budget used up; ${items.length - cursor} routes left client-rendered`);
+      cursor = items.length;
+      return;
+    }
     const item = items[cursor++];
     await worker(item);
     await next();
@@ -132,11 +149,14 @@ async function main() {
   console.log(`prerendering ${routes.length} routes...`);
 
   const server = await startServer();
-  const firstBrowser = await launchBrowser();
+  const firstBrowser = await withTimeout(launchBrowser(), 60_000, 'launchBrowser');
   const browserHolder = { current: firstBrowser, all: [firstBrowser] };
 
   try {
-    await runPool(routes, CONCURRENCY, (route) => prerenderRoute(browserHolder, route));
+    const deadline = Date.now() + TOTAL_BUDGET_MS;
+    await runPool(routes, CONCURRENCY, (route) =>
+      withTimeout(prerenderRoute(browserHolder, route), ROUTE_TIMEOUT_MS * 2, `route ${route.path}`)
+        .catch((err) => console.warn(`skipped ${route.path}: ${err.message}`)), deadline);
   } finally {
     // Every browser this run ever launched, not just the current one — a
     // relaunch replaces browserHolder.current but the previous instance
@@ -147,4 +167,7 @@ async function main() {
   }
 }
 
-main();
+// Always exit: a leftover Chromium child must not keep the build process alive.
+main()
+  .catch((err) => console.warn(`prerender aborted: ${err.message}`))
+  .finally(() => process.exit(0));

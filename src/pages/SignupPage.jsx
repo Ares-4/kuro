@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { GraduationCap, Mail, Lock, User, Phone, MapPin, ArrowLeft, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';
+import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -167,6 +168,8 @@ const SignupPage = () => {
             <>
             <h1 className="text-3xl font-bold text-white text-center mb-2">Create Account</h1>
             <p className="text-slate-300 text-center mb-8">Start your journey to study abroad</p>
+
+            <GoogleSignInButton label="Sign up with Google" />
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

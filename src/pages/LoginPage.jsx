@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { GraduationCap, Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -63,6 +64,8 @@ const LoginPage = () => {
 
             <h1 className="text-3xl font-bold text-white text-center mb-2">Welcome Back</h1>
             <p className="text-slate-300 text-center mb-8">Login to your student account</p>
+
+            <GoogleSignInButton />
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>

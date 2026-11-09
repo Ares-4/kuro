@@ -19,7 +19,7 @@ const DEFAULTS = {
     visible_pages: ['/services']
   },
   guide: {
-    title: 'The Ultimate Study in Europe Guide 2025',
+    title: 'The Ultimate Study in Europe Guide 2027',
     text:
       'Download our 50-page PDF covering tuition fees, visa interviews, and cost of living comparisons for 15+ countries.',
     buttonText: 'Get Guide',
@@ -32,6 +32,7 @@ const AVAILABLE_PAGES = [
   { id: '/services', label: 'Services Page' },
   { id: '/destinations', label: 'Destinations Page' },
   { id: '/readiness-check', label: 'Readiness Check Page' },
+  { id: '/intake-planner', label: 'Intake Planner Page' },
   { id: '/resources', label: 'Resources Page' }
 ];
 

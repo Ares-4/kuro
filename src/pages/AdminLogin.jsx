@@ -160,7 +160,7 @@ const AdminLogin = () => {
         </div>
         
         <div className="text-center text-xs text-slate-600 pb-8 md:pb-0">
-          <p>&copy; 2026 Kuro Educational. Unauthorized access is prohibited.</p>
+          <p>&copy; {new Date().getFullYear()} Kuro Educational. Unauthorized access is prohibited.</p>
         </div>
       </div>
     </div>

@@ -25,6 +25,7 @@ import HomePage from '@/pages/HomePage';
 import ServicesPage from '@/pages/ServicesPage';
 import ResourcesPage from '@/pages/ResourcesPage';
 import ReadinessCheckPage from '@/pages/ReadinessCheckPage';
+import IntakePlannerPage from '@/pages/IntakePlannerPage';
 import AboutPage from '@/pages/AboutPage';
 import ContactPage from '@/pages/ContactPage';
 
@@ -117,6 +118,7 @@ const PromoPlacementEditor = () => {
       case '/services': return <ServicesPage />;
       case '/resources': return <ResourcesPage />;
       case '/readiness-check': return <ReadinessCheckPage />;
+      case '/intake-planner': return <IntakePlannerPage />;
       case '/about': return <AboutPage />;
       case '/contact': return <ContactPage />;
       default: return <HomePage />;
@@ -216,6 +218,7 @@ const PromoPlacementEditor = () => {
                     { id: '/services', label: 'Services' },
                     { id: '/resources', label: 'Resources' },
                     { id: '/readiness-check', label: 'Readiness' },
+                    { id: '/intake-planner', label: 'Planner' },
                     { id: '/about', label: 'About' },
                     { id: '/contact', label: 'Contact' },
                   ].map(page => (

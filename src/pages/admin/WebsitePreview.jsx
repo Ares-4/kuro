@@ -15,6 +15,7 @@ import AboutPage from '@/pages/AboutPage';
 import ServicesPage from '@/pages/ServicesPage';
 import ResourcesPage from '@/pages/ResourcesPage';
 import ReadinessCheckPage from '@/pages/ReadinessCheckPage';
+import IntakePlannerPage from '@/pages/IntakePlannerPage';
 import ContactPage from '@/pages/ContactPage';
 
 const WebsitePreview = () => {
@@ -29,6 +30,7 @@ const WebsitePreview = () => {
     { label: 'Services', path: '/services', component: ServicesPage },
     { label: 'Resources', path: '/resources', component: ResourcesPage },
     { label: 'Readiness Check', path: '/readiness-check', component: ReadinessCheckPage },
+    { label: 'Intake Planner', path: '/intake-planner', component: IntakePlannerPage },
     { label: 'About', path: '/about', component: AboutPage },
     { label: 'Contact', path: '/contact', component: ContactPage }
   ]), []);

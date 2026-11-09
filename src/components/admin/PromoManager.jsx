@@ -27,6 +27,7 @@ const PAGE_OPTIONS = [
   { value: '/services', label: 'Services' },
   { value: '/resources', label: 'Resources' },
   { value: '/readiness-check', label: 'Readiness Check' },
+  { value: '/intake-planner', label: 'Intake Planner' },
   { value: '/about', label: 'About Us' },
   { value: '/contact', label: 'Contact' },
   { value: 'all', label: 'All Pages' }

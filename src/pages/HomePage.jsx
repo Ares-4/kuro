@@ -247,6 +247,42 @@ const HomePage = ({ contentOverride }) => {
         <AdSlot page="/" slot="top" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" />
 
         <CredibilityBlock />
+        <section className="relative py-20 border-t border-white/5">
+          <Section style={{ width: 'var(--container)', marginInline: 'auto', padding: '0 1rem' }}>
+            <div className="grid lg:grid-cols-[0.85fr_1fr] gap-10 items-center">
+              <motion.div variants={fadeUp}>
+                <span className="eyebrow">2027 intake planning</span>
+                <h2 className="font-display font-bold text-white mt-4" style={{ fontSize: 'var(--fs-3xl)', letterSpacing: '-0.03em' }}>
+                  Plan intake, budget, deadlines and visa risk in one place
+                </h2>
+                <p className="text-slate-400 mt-4 leading-relaxed max-w-xl">
+                  Compare study routes before applying. See country costs, proof-of-funds notes, document stages and what Kuro handles next.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 mt-7">
+                  <Button size="lg" asChild><Link to="/intake-planner">Open intake planner <ArrowRight className="w-4 h-4" /></Link></Button>
+                  <Button size="lg" variant="outline" asChild><Link to="/deadlines">Track deadlines</Link></Button>
+                </div>
+              </motion.div>
+
+              <motion.div variants={fadeUp} custom={1} className="grid sm:grid-cols-2 gap-4">
+                {[
+                  ['Route map', 'Country, intake, cost and fit checked first.'],
+                  ['Document room', 'Translations, sponsor proof and missing files flagged.'],
+                  ['Visa triage', 'Study gap, funds and refusal risk reviewed early.'],
+                  ['Departure desk', 'Flights, arrival checklist and first-week support.'],
+                ].map(([title, desc], i) => (
+                  <div key={title} className="bento-cell spotlight-card">
+                    <div className="relative z-10">
+                      <p className="font-mono text-blue-400/60 text-xs mb-3">{String(i + 1).padStart(2, '0')}</p>
+                      <h3 className="font-display font-semibold text-white text-lg mb-2">{title}</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+          </Section>
+        </section>
 
         {/* ── How it works ── */}
         <section className="relative py-28 border-t border-white/5">

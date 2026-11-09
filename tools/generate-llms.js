@@ -82,7 +82,11 @@ function extractRoutes(appJsxPath) {
 }
 
 function findReactFiles(dir) {
-  return fs.readdirSync(dir).map(item => path.join(dir, item));
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const filePath = path.join(dir, entry.name);
+    if (entry.isDirectory()) return findReactFiles(filePath);
+    return /\.(jsx|tsx)$/.test(entry.name) ? [filePath] : [];
+  });
 }
 
 function extractHelmetData(content, filePath, routes) {
@@ -103,7 +107,7 @@ function extractHelmetData(content, filePath, routes) {
   const description = cleanText(descMatch?.[1]);
   
   const fileName = path.basename(filePath, path.extname(filePath));
-  const url = routes.length && routes.has(fileName) 
+  const url = routes.size && routes.has(fileName) 
     ? routes.get(fileName) 
     : generateFallbackUrl(fileName);
   

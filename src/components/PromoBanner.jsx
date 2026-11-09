@@ -37,7 +37,7 @@ const DEFAULTS = {
     visible_pages: []
   },
   guide: {
-    title: 'The Ultimate Study in Europe Guide 2025',
+    title: 'The Ultimate Study in Europe Guide 2027',
     text: 'Download our 50-page PDF covering tuition fees...',
     buttonText: 'Get Guide',
     price: '',

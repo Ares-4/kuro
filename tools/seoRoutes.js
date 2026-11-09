@@ -10,7 +10,7 @@ export const SITE_ORIGIN = 'https://kuroeduconsultancy.com';
 
 export const STATIC_ROUTES = [
   '/', '/about', '/destinations', '/services', '/process', '/why-kuro',
-  '/faqs', '/eligibility', '/readiness-check', '/resources', '/contact',
+  '/faqs', '/eligibility', '/readiness-check', '/intake-planner', '/resources', '/contact',
   '/scholarships', '/universities', '/deadlines', '/privacy-policy', '/terms-of-service',
 ];
 

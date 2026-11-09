@@ -90,7 +90,10 @@ const getIntakePoints = (intake) => {
   if (['6_12', 'next year'].some(k => i.includes(k))) return 15;
   
   // Long-term 12+ months (5 pts)
-  if (['12_plus', '2026', '2027'].some(k => i.includes(k))) return 5;
+  const year = new Date().getFullYear();
+  if (i.includes('12_plus') || [year + 2, year + 3].some(y => i.includes(String(y)))) return 5;
+  if (i.includes(String(year + 1))) return 15;
+  if (i.includes(String(year))) return 20;
   
   return 10;
 };

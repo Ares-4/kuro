@@ -22,7 +22,8 @@ const COL1_LINKS = [
 
 const COL2_LINKS = [
   { label: 'Scholarships',   to: '/scholarships' },
-  { label: 'Deadlines',      to: '/deadlines' },
+  { label: 'Deadlines',       to: '/deadlines' },
+  { label: 'Intake planner',  to: '/intake-planner' },
   { label: 'Readiness check', to: '/readiness-check' },
   { label: 'Blog & guides',  to: '/resources' },
   { label: 'FAQs',           to: '/faqs' },
@@ -203,7 +204,7 @@ const Footer = () => {
         <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4"
           style={{ borderTop: '1px solid rgba(148,163,184,0.07)' }}>
 
-          <p className="text-xs text-slate-600 tabular">{footer.copyright_text}</p>
+          <p className="text-xs text-slate-600 tabular">{String(footer.copyright_text || DEFAULT_FOOTER.copyright_text).replace(/(©|&copy;|\(c\))\s*\d{4}(\s*[-–]\s*\d{4})?/i,`© ${new Date().getFullYear()}`)}</p>
 
           <div className="flex items-center gap-5">
             <Link to="/privacy-policy"

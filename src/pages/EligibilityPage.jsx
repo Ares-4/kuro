@@ -13,6 +13,14 @@ import { DEFAULT_CONTENT } from '@/lib/defaultContent';
 import AdUnit from '@/components/AdUnit';
 import { ADSENSE_SLOTS } from '@/config/adsenseSlots';
 
+// Year of the next upcoming intake for a given month name (e.g. "September" in Nov 2026 -> 2027)
+const nextIntakeYear = (monthName) => {
+  const now = new Date();
+  const month = new Date(`${monthName} 1, 2000`).getMonth();
+  if (Number.isNaN(month)) return '';
+  return month > now.getMonth() ? now.getFullYear() : now.getFullYear() + 1;
+};
+
 const EligibilityPage = ({ contentOverride }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -236,7 +244,7 @@ const EligibilityPage = ({ contentOverride }) => {
                         : formData.target_destination === 'Germany'
                         ? ['April', 'October']
                         : ['January', 'February', 'September', 'October']
-                      ).map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                      ).map(m => <SelectItem key={m} value={m}>{m} {nextIntakeYear(m)}</SelectItem>)}
                       <SelectItem value="Any">Any Available</SelectItem>
                     </SelectContent>
                   </Select>

@@ -1,15 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Loader2, GraduationCap, Building2, MapPin, X } from 'lucide-react';
+import { Search, Loader2, GraduationCap, Building2, MapPin, X, FileText } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+const STATIC_PAGES = [
+  { title: 'Intake planner', path: '/intake-planner', description: 'Plan country, intake, budget, documents and visa route.' },
+  { title: 'Readiness check', path: '/readiness-check', description: 'Check admission and visa risk before applying.' },
+  { title: 'Application deadlines', path: '/deadlines', description: 'Track deadline windows and pinned dates.' },
+  { title: 'Scholarships', path: '/scholarships', description: 'Find funding opportunities and scholarship pages.' },
+  { title: 'Universities', path: '/universities', description: 'Browse partner and target institutions.' },
+  { title: 'Services', path: '/services', description: 'Admissions, visa and relocation support.' },
+  { title: 'Contact', path: '/contact', description: 'Book consultation or message Kuro.' },
+];
+
 const GlobalSearch = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState({ programs: [], universities: [], destinations: [] });
+  const [results, setResults] = useState({ pages: [], programs: [], universities: [], destinations: [] });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -23,7 +33,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
   useEffect(() => {
     const search = async () => {
       if (query.trim().length < 2) {
-        setResults({ programs: [], universities: [], destinations: [] });
+        setResults({ pages: [], programs: [], universities: [], destinations: [] });
         return;
       }
 
@@ -36,6 +46,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
         ]);
 
         setResults({
+          pages: STATIC_PAGES.filter(page => `${page.title} ${page.description}`.toLowerCase().includes(query.toLowerCase())).slice(0, 5),
           programs: progRes.data || [],
           universities: uniRes.data || [],
           destinations: destRes.data || []
@@ -89,9 +100,29 @@ const GlobalSearch = ({ isOpen, onClose }) => {
                 </div>
               )}
 
-              {query && results.programs.length === 0 && results.universities.length === 0 && results.destinations.length === 0 && (
+              {query && results.pages.length === 0 && results.programs.length === 0 && results.universities.length === 0 && results.destinations.length === 0 && (
                 <div className="py-8 text-center text-slate-500">
                   No results found for "{query}"
+                </div>
+              )}
+
+              {/* Pages */}
+              {results.pages.length > 0 && (
+                <div className="mb-2">
+                  <h3 className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase">Pages and tools</h3>
+                  {results.pages.map(page => (
+                    <div
+                      key={page.path}
+                      onClick={() => handleSelect(page.path)}
+                      className="flex items-center px-3 py-2 text-sm text-slate-200 hover:bg-slate-800 rounded-md cursor-pointer group"
+                    >
+                      <FileText className="w-4 h-4 mr-3 text-amber-400 group-hover:text-amber-300" />
+                      <div>
+                        <div className="font-medium">{page.title}</div>
+                        <div className="text-xs text-slate-500">{page.description}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
 

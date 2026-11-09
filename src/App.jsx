@@ -46,6 +46,7 @@ import ScholarshipDetailPage from '@/pages/ScholarshipDetailPage';
 import UniversitiesPage from '@/pages/UniversitiesPage';
 import UniversityDetailPage from '@/pages/UniversityDetailPage';
 import DeadlinesPage from '@/pages/DeadlinesPage';
+import IntakePlannerPage from '@/pages/IntakePlannerPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
 const PageLoader = () => (
@@ -80,6 +81,7 @@ function App() {
                   <Route path="/eligibility" element={<EligibilityPage />} />
                   <Route path="/courses/:id" element={<CourseDetailPage />} />
                   <Route path="/readiness-check" element={<ReadinessCheckPage />} />
+                  <Route path="/intake-planner" element={<IntakePlannerPage />} />
                   <Route path="/resources" element={<ResourcesPage />} />
                   <Route path="/blog/:slug" element={<BlogDetailPage />} />
                   <Route path="/contact" element={<ContactPage />} />

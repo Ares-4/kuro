@@ -9,7 +9,7 @@ import { Loader2, Save } from 'lucide-react';
 import { getSiteSetting, setSiteSetting } from '@/lib/settingsStore';
 
 const DEFAULTS = {
-  copyright_text: '© 2024 Kuro Educational. All rights reserved.',
+  copyright_text: `© ${new Date().getFullYear()} Kuro Educational. All rights reserved.`,
   footer_description: 'Empowering students to achieve their global education dreams.',
   links_column_1_title: 'Company',
   links_column_2_title: 'Resources',

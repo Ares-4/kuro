@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { label: 'Destinations', path: '/destinations' },
   { label: 'Services', path: '/services' },
   { label: 'Process', path: '/process' },
+  { label: 'Intake planner', path: '/intake-planner' },
   { label: 'Why Kuro', path: '/why-kuro' },
   { label: 'FAQs', path: '/faqs' },
   { label: 'Contact', path: '/contact' },
@@ -215,3 +216,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

@@ -123,7 +123,10 @@ const StudentSettings = () => {
         // Safely merge preferences ensuring structure exists
         if (data.preferences) {
           setPreferences(prev => ({
-            notifications: { 
+            // Keep every other stored key (intake_month, roadmap_progress, ...) so saving
+            // Settings doesn't silently wipe data written elsewhere in the dashboard
+            ...data.preferences,
+            notifications: {
               email: true, 
               sms: false, 
               ...data.preferences?.notifications 

@@ -6,6 +6,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Send } from 'lucide-react';
 import StickerPicker from './StickerPicker';
 
+// Sender names: students can only read their own row, so names of other members come
+// from the get_student_display_names RPC (id + full_name only).
+const withSenderNames = async (rows) => {
+  const missing = [...new Set(rows.filter(r => !r.student?.full_name && r.student_id).map(r => r.student_id))];
+  if (missing.length === 0) return rows;
+  const { data, error } = await supabase.rpc('get_student_display_names', { ids: missing });
+  if (error || !data) return rows;
+  const names = Object.fromEntries(data.map(d => [d.id, d.full_name]));
+  return rows.map(r => (r.student?.full_name || !names[r.student_id]) ? r : { ...r, student: { full_name: names[r.student_id] } });
+};
+
 const MessagesTab = ({ studentId }) => {
   const [joinedGroups, setJoinedGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
@@ -49,14 +60,14 @@ const MessagesTab = ({ studentId }) => {
       const { data } = await supabase
         .from('community_messages')
         .select(`
-          id, message_text, created_at,
+          id, message_text, created_at, student_id,
           student:students(full_name),
           sticker:stickers(emoji, name)
         `)
         .eq('group_id', selectedGroupId)
         .order('created_at', { ascending: true });
       
-      setMessages(data || []);
+      setMessages(await withSenderNames(data || []));
       scrollToBottom();
     };
 
@@ -72,7 +83,7 @@ const MessagesTab = ({ studentId }) => {
           const { data } = await supabase
             .from('community_messages')
             .select(`
-              id, message_text, created_at,
+              id, message_text, created_at, student_id,
               student:students(full_name),
               sticker:stickers(emoji, name)
             `)
@@ -80,7 +91,8 @@ const MessagesTab = ({ studentId }) => {
             .single();
             
           if (data) {
-            setMessages(prev => [...prev, data]);
+            const [named] = await withSenderNames([data]);
+            setMessages(prev => [...prev, named]);
             scrollToBottom();
           }
         }

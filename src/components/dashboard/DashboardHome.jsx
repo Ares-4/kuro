@@ -9,6 +9,7 @@ import {
   Sparkles, ChevronRight, Zap, Radio,
 } from 'lucide-react';
 import CountryUpdateCard from '@/components/CountryUpdateCard';
+import RoadmapTracker from '@/components/dashboard/RoadmapTracker';
 import { Button } from '@/components/ui/button';
 
 const ease = [0.16, 1, 0.3, 1];
@@ -222,6 +223,13 @@ const DashboardHome = () => {
           <div className="grid sm:grid-cols-2 gap-3">
             {countryAlerts.map(u => <CountryUpdateCard key={u.id} update={u} />)}
           </div>
+        </motion.div>
+      )}
+
+      {/* ── Destination roadmap with progress ── */}
+      {student && (
+        <motion.div variants={fadeUp} custom={1} initial="hidden" animate="show">
+          <RoadmapTracker student={student} onStudentChange={setStudent} />
         </motion.div>
       )}
 

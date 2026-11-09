@@ -75,15 +75,14 @@ const EligibilityPage = ({ contentOverride }) => {
         payment_status: 'pending'
       };
 
-      const { data, error } = await supabase
-        .from('leads')
-        .insert([leadPayload])
-        .select()
-        .single();
+      // Generate the id client-side: anonymous visitors may insert leads but (correctly)
+      // cannot read them back, so `.insert().select()` would fail under RLS.
+      const leadRow = { id: crypto.randomUUID(), ...leadPayload };
+      const { error } = await supabase.from('leads').insert([leadRow]);
 
       if (error) throw error;
 
-      setCurrentLead(data);
+      setCurrentLead(leadRow);
 
       toast({
         title: "Assessment Saved",

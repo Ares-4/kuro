@@ -201,6 +201,12 @@ const EligibilityPage = ({ contentOverride }) => {
                       <SelectItem value="Canada">Canada</SelectItem>
                       <SelectItem value="UK">UK</SelectItem>
                       <SelectItem value="Germany">Germany</SelectItem>
+                      <SelectItem value="Hungary">Hungary</SelectItem>
+                      <SelectItem value="Austria">Austria</SelectItem>
+                      <SelectItem value="Lithuania">Lithuania</SelectItem>
+                      <SelectItem value="Latvia">Latvia</SelectItem>
+                      <SelectItem value="Malta">Malta</SelectItem>
+                      <SelectItem value="Cyprus">Cyprus</SelectItem>
                       <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>

@@ -50,6 +50,7 @@ const StudentSettings = () => {
     privacy: { data_sharing: false },
     application: { countries: '', program_types: '' }
   });
+  const [studentId, setStudentId] = useState(null);
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
 
@@ -83,10 +84,10 @@ const StudentSettings = () => {
     setPushLoading(true);
     try {
       if (checked) {
-        const sub = await subscribeToPush(studentData?.id || user.id);
+        const sub = await subscribeToPush(studentId || user.id);
         setPushEnabled(!!sub);
       } else {
-        await unsubscribeFromPush(studentData?.id || user.id);
+        await unsubscribeFromPush(studentId || user.id);
         setPushEnabled(false);
       }
     } catch (err) {
@@ -109,6 +110,8 @@ const StudentSettings = () => {
       if (error) throw error;
 
       if (data) {
+        setStudentId(data.id);
+        setStudentId(data.id);
         setProfile({
           full_name: data.full_name || '',
           email: data.email || user.email || '',

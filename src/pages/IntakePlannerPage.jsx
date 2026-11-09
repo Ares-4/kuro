@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/lib/customSupabaseClient';
 
 const COUNTRIES = [
   {
@@ -77,7 +78,51 @@ const COUNTRIES = [
     speed: 'Medium',
     fit: 'Best for students with strong sponsors, health cover readiness, and patient visa planning.',
   },
+  {
+    name: 'Germany',
+    slug: 'germany',
+    intake: 'October 2027',
+    deadline: 'February to July 2027',
+    currency: 'EUR',
+    // Public universities charge no tuition, only a semester contribution (~EUR 300-400 per semester)
+    tuitionLow: 600,
+    tuitionHigh: 800,
+    // Blocked account: EUR 992/month (EUR 11,904/year) for 2026 — fixed government figure
+    monthlyLivingLow: 992,
+    monthlyLivingHigh: 992,
+    proofMonths: 12,
+    proof: 'Blocked account (Sperrkonto) of EUR 11,904 for the year',
+    speed: 'Slow',
+    fit: 'Best for strong academic profiles who want tuition-free public universities and can fund the blocked account up front.',
+  },
+  {
+    name: 'Hungary',
+    slug: 'hungary',
+    intake: 'September 2027',
+    deadline: 'January to June 2027',
+    currency: 'EUR',
+    tuitionLow: 2500,
+    tuitionHigh: 7000,
+    monthlyLivingLow: 450,
+    monthlyLivingHigh: 750,
+    proofMonths: 12,
+    proof: 'Moderate proof of funds; Stipendium Hungaricum covers fees for scholars',
+    speed: 'Medium',
+    fit: 'Best for students targeting the fully funded Stipendium Hungaricum, or affordable EU degrees in Budapest, Debrecen and Szeged.',
+  },
 ];
+
+// Planner country name -> country label used in the university_deadlines table
+const DEADLINE_COUNTRY = { 'United Kingdom': 'UK' };
+
+const safeStorage = {
+  get(key, fallback) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+  },
+  set(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
+  },
+};
 
 const TIMELINE = [
   { title: 'Profile audit', window: 'Week 1', detail: 'Grades, study gap, budget, English level, passport, and sponsor strength checked first.' },
@@ -132,16 +177,33 @@ const fadeUp = {
 const formatMoney = (currency, value) => `${currency} ${Math.round(value).toLocaleString('en-GB')}`;
 
 const IntakePlannerPage = () => {
-  const [country, setCountry] = useState(COUNTRIES[0].name);
-  const [studyLevel, setStudyLevel] = useState('masters');
-  const [sponsorBudget, setSponsorBudget] = useState(9000);
-  const [checkedDocs, setCheckedDocs] = useState(() => {
-    try { return new Set(JSON.parse(localStorage.getItem('kuro_level3_docs') || '[]')); }
-    catch { return new Set(); }
-  });
-  const [saved, setSaved] = useState(false);
+  // Restore the last saved plan so "Save plan" actually means something on return visits
+  const savedPlan = useMemo(() => safeStorage.get('kuro_level3_plan', null), []);
+  const [country, setCountry] = useState(() =>
+    COUNTRIES.some(c => c.name === savedPlan?.country) ? savedPlan.country : COUNTRIES[0].name);
+  const [studyLevel, setStudyLevel] = useState(savedPlan?.studyLevel || 'masters');
+  const [sponsorBudget, setSponsorBudget] = useState(Number(savedPlan?.sponsorBudget) || 9000);
+  const [checkedDocs, setCheckedDocs] = useState(() => new Set(safeStorage.get('kuro_level3_docs', [])));
+  const [saved, setSaved] = useState(Boolean(savedPlan));
+  const [deadlines, setDeadlines] = useState([]);
 
   const selected = useMemo(() => COUNTRIES.find(item => item.name === country) || COUNTRIES[0], [country]);
+
+  // Live upcoming deadlines for the selected country (managed in Admin -> Deadlines)
+  useEffect(() => {
+    let cancelled = false;
+    const today = new Date().toISOString().slice(0, 10);
+    supabase
+      .from('university_deadlines')
+      .select('id, university_name, program_name, deadline_date, type, intake_season, intake_year, link')
+      .eq('is_active', true)
+      .ilike('country', DEADLINE_COUNTRY[selected.name] || selected.name)
+      .gte('deadline_date', today)
+      .order('deadline_date', { ascending: true })
+      .limit(4)
+      .then(({ data }) => { if (!cancelled) setDeadlines(data || []); });
+    return () => { cancelled = true; };
+  }, [selected.name]);
 
   const plan = useMemo(() => {
     const tuitionMid = (selected.tuitionLow + selected.tuitionHigh) / 2;
@@ -154,7 +216,7 @@ const IntakePlannerPage = () => {
   }, [checkedDocs.size, selected, sponsorBudget]);
 
   useEffect(() => {
-    localStorage.setItem('kuro_level3_docs', JSON.stringify([...checkedDocs]));
+    safeStorage.set('kuro_level3_docs', [...checkedDocs]);
   }, [checkedDocs]);
 
   const toggleDoc = (id) => {
@@ -167,8 +229,7 @@ const IntakePlannerPage = () => {
   };
 
   const savePlan = () => {
-    localStorage.setItem('kuro_level3_plan', JSON.stringify({ country, studyLevel, sponsorBudget, docs: [...checkedDocs], savedAt: new Date().toISOString() }));
-    setSaved(true);
+    setSaved(safeStorage.set('kuro_level3_plan', { country, studyLevel, sponsorBudget, docs: [...checkedDocs], savedAt: new Date().toISOString() }));
   };
 
   return (
@@ -207,7 +268,7 @@ const IntakePlannerPage = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 mb-5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-5">
                 {COUNTRIES.map(item => (
                   <button
                     key={item.name}
@@ -236,6 +297,27 @@ const IntakePlannerPage = () => {
               <div className="mt-4 rounded-xl bg-blue-500/10 border border-blue-400/20 p-4">
                 <p className="text-sm text-slate-200 leading-relaxed">{selected.fit}</p>
                 <p className="text-xs text-slate-400 mt-2">Funds note: {selected.proof}</p>
+              </div>
+
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-slate-500 flex items-center gap-1.5"><CalendarClock className="w-3.5 h-3.5" /> Upcoming {selected.name} deadlines</p>
+                  <Link to={`/destinations/${selected.slug}`} className="text-xs text-blue-300 hover:text-blue-200">Full {selected.name} guide →</Link>
+                </div>
+                {deadlines.length > 0 ? (
+                  <ul className="space-y-1.5">
+                    {deadlines.map(d => (
+                      <li key={d.id} className="flex items-center justify-between gap-3 rounded-lg bg-slate-950/50 border border-slate-800 px-3 py-2 text-sm">
+                        <span className="text-slate-300 truncate">{d.university_name}{d.program_name ? ` · ${d.program_name}` : ''}</span>
+                        <span className="text-white font-medium tabular shrink-0">
+                          {new Date(`${d.deadline_date}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-slate-500">No dated deadlines listed yet. <Link to="/deadlines" className="text-blue-300 hover:text-blue-200">See all deadlines</Link> or ask Kuro for programme dates.</p>
+                )}
               </div>
             </motion.div>
           </div>

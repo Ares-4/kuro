@@ -52,12 +52,17 @@ const AdminScholarships = () => {
     setImporting(true);
     try {
       let res;
+      const { data: { session } } = await supabase.auth.getSession();
       try {
         res = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scrape-scholarship`,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', apikey: import.meta.env.VITE_SUPABASE_ANON_KEY },
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            },
             body: JSON.stringify({ url: importUrl }),
           }
         );

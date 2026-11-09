@@ -9,6 +9,24 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
 }
 
+// Register/remove subscriptions through RLS-safe RPCs; fall back to the legacy table
+// write only if the RPCs are not deployed yet (PGRST202 = function not found).
+async function registerSubscription(endpoint, keys, asAdmin, studentId) {
+  const { error } = await supabase.rpc('register_push_subscription', {
+    p_endpoint: endpoint, p_p256dh: keys.p256dh, p_auth: keys.auth, p_as_admin: asAdmin,
+  });
+  if (!error) return true;
+  if (error.code !== 'PGRST202') { console.warn('Push registration failed:', error.message); return false; }
+  const row = asAdmin ? { is_admin: true } : { student_id: studentId };
+  const legacy = await supabase.from('push_subscriptions').upsert({ ...row, endpoint, p256dh: keys.p256dh, auth: keys.auth }, { onConflict: 'endpoint' });
+  return !legacy.error;
+}
+
+async function removeSubscription(endpoint) {
+  const { error } = await supabase.rpc('remove_push_subscription', { p_endpoint: endpoint });
+  if (error?.code === 'PGRST202') await supabase.from('push_subscriptions').delete().eq('endpoint', endpoint);
+}
+
 export async function registerServiceWorker() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null;
   return navigator.serviceWorker.register('/sw.js');
@@ -34,10 +52,8 @@ export async function subscribeToPush(studentId) {
   });
 
   const { endpoint, keys } = subscription.toJSON();
-  await supabase.from('push_subscriptions').upsert(
-    { student_id: studentId, endpoint, p256dh: keys.p256dh, auth: keys.auth },
-    { onConflict: 'endpoint' }
-  );
+  // studentId is resolved server-side from the signed-in user
+  if (!(await registerSubscription(endpoint, keys, false, studentId))) return null;
   return subscription;
 }
 
@@ -49,7 +65,7 @@ export async function unsubscribeFromPush(studentId) {
   if (!sub) return;
   const { endpoint } = sub.toJSON();
   await sub.unsubscribe();
-  await supabase.from('push_subscriptions').delete().eq('endpoint', endpoint).eq('student_id', studentId);
+  await removeSubscription(endpoint);
 }
 
 export async function isPushSubscribed() {
@@ -79,10 +95,7 @@ export async function subscribeAdminToPush() {
   }
 
   const { endpoint, keys } = subscription.toJSON();
-  await supabase.from('push_subscriptions').upsert(
-    { is_admin: true, endpoint, p256dh: keys.p256dh, auth: keys.auth },
-    { onConflict: 'endpoint' }
-  );
+  if (!(await registerSubscription(endpoint, keys, true))) return null;
   return subscription;
 }
 
@@ -94,7 +107,7 @@ export async function unsubscribeAdminFromPush() {
   if (!sub) return;
   const { endpoint } = sub.toJSON();
   await sub.unsubscribe();
-  await supabase.from('push_subscriptions').delete().eq('endpoint', endpoint);
+  await removeSubscription(endpoint);
 }
 
 /**

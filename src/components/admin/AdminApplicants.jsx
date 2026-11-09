@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Loader2, RefreshCw, FileText, X, Mail, Phone, MapPin, Globe, GraduationCap, BookOpen, Copy, ClipboardCheck } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Textarea } from '@/components/ui/textarea';
+import { openStoredUrl } from '@/lib/storageUrls';
+
+const alertOpenError = (err) => console.error('Could not open document:', err);
 
 const AdminApplicants = () => {
   const [applicants, setApplicants] = useState([]);
@@ -248,11 +251,11 @@ const AdminApplicants = () => {
                   <h3 className="text-sm font-semibold text-slate-300 mb-3">Uploaded Documents</h3>
                   <div className="space-y-2">
                     {docEntries.map(([key, doc]) => (
-                      <a key={key} href={doc.url} target="_blank" rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm text-blue-400 hover:text-blue-300 hover:bg-slate-700 transition-colors">
+                      <button key={key} type="button" onClick={() => openStoredUrl(doc.url).catch(err => alertOpenError(err))}
+                        className="w-full text-left flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm text-blue-400 hover:text-blue-300 hover:bg-slate-700 transition-colors">
                         <FileText className="w-4 h-4 shrink-0" />
                         <span className="truncate">{key} — {doc.name}</span>
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
 import { GraduationCap, ExternalLink, CalendarDays, Loader2, Bell, BellOff, Search } from 'lucide-react';
 import AddToCalendarButton from '@/components/AddToCalendarButton';
+import { setScholarshipSubscription } from '@/lib/scholarshipSubscriptions';
 
 const COUNTRIES = ['All','Poland','UK','Canada','Australia','USA','Germany','Lithuania','Latvia','Hungary','Malta','Cyprus','Austria'];
 const LEVELS    = ['All','Undergraduate','Masters','PhD','Any level'];
@@ -113,10 +114,10 @@ const ScholarshipsPage = () => {
     }
     const email = user?.email || subEmail;
     if (subscriptions.has(scholarshipId)) {
-      await supabase.from('scholarship_subscriptions').delete().eq('scholarship_id', scholarshipId).eq('email', email);
+      await setScholarshipSubscription(scholarshipId, email, false);
       setSubscriptions(prev => { const s = new Set(prev); s.delete(scholarshipId); return s; });
     } else {
-      await supabase.from('scholarship_subscriptions').upsert({ scholarship_id: scholarshipId, email, user_id: user?.id || null }, { onConflict: 'scholarship_id,email' });
+      await setScholarshipSubscription(scholarshipId, email, true);
       setSubscriptions(prev => new Set([...prev, scholarshipId]));
     }
     setShowEmailPrompt(null);

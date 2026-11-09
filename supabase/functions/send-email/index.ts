@@ -1,0 +1,80 @@
+// send-email: renders an email_templates row and sends it over SMTP.
+//
+// Security (2026-11-09): previously an open relay — anyone with the public anon key
+// could send any template, a custom subject, or raw content to any address.
+//   * Admins and trusted server functions (service-role key): any template/recipient.
+//   * Public callers: only PUBLIC_TEMPLATES, no subject override, throttled per
+//     recipient; admin_notification always goes to ADMIN_EMAIL, never to `to`.
+//   * Template variables are HTML-escaped.
+import nodemailer from "npm:nodemailer@6.9.7";
+import {
+  corsHeaders, json, serviceClient, isPrivileged, escapeHtml, isEmail, recentEmailCount,
+} from "../_shared/security.ts";
+
+const SMTP_USER = Deno.env.get("SMTP_USER")!;
+const transporter = nodemailer.createTransport({
+  host: Deno.env.get("SMTP_HOST")!,
+  port: parseInt(Deno.env.get("SMTP_PORT") ?? "465"),
+  secure: true,
+  auth: { user: SMTP_USER, pass: Deno.env.get("SMTP_PASS")! },
+});
+
+const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") || "kuro.agents@kuroeduconsultancy.com";
+const PUBLIC_TEMPLATES = new Set(["guide_download", "readiness_results", "admin_notification"]);
+const PUBLIC_PER_RECIPIENT_PER_HOUR = 3;
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+
+  try {
+    const body = await req.json().catch(() => ({}));
+    const templateName = String(body.templateName ?? "");
+    const data: Record<string, unknown> = body.data && typeof body.data === "object" ? body.data : {};
+    const privileged = await isPrivileged(req);
+
+    let to = String(body.to ?? "").trim();
+    let subjectOverride: string | undefined = privileged && typeof body.subject === "string" ? body.subject.slice(0, 200) : undefined;
+
+    if (!privileged) {
+      if (!PUBLIC_TEMPLATES.has(templateName)) return json({ error: "Not allowed" }, 403);
+      if (templateName === "admin_notification") to = ADMIN_EMAIL;
+      subjectOverride = undefined;
+    }
+    if (!isEmail(to)) return json({ error: "Invalid recipient" }, 400);
+
+    if (!privileged && (await recentEmailCount(to)) >= PUBLIC_PER_RECIPIENT_PER_HOUR) {
+      return json({ error: "Too many emails to this address, try again later" }, 429);
+    }
+
+    const supabase = serviceClient();
+    const { data: template } = await supabase
+      .from("email_templates").select("subject, body").eq("name", templateName).maybeSingle();
+    if (!template) return json({ error: "Unknown template" }, 400);
+
+    let html = String(template.body ?? "");
+    let subject = subjectOverride || String(template.subject ?? "Notification from Kuro Edu");
+    for (const [key, raw] of Object.entries(data)) {
+      if (!/^[A-Za-z0-9_]{1,40}$/.test(key)) continue;
+      const value = escapeHtml(raw).slice(0, 2000);
+      const re = new RegExp(`{{\\s*${key}\\s*}}`, "g");
+      html = html.replace(re, value);
+      subject = subject.replace(re, String(raw ?? "").replace(/[\r\n]/g, " ").slice(0, 200));
+    }
+
+    const info = await transporter.sendMail({ from: `"Kuro Support" <${SMTP_USER}>`, to, subject, html });
+
+    await supabase.from("email_logs").insert({
+      recipient: to,
+      subject,
+      template_name: templateName,
+      status: "sent",
+      metadata: { messageId: info.messageId, privileged },
+    });
+
+    return json({ success: true });
+  } catch (error) {
+    console.error("send-email error:", error);
+    return json({ error: "Could not send email" }, 500);
+  }
+});

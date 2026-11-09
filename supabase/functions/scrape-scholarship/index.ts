@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { isPrivileged } from '../_shared/security.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -66,7 +67,18 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
 
   try {
+    // Security (2026-11-09): admin-only, and no fetching of internal/private hosts (SSRF)
+    if (!(await isPrivileged(req))) {
+      return new Response(JSON.stringify({ error: 'Admin only' }), { status: 403, headers: { ...CORS, 'Content-Type': 'application/json' } });
+    }
     const { url } = await req.json();
+    let host = '';
+    try { const u = new URL(url); host = u.hostname.toLowerCase(); if (u.protocol !== 'https:' && u.protocol !== 'http:') throw new Error(); } catch { host = ''; }
+    const privateHost = !host || host === 'localhost' || host.endsWith('.local') || host.endsWith('.internal')
+      || /^(127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host) || host.includes(':') || host.endsWith('.supabase.co');
+    if (privateHost) {
+      return new Response(JSON.stringify({ error: 'URL not allowed' }), { status: 400, headers: { ...CORS, 'Content-Type': 'application/json' } });
+    }
     if (!url || !url.startsWith('http')) {
       return new Response(JSON.stringify({ error: 'Invalid URL' }), { status: 400, headers: { ...CORS, 'Content-Type': 'application/json' } });
     }

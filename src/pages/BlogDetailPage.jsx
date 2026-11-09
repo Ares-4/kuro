@@ -5,6 +5,7 @@ import { supabase } from '@/lib/customSupabaseClient';
 import { Loader2, ArrowLeft, Calendar, User, Clock, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import DOMPurify from 'dompurify';
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
@@ -126,7 +127,7 @@ const BlogDetailPage = () => {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div 
             className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-slate-300 prose-a:text-primary prose-strong:text-white prose-blockquote:border-l-primary prose-blockquote:bg-slate-900/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-img:rounded-lg"
-            dangerouslySetInnerHTML={{ __html: post.content }} 
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content || '', { ADD_ATTR: ['target', 'rel'] }) }}
           />
           
           {/* Footer of Article */}

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, RefreshCw, Calculator, FileText, DollarSign, X, Mail, Phone, MapPin, Globe, GraduationCap, DollarSign as Budget, ChevronRight } from 'lucide-react';
 import { calculateLeadScore } from '@/lib/leadScoringService';
 import { useToast } from '@/components/ui/use-toast';
+import { openPrivateFile } from '@/lib/storageUrls';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -271,16 +272,16 @@ const AdminLeads = () => {
                 <div>
                   <h3 className="text-sm font-semibold text-slate-300 mb-3">Uploaded Documents</h3>
                   <div className="space-y-2">
-                    {leadDocs.map(doc => {
-                      const { data: { publicUrl } } = supabase.storage.from('student-documents').getPublicUrl(`${selectedLead.id}/${doc.name}`);
-                      return (
-                        <a key={doc.name} href={publicUrl} target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm text-blue-400 hover:text-blue-300 hover:bg-slate-700 transition-colors">
-                          <FileText className="w-4 h-4 shrink-0" />
-                          <span className="truncate">{doc.name}</span>
-                        </a>
-                      );
-                    })}
+                    {leadDocs.map(doc => (
+                      // student-documents is a private bucket: open through a short-lived signed URL
+                      <button key={doc.name} type="button"
+                        onClick={() => openPrivateFile('student-documents', `${selectedLead.id}/${doc.name}`)
+                          .catch(err => toast({ title: 'Could not open document', description: err.message, variant: 'destructive' }))}
+                        className="w-full text-left flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-sm text-blue-400 hover:text-blue-300 hover:bg-slate-700 transition-colors">
+                        <FileText className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{doc.name}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}

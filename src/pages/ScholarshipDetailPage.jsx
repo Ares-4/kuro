@@ -5,6 +5,7 @@ import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { GraduationCap, ExternalLink, CalendarDays, Loader2, Bell, BellOff, ArrowLeft, MapPin, Layers } from 'lucide-react';
 import AddToCalendarButton from '@/components/AddToCalendarButton';
+import { setScholarshipSubscription } from '@/lib/scholarshipSubscriptions';
 
 const daysLeft = (date) => {
   if (!date) return null;
@@ -47,10 +48,10 @@ const ScholarshipDetailPage = () => {
     }
     const email = user?.email || subEmail;
     if (subscribed) {
-      await supabase.from('scholarship_subscriptions').delete().eq('scholarship_id', id).eq('email', email);
+      await setScholarshipSubscription(id, email, false);
       setSubscribed(false);
     } else {
-      await supabase.from('scholarship_subscriptions').upsert({ scholarship_id: id, email, user_id: user?.id || null }, { onConflict: 'scholarship_id,email' });
+      await setScholarshipSubscription(id, email, true);
       setSubscribed(true);
     }
     setShowEmailPrompt(false);

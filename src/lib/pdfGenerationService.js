@@ -69,7 +69,9 @@ export const generateEligibilityPDF = async (leadData) => {
 
   // Save/Upload
   const pdfBlob = doc.output('blob');
-  const fileName = `${name.replace(/\s+/g, '_')}_Eligibility_${Date.now()}.pdf`;
+  // Random token keeps report URLs (which contain personal data) unguessable
+  const safeName = String(name || 'student').replace(/[^A-Za-z0-9]+/g, '_').slice(0, 40);
+  const fileName = `${safeName}_Eligibility_${crypto.randomUUID()}.pdf`;
 
   const { data, error } = await supabase.storage
     .from('eligibility-results')

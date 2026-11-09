@@ -11,3 +11,12 @@ supabase/.temp/
 
 .vercel
 .env*
+
+# Personal / sensitive files that must never ship in public/ or the repo
+*RECOVERYKEY*
+public/*.pdf
+supabase/*.csv
+supabase/*.jpg
+.vercel-auth*/
+.vercel-og-link-backup/
+.firecrawl/

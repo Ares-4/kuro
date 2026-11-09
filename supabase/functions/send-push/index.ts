@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import webpush from 'npm:web-push@3.6.7';
+import { isPrivileged } from '../_shared/security.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -27,6 +28,25 @@ serve(async (req) => {
 
   try {
     const { title, body, url, studentId } = await req.json();
+
+    // Security (2026-11-09): pushing to a specific student's devices is admin/server only.
+    // Public pages may still alert admins about new leads, but with length-capped text
+    // and an in-app relative link only (no external phishing URLs).
+    if (studentId && !(await isPrivileged(req))) {
+      return new Response(JSON.stringify({ error: 'Not allowed' }), {
+        status: 403, headers: { ...CORS, 'Content-Type': 'application/json' },
+      });
+    }
+    if (typeof title !== 'string' || typeof body !== 'string' || title.length > 120 || body.length > 300) {
+      return new Response(JSON.stringify({ error: 'Invalid notification' }), {
+        status: 400, headers: { ...CORS, 'Content-Type': 'application/json' },
+      });
+    }
+    if (url && (typeof url !== 'string' || !url.startsWith('/') || url.startsWith('//'))) {
+      return new Response(JSON.stringify({ error: 'Invalid url' }), {
+        status: 400, headers: { ...CORS, 'Content-Type': 'application/json' },
+      });
+    }
     if (!title || !body) {
       return new Response(JSON.stringify({ error: 'title and body are required' }), {
         status: 400,
@@ -68,7 +88,7 @@ serve(async (req) => {
       headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
+    return new Response(JSON.stringify({ error: 'Push failed' }), {
       status: 500,
       headers: { ...CORS, 'Content-Type': 'application/json' },
     });

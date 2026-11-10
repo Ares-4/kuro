@@ -145,13 +145,32 @@ async function waitUntilRendered(page, route, shellTitles) {
   await page.waitForTimeout(300);
 }
 
+// The snapshot is the DOM after the page has run, so it contains things the
+// page added at runtime that must NOT be in the static HTML:
+// - the font stylesheet already flipped from media="print" to "all", which
+//   makes it render-blocking again;
+// - script tags index.html injects ~2.5s after load (gtag.js, Trustpilot),
+//   which would then load immediately for every visitor;
+// - the Speed Insights script, which React injects again itself.
+const RUNTIME_SCRIPT_SRC = [
+  'googletagmanager.com/gtag/js',
+  'widget.trustpilot.com/bootstrap',
+  '/_vercel/speed-insights/script.js',
+];
+function cleanSnapshot(html) {
+  let out = html.replace(/media="all"(\s+onload="this\.media='all'")/g, 'media="print"$1');
+  out = out.replace(/<script\b[^>]*\bsrc="([^"]*)"[^>]*>\s*<\/script>/g, (tag, src) =>
+    (RUNTIME_SCRIPT_SRC.some((s) => src.includes(s)) ? '' : tag));
+  return out;
+}
+
 async function prerenderRoute(browserHolder, route, shellTitles, attempt = 1) {
   try {
     if (!browserHolder.page || browserHolder.page.isClosed()) await openPage(browserHolder);
     const { page } = browserHolder;
     await page.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
     await waitUntilRendered(page, route, shellTitles);
-    const html = await withTimeout(page.content(), 10_000, 'page.content');
+    const html = cleanSnapshot(await withTimeout(page.content(), 10_000, 'page.content'));
 
     const outDir = route.path === '/' ? DIST_DIR : path.join(DIST_DIR, route.path);
     fs.mkdirSync(outDir, { recursive: true });

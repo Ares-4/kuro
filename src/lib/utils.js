@@ -27,11 +27,19 @@ export function formatCurrency(amount, currencyCode) {
   const code = currencyCode ? currencyCode.toUpperCase() : 'USD';
   const symbol = symbols[code] || code;
   
-  const numeric = Number(String(amount).replace(/,/g, ''));
-  // Free-text amounts ("2,550 - 3,000") pass through untouched; plain numbers
-  // get thousands separators ("€4,000").
+  const raw = String(amount).trim();
+  if (!raw || raw === '-') return "N/A";
+  // Text such as "Free (€300 semester fee)" is shown as written, no symbol.
+  if (/[a-z]/i.test(raw)) return raw;
+  // "386,00" / "303,8" use a decimal comma; "4,000" is a thousands separator.
+  const normalised = /^\d+,\d{1,2}$/.test(raw) ? raw.replace(',', '.') : raw.replace(/,/g, '');
+  const numeric = Number(normalised);
+  // Free-text ranges ("2,550 - 3,000") pass through untouched; plain numbers
+  // get thousands separators ("€4,000", "€308.80").
   const display = Number.isFinite(numeric)
-    ? numeric.toLocaleString('en-US', { maximumFractionDigits: 2 })
+    ? numeric.toLocaleString('en-US', Number.isInteger(numeric)
+      ? { maximumFractionDigits: 0 }
+      : { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     : amount;
   // "zł" conventionally follows the number.
   return code === 'PLN' ? `${display} ${symbol}` : `${symbol}${display}`;

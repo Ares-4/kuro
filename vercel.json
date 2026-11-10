@@ -2,46 +2,98 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "kuro-rose.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "kuro-rose.vercel.app"
+        }
+      ],
       "destination": "https://kuroeduconsultancy.com/:path*",
       "permanent": true
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "kuro-arszyne-2065s-projects.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "kuro-arszyne-2065s-projects.vercel.app"
+        }
+      ],
       "destination": "https://kuroeduconsultancy.com/:path*",
       "permanent": true
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "kuro-git-main-arszyne-2065s-projects.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "kuro-git-main-arszyne-2065s-projects.vercel.app"
+        }
+      ],
       "destination": "https://kuroeduconsultancy.com/:path*",
       "permanent": true
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.kuroeduconsultancy.com" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "www.kuroeduconsultancy.com"
+        }
+      ],
       "destination": "https://kuroeduconsultancy.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "destination": "/resources",
       "permanent": true
     }
   ],
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
-        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com" }
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com"
+        }
       ]
     }
   ],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "crons": [{ "path": "/api/redeploy", "schedule": "0 0 * * *" }]
+  "crons": [
+    {
+      "path": "/api/redeploy",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }
-

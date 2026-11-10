@@ -6,12 +6,33 @@ import AdSlot from '@/components/ads/AdSlot';
 
 const fadeUp = { hidden: { opacity: 0, y: 22 }, show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] } }) };
 
+// Ties the company and its founder together for search engines and AI assistants.
+const ABOUT_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  url: 'https://kuroeduconsultancy.com/about',
+  mainEntity: {
+    '@type': 'EducationalOrganization',
+    '@id': 'https://kuroeduconsultancy.com/#organization',
+    name: 'Kuro Educational Consultancy',
+    alternateName: ['Kuro Education Consultancy', 'Kuro Edu Consultancy', 'Kuro Education'],
+    url: 'https://kuroeduconsultancy.com',
+    founder: {
+      '@type': 'Person',
+      '@id': 'https://kuroeduconsultancy.com/#founder',
+      name: 'Ronald Kahoka',
+      jobTitle: 'Founder',
+      worksFor: { '@id': 'https://kuroeduconsultancy.com/#organization' },
+    },
+  },
+};
+
 const AboutPage = () => {
   const teamImage = "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80";
 
   return (
     <>
-      <SEO title="About Kuro Education Consultancy" description="Our mission is to guide international students through the study abroad journey with expert advice and support." />
+      <SEO title="About Kuro Education Consultancy" description="Kuro Educational Consultancy, founded by Ronald Kahoka and based in Harare, Zimbabwe, guides African students through studying abroad in Europe." schema={ABOUT_SCHEMA} />
       <div className="text-slate-50">
         <AdSlot page="/about" slot="top" className="max-w-4xl mx-auto px-4 pt-6" />
 
@@ -44,7 +65,7 @@ const AboutPage = () => {
               <span className="eyebrow">Background</span>
               <h2 className="font-display font-bold text-white" style={{ fontSize: 'var(--fs-3xl)', letterSpacing: '-0.03em' }}>Who we are</h2>
               <p className="text-slate-400 leading-relaxed">
-                Kuro Educational Consultancy is a premier education consulting firm headquartered in Harare, Zimbabwe. Founded with the vision of democratising access to international education, we specialise in placing students in top universities across Poland, Cyprus, Lithuania, and other European nations.
+                Kuro Educational Consultancy is a premier education consulting firm headquartered in Harare, Zimbabwe. It was founded by <strong className="text-white font-semibold">Ronald Kahoka</strong> with the vision of democratising access to international education, and we specialise in placing students in top universities across Poland, Cyprus, Lithuania, and other European nations.
               </p>
               <p className="text-slate-400 leading-relaxed">
                 We understand the unique challenges African students face — from complex visa procedures to finding affordable tuition. Our team of experienced consultants works tirelessly to simplify this process, ensuring a seamless transition from your home country to your dream campus.

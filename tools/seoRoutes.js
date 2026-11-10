@@ -11,7 +11,7 @@ export const SITE_ORIGIN = 'https://kuroeduconsultancy.com';
 export const STATIC_ROUTES = [
   '/', '/about', '/destinations', '/services', '/process', '/why-kuro',
   '/faqs', '/eligibility', '/readiness-check', '/intake-planner', '/resources', '/contact',
-  '/scholarships', '/universities', '/deadlines', '/privacy-policy', '/terms-of-service',
+  '/scholarships', '/universities', '/courses', '/deadlines', '/privacy-policy', '/terms-of-service',
 ];
 
 // Not prerendered, not in the sitemap, disallowed in robots.txt.

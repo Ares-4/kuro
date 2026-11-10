@@ -1,10 +1,41 @@
-## Pages
-- [- Kuro Educational](/blogdetail): No description available
-- [- Kuro Educational](/dynamic): No description available
-- [at  | Apply Now](/coursedetail): No description available
-- [Kuro Educational Consultancy - Study Abroad in Europe](/landing): Study in Europe with Kuro Educational Consultancy. Expert guidance for students from Southern Africa applying to Poland, Latvia, Lithuania, Germany, and Hungary.
-- [Login - Kuro Educational Consultancy](/login): Login to your Kuro Educational Consultancy student account
-- [Privacy Policy - Kuro Educational Consultancy](/privacypolicy): Privacy Policy for Kuro Educational Consultancy (Zimbabwe) including GDPR notice, GA4 analytics, and payment processing transparency.
-- [Sign Up - Kuro Educational Consultancy](/signup): Create your Kuro Educational Consultancy student account
-- [Student Portal — Kuro Education](/studentdashboard): No description available
-- [Terms of Service - Kuro Educational Consultancy](/termsofservice): Terms of Service for Kuro Educational Consultancy (Zimbabwe) including Basic/Premium readiness reports and payment terms.
+# Kuro Educational Consultancy
+
+> Kuro Educational Consultancy (also written Kuro Education Consultancy) is a study-abroad consultancy founded by Ronald Kahoka. Based in Harare, Zimbabwe, it helps students from Zimbabwe, South Africa, Botswana, Namibia, Zambia and the rest of Africa choose courses, apply to universities and get student visas, mainly for Poland, Germany, Hungary, Latvia, Lithuania, Austria, Cyprus and Malta, as well as the UK, USA, Canada and Australia.
+
+## Key facts
+
+- Name: Kuro Educational Consultancy (Kuro Education Consultancy, Kuro Edu Consultancy)
+- Founder: Ronald Kahoka
+- Headquarters: Harare, Zimbabwe
+- Website: https://kuroeduconsultancy.com
+- Services: course and university selection, application support, student visa guidance, scholarship and deadline information, a paid eligibility check with a PDF report, a readiness check, a 2027 intake planner and a student dashboard for tracking applications.
+- Partner universities in Poland: Vistula University, VIZJA University, WSEI University, UITM University and Akademia Tatrzańska.
+
+## Main pages
+
+- [Home](https://kuroeduconsultancy.com/): overview of services
+- [About](https://kuroeduconsultancy.com/about): who we are and our founder, Ronald Kahoka
+- [Destinations](https://kuroeduconsultancy.com/destinations): tuition, living costs and student visa details per country
+- [Courses](https://kuroeduconsultancy.com/courses): English-taught programmes with fees and requirements
+- [Universities](https://kuroeduconsultancy.com/universities): partner and listed universities
+- [Scholarships](https://kuroeduconsultancy.com/scholarships): open scholarships for international and African students
+- [Deadlines](https://kuroeduconsultancy.com/deadlines): upcoming university and scholarship deadlines
+- [2027 Intake Planner](https://kuroeduconsultancy.com/intake-planner): month-by-month plan for the 2027 intakes
+- [Eligibility check](https://kuroeduconsultancy.com/eligibility): paid assessment with a PDF report
+- [Readiness check](https://kuroeduconsultancy.com/readiness-check): self-assessment of documents, finances and timeline
+- [Blog](https://kuroeduconsultancy.com/resources): study-abroad guides
+- [Contact](https://kuroeduconsultancy.com/contact): talk to an advisor
+
+## Guides
+
+- [2027 intake timeline](https://kuroeduconsultancy.com/blog/study-abroad-2027-intake-timeline)
+- [Student visa fees 2026–27 compared](https://kuroeduconsultancy.com/blog/student-visa-fees-2026-2027-compared)
+- [Study in Poland from Southern Africa](https://kuroeduconsultancy.com/blog/study-in-poland-from-southern-africa-2027)
+- [Study in Germany guide](https://kuroeduconsultancy.com/blog/study-in-germany-complete-guide-for-international-students-2027)
+- [Scholarships for international students in Europe](https://kuroeduconsultancy.com/blog/scholarships-international-students-europe)
+- [Cost of living as a student in Europe](https://kuroeduconsultancy.com/blog/cost-of-living-student-europe-breakdown)
+
+## Optional
+
+- [Privacy policy](https://kuroeduconsultancy.com/privacy-policy)
+- [Terms of service](https://kuroeduconsultancy.com/terms-of-service)

@@ -62,6 +62,7 @@ const WelcomePage = lazyPage(() => import('@/pages/WelcomePage'));
 const AdminDashboard = lazyPage(() => import('@/pages/AdminDashboard'));
 const DynamicPage = lazyPage(() => import('@/pages/DynamicPage'));
 const CourseDetailPage = lazyPage(() => import('@/pages/CourseDetailPage'));
+const CoursesPage = lazyPage(() => import('@/pages/CoursesPage'));
 const ReadinessCheckPage = lazyPage(() => import('@/pages/ReadinessCheckPage'));
 const PaymentSuccess = lazyPage(() => import('@/pages/PaymentSuccess'));
 const PrivacyPolicy = lazyPage(() => import('@/pages/PrivacyPolicy'));
@@ -104,6 +105,7 @@ function App() {
                   <Route path="/why-kuro" element={<WhyKuroPage />} />
                   <Route path="/faqs" element={<FaqsPage />} />
                   <Route path="/eligibility" element={<EligibilityPage />} />
+                  <Route path="/courses" element={<CoursesPage />} />
                   <Route path="/courses/:id" element={<CourseDetailPage />} />
                   <Route path="/readiness-check" element={<ReadinessCheckPage />} />
                   <Route path="/intake-planner" element={<IntakePlannerPage />} />

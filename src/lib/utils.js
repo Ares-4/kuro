@@ -27,7 +27,14 @@ export function formatCurrency(amount, currencyCode) {
   const code = currencyCode ? currencyCode.toUpperCase() : 'USD';
   const symbol = symbols[code] || code;
   
-  return `${symbol}${amount}`;
+  const numeric = Number(String(amount).replace(/,/g, ''));
+  // Free-text amounts ("2,550 - 3,000") pass through untouched; plain numbers
+  // get thousands separators ("€4,000").
+  const display = Number.isFinite(numeric)
+    ? numeric.toLocaleString('en-US', { maximumFractionDigits: 2 })
+    : amount;
+  // "zł" conventionally follows the number.
+  return code === 'PLN' ? `${display} ${symbol}` : `${symbol}${display}`;
 }
 
 /**

@@ -139,8 +139,10 @@ async function waitUntilRendered(page, route, shellTitles) {
       { timeout: READY_TIMEOUT_MS },
     );
   }
-  // Let lists that load after the title (related items, etc.) settle briefly.
-  await page.waitForTimeout(400);
+  // Sections that load after the title (related courses, deadlines...) get a
+  // short, capped chance to finish so they land in the snapshot too.
+  await page.waitForLoadState('networkidle', { timeout: 3_000 }).catch(() => {});
+  await page.waitForTimeout(300);
 }
 
 async function prerenderRoute(browserHolder, route, shellTitles, attempt = 1) {

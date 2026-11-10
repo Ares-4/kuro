@@ -7,6 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Lock, Loader2, Fingerprint, CheckCircle, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
+// Only same-site admin paths; '//evil.com' or '/\evil.com' style values fall back.
+const safeAdminPath = (p) =>
+  typeof p === 'string' && p.startsWith('/admin') ? p : '/admin';
+
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +26,7 @@ const AdminLogin = () => {
   // If already logged in, redirect
   useEffect(() => {
     if (isAdminAuthenticated && !authLoading) {
-      const from = location.state?.from?.pathname || '/admin';
+      const from = safeAdminPath(location.state?.from?.pathname);
       navigate(from, { replace: true });
     }
   }, [isAdminAuthenticated, authLoading, navigate, location]);
@@ -45,7 +49,7 @@ const AdminLogin = () => {
       setSuccess(true);
       // Redirect handled by useEffect or explicit navigation after delay
       setTimeout(() => {
-        const from = location.state?.from?.pathname || '/admin';
+        const from = safeAdminPath(location.state?.from?.pathname);
         navigate(from, { replace: true });
       }, 1000); 
     } else {

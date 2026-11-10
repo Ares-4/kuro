@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { sizedImage } from '@/lib/imageUtils';
 import { supabase } from '@/lib/customSupabaseClient';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -87,7 +88,7 @@ const ResourcesPage = () => {
                     <Card className="bg-slate-900 border-slate-800 h-full hover:border-primary/50 transition-colors overflow-hidden flex flex-col">
                       <div className="h-48 overflow-hidden bg-slate-800">
                         {post.featured_image ? (
-                          <img src={post.featured_image} alt={post.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={sizedImage(post.featured_image, 640)} alt={post.title} loading="lazy" decoding="async" width={640} height={360} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-slate-600 bg-slate-800">
                             <BookOpen className="w-12 h-12" />

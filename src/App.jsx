@@ -10,7 +10,18 @@ import ProtectedAdminRoute from '@/components/ProtectedAdminRoute';
 import { Toaster } from '@/components/ui/toaster';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import KuroChatWidget from '@/components/chat/KuroChatWidget';
+// Chat assistant is not needed for first paint: load it shortly after the page.
+const KuroChatWidget = React.lazy(() => import('@/components/chat/KuroChatWidget'));
+const DeferredChatWidget = () => {
+  const [ready, setReady] = React.useState(false);
+  React.useEffect(() => {
+    let timer;
+    const start = () => { timer = setTimeout(() => setReady(true), 3000); };
+    if (document.readyState === 'complete') start(); else window.addEventListener('load', start, { once: true });
+    return () => { clearTimeout(timer); window.removeEventListener('load', start); };
+  }, []);
+  return ready ? <React.Suspense fallback={null}><KuroChatWidget /></React.Suspense> : null;
+};
 import Layout from '@/components/Layout';
 import ConsentBanner from '@/components/ConsentBanner';
 import { applyStoredConsent } from '@/utils/consent';
@@ -20,8 +31,20 @@ import { applyStoredConsent } from '@/utils/consent';
 // Route-level code splitting. After a deploy, a tab opened on the old build
 // asks for chunk files that no longer exist, so reload once to pick up the new
 // build instead of showing the error boundary.
-const lazyPage = (factory) =>
-  React.lazy(() =>
+// The import promise is memoised so preload() (see preloadRoute) and
+// React.lazy share one download.
+const lazyPage = (factory) => {
+  let promise;
+  const load = () => {
+    if (!promise) promise = loadChunk(factory);
+    return promise;
+  };
+  const Component = React.lazy(load);
+  Component.preload = load;
+  return Component;
+};
+
+const loadChunk = (factory) =>
     factory()
       .then((mod) => {
         try { sessionStorage.removeItem('kuro_chunk_reload'); } catch { /* storage blocked */ }
@@ -38,8 +61,7 @@ const lazyPage = (factory) =>
           return new Promise(() => {});
         }
         throw error;
-      })
-  );
+      });
 
 import HomePage from '@/pages/HomePage';
 const AdminLogin = lazyPage(() => import('@/pages/AdminLogin'));
@@ -74,6 +96,41 @@ const UniversityDetailPage = lazyPage(() => import('@/pages/UniversityDetailPage
 const DeadlinesPage = lazyPage(() => import('@/pages/DeadlinesPage'));
 const IntakePlannerPage = lazyPage(() => import('@/pages/IntakePlannerPage'));
 const NotFoundPage = lazyPage(() => import('@/pages/NotFoundPage'));
+
+// main.jsx downloads the current URL's page chunk before mounting React, so
+// the prerendered HTML is replaced straight by the real page instead of a
+// spinner followed by the page (the main cause of slow LCP on mobile).
+const PRELOAD_ROUTES = [
+  [/^\/about$/, AboutPage],
+  [/^\/destinations$/, DestinationsPage],
+  [/^\/destinations\/[^/]+$/, DestinationResolver],
+  [/^\/services$/, ServicesPage],
+  [/^\/process$/, ProcessPage],
+  [/^\/why-kuro$/, WhyKuroPage],
+  [/^\/faqs$/, FaqsPage],
+  [/^\/eligibility$/, EligibilityPage],
+  [/^\/courses$/, CoursesPage],
+  [/^\/courses\/[^/]+$/, CourseDetailPage],
+  [/^\/readiness-check$/, ReadinessCheckPage],
+  [/^\/intake-planner$/, IntakePlannerPage],
+  [/^\/resources$/, ResourcesPage],
+  [/^\/blog\/[^/]+$/, BlogDetailPage],
+  [/^\/contact$/, ContactPage],
+  [/^\/page\/[^/]+$/, DynamicPage],
+  [/^\/privacy-policy$/, PrivacyPolicy],
+  [/^\/terms-of-service$/, TermsOfService],
+  [/^\/scholarships$/, ScholarshipsPage],
+  [/^\/scholarships\/[^/]+$/, ScholarshipDetailPage],
+  [/^\/universities$/, UniversitiesPage],
+  [/^\/universities\/[^/]+$/, UniversityDetailPage],
+  [/^\/deadlines$/, DeadlinesPage],
+];
+
+export const preloadRoute = (pathname) => {
+  const path = (pathname || '/').replace(/\/+$/, '') || '/';
+  const match = PRELOAD_ROUTES.find(([pattern]) => pattern.test(path));
+  return match ? match[1].preload() : Promise.resolve();
+};
 
 const PageLoader = () => (
   <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -156,7 +213,7 @@ function App() {
 
               </Routes>
             </React.Suspense>
-            <KuroChatWidget />
+            <DeferredChatWidget />
             <Toaster />
           </ReadinessProvider>
         </SystemSettingsProvider>

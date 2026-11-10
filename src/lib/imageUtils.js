@@ -1,24 +1,24 @@
 // Utility functions for handling image fallbacks and country-specific assets
 
-export const DEFAULT_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80';
+export const DEFAULT_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=70&auto=format&fit=crop';
 
 // SINGLE SOURCE OF TRUTH - Proven Unsplash URLs that are guaranteed to load
 // Updated with high-quality destination images
 const COUNTRY_IMAGES = {
-  'Canada': 'https://images.unsplash.com/photo-1673528799737-a33ecdd07788?w=800&q=80', // Ottawa Parliament Hill
-  'UK': 'https://images.unsplash.com/photo-1694934985423-9fe08c27bb56?w=800&q=80', // London dusk cityscape
-  'Austria': 'https://images.unsplash.com/photo-1691425791089-fc00f4994b6b?w=800&q=80', // Salzburg alpine city
-  'Australia': 'https://images.unsplash.com/photo-1695296757535-90a3b225a53c?w=800&q=80', // Sydney Opera House
-  'USA': 'https://images.unsplash.com/photo-1696874152733-9023012cb6b1?w=800&q=80', // Chicago skyline
-  'Poland': 'https://images.unsplash.com/photo-1685687839153-213cfb9348f0?w=800&q=80', // Warsaw cityscape
-  'Hungary': 'https://images.unsplash.com/photo-1691425791089-fc00f4994b6b?w=800&q=80', // Salzburg as fallback per request
+  'Canada': 'https://images.unsplash.com/photo-1673528799737-a33ecdd07788?w=800&q=70&auto=format&fit=crop', // Ottawa Parliament Hill
+  'UK': 'https://images.unsplash.com/photo-1694934985423-9fe08c27bb56?w=800&q=70&auto=format&fit=crop', // London dusk cityscape
+  'Austria': 'https://images.unsplash.com/photo-1691425791089-fc00f4994b6b?w=800&q=70&auto=format&fit=crop', // Salzburg alpine city
+  'Australia': 'https://images.unsplash.com/photo-1695296757535-90a3b225a53c?w=800&q=70&auto=format&fit=crop', // Sydney Opera House
+  'USA': 'https://images.unsplash.com/photo-1696874152733-9023012cb6b1?w=800&q=70&auto=format&fit=crop', // Chicago skyline
+  'Poland': 'https://images.unsplash.com/photo-1685687839153-213cfb9348f0?w=800&q=70&auto=format&fit=crop', // Warsaw cityscape
+  'Hungary': 'https://images.unsplash.com/photo-1691425791089-fc00f4994b6b?w=800&q=70&auto=format&fit=crop', // Salzburg as fallback per request
   
   // Previous mappings kept for compatibility
-  'Germany': 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80',
-  'Lithuania': 'https://images.unsplash.com/photo-1654122675531-978945505186?w=800&q=80', // Vilnius aerial cityscape
-  'Latvia': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
-  'Malta': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
-  'Cyprus': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+  'Germany': 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=70&auto=format&fit=crop',
+  'Lithuania': 'https://images.unsplash.com/photo-1654122675531-978945505186?w=800&q=70&auto=format&fit=crop', // Vilnius aerial cityscape
+  'Latvia': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=70&auto=format&fit=crop',
+  'Malta': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=70&auto=format&fit=crop',
+  'Cyprus': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=70&auto=format&fit=crop',
 };
 
 const COUNTRY_COLORS = {
@@ -86,4 +86,26 @@ export const getCountryGradient = (countryName) => {
  */
 export const getCountryEmoji = (countryName) => {
   return COUNTRY_EMOJIS[countryName] || '🌍';
+};
+/**
+ * Returns a right-sized version of an image URL. Unsplash originals can be
+ * several MB (a blog hero was 3 MB), so request the display width, modern
+ * formats (auto=format gives WebP/AVIF) and moderate quality. Other hosts are
+ * returned unchanged.
+ * @param {string} url
+ * @param {number} width - target display width in CSS pixels
+ */
+export const sizedImage = (url, width = 1200) => {
+  if (!url || typeof url !== 'string') return url;
+  try {
+    const u = new URL(url);
+    if (u.hostname !== 'images.unsplash.com') return url;
+    u.searchParams.set('w', String(width));
+    u.searchParams.set('q', '70');
+    u.searchParams.set('auto', 'format');
+    u.searchParams.set('fit', 'crop');
+    return u.toString();
+  } catch {
+    return url;
+  }
 };

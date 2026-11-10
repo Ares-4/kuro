@@ -13,7 +13,10 @@
 		<!-- Kuro 22c Fonts: Space Grotesk (display) + Inter (body) + JetBrains Mono -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+		<!-- Non-blocking: text renders in the fallback font first, then swaps. -->
+		<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+		<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+		<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 		
 		<!-- Favicons -->
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -41,22 +44,31 @@
 		<meta property="twitter:description" content="Expert guidance for students in Zimbabwe and Africa to study abroad in Poland, Germany, and Cyprus. We simplify the admission and visa process." />
 		<meta property="twitter:image" content="https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/17af830489377c0bbddafc566e44e4f2.png" />
 
-		<!-- Trustpilot -->
-		<script type="text/javascript" src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
-		
-		<!-- Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-XWHNTFSP8W"></script>
+		<!-- Google Analytics (Consent Mode v2) + Trustpilot widget.
+		     Consent defaults are set BEFORE config, from the visitor's saved banner
+		     choice (denied until they accept). Both third-party scripts load after
+		     the page has finished loading so they don't slow the first render. -->
 		<script>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', 'G-XWHNTFSP8W');
-		</script>
-		<script>
-			(function(w,d,s,r,n){w.TrustpilotObject=n;w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)};
-			a=d.createElement(s);a.async=1;a.src=r;a.type='text/java'+s;f=d.getElementsByTagName(s)[0];
-			f.parentNode.insertBefore(a,f)})(window,document,'script', 'https://invitejs.trustpilot.com/tp.min.js', 'tp');
-			tp('register', 'Yfg6BUz54hcI2MsE');
+			(function () {
+				var choice = null;
+				try { choice = localStorage.getItem('kuro_consent_choice'); } catch (e) {}
+				var state = choice === 'accepted' ? 'granted' : 'denied';
+				gtag('consent', 'default', {
+					ad_storage: state, ad_user_data: state, ad_personalization: state, analytics_storage: state,
+					wait_for_update: 500
+				});
+				gtag('js', new Date());
+				gtag('config', 'G-XWHNTFSP8W');
+				function load(src) { var s = document.createElement('script'); s.async = true; s.src = src; document.head.appendChild(s); }
+				window.addEventListener('load', function () {
+					setTimeout(function () {
+						load('https://www.googletagmanager.com/gtag/js?id=G-XWHNTFSP8W');
+						load('https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js');
+					}, 2500);
+				});
+			})();
 		</script>
 	</head>
 	<body>

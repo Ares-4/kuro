@@ -28,18 +28,9 @@ export const applyConsent = (choice) => {
 };
 
 export const applyStoredConsent = () => {
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { window.dataLayer.push(arguments); }
-  
-  // Set default state before update
-  gtag('consent', 'default', {
-    'ad_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied',
-    'analytics_storage': 'denied',
-    'wait_for_update': 500
-  });
-
+  // The consent 'default' is set inline in index.html before gtag('config'),
+  // so the first hit already respects the visitor's choice. Here we only
+  // re-apply a stored choice as an update.
   const storedChoice = getStoredConsent();
   if (storedChoice) {
     applyConsent(storedChoice);

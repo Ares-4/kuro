@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { sizedImage } from '@/lib/imageUtils';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { supabase } from '@/lib/customSupabaseClient';
@@ -115,9 +116,13 @@ const BlogDetailPage = () => {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
             <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl bg-slate-900 border border-slate-800">
               <img 
-                src={post.featured_image} 
+                src={sizedImage(post.featured_image, 1200)} 
                 alt={post.title} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover" 
+                fetchPriority="high" 
+                decoding="async" 
+                width={1200} 
+                height={675}
               />
             </div>
           </div>

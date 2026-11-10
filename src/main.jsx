@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import App from './App';
+import App, { preloadRoute } from './App';
 import './index.css';
 
 import { PublicSiteSettingsProvider } from '@/contexts/PublicSiteSettingsContext';
@@ -44,6 +44,10 @@ const Root = () => {
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <Root />
-);
+// Fetch this URL's page chunk first (capped at 3s) so React replaces the
+// prerendered HTML directly with the page, not with a loading spinner.
+const mount = () => ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
+Promise.race([
+  preloadRoute(window.location.pathname).catch(() => {}),
+  new Promise((resolve) => setTimeout(resolve, 3000)),
+]).finally(mount);

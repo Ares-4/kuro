@@ -104,7 +104,7 @@ const HomePage = ({ contentOverride }) => {
     "@context": "https://schema.org", "@type": "EducationalOrganization",
     "@id": "https://kuroeduconsultancy.com/#organization",
     "name": "Kuro Educational Consultancy", "url": "https://kuroeduconsultancy.com",
-    "founder": { "@type": "Person", "@id": "https://kuroeduconsultancy.com/#founder", "name": "Ronald Kahoka" },
+    "founder": { "@type": "Person", "@id": "https://kuroeduconsultancy.com/#founder", "name": "Ronald Kahoka", "sameAs": ["https://www.linkedin.com/in/ronald-kahoka-946178192/"] },
     "contactPoint": { "@type": "ContactPoint", "telephone": "+48783042776", "contactType": "customer service" },
   };
 

@@ -22,6 +22,7 @@ const ABOUT_SCHEMA = {
       '@id': 'https://kuroeduconsultancy.com/#founder',
       name: 'Ronald Kahoka',
       jobTitle: 'Founder',
+      sameAs: ['https://www.linkedin.com/in/ronald-kahoka-946178192/'],
       worksFor: { '@id': 'https://kuroeduconsultancy.com/#organization' },
     },
   },
@@ -65,7 +66,7 @@ const AboutPage = () => {
               <span className="eyebrow">Background</span>
               <h2 className="font-display font-bold text-white" style={{ fontSize: 'var(--fs-3xl)', letterSpacing: '-0.03em' }}>Who we are</h2>
               <p className="text-slate-400 leading-relaxed">
-                Kuro Educational Consultancy is a premier education consulting firm headquartered in Harare, Zimbabwe. It was founded by <strong className="text-white font-semibold">Ronald Kahoka</strong> with the vision of democratising access to international education, and we specialise in placing students in top universities across Poland, Cyprus, Lithuania, and other European nations.
+                Kuro Educational Consultancy is a premier education consulting firm headquartered in Harare, Zimbabwe. It was founded by <a href="https://www.linkedin.com/in/ronald-kahoka-946178192/" target="_blank" rel="noopener noreferrer" className="text-white font-semibold hover:text-blue-300 underline-offset-4 hover:underline">Ronald Kahoka</a> with the vision of democratising access to international education, and we specialise in placing students in top universities across Poland, Cyprus, Lithuania, and other European nations.
               </p>
               <p className="text-slate-400 leading-relaxed">
                 We understand the unique challenges African students face — from complex visa procedures to finding affordable tuition. Our team of experienced consultants works tirelessly to simplify this process, ensuring a seamless transition from your home country to your dream campus.

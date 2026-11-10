@@ -30,7 +30,7 @@ const ConsentBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="consent-banner-overlay" role="dialog" aria-live="polite">
+    <div className="consent-banner-overlay" role="dialog" aria-live="polite" aria-label="Cookie preferences">
       <div className="consent-banner-text">
         <p>
           We use cookies and similar technologies to personalize content, tailor and measure ads, 

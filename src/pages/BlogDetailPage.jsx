@@ -83,7 +83,7 @@ const BlogDetailPage = () => {
           <div className="space-y-4 mb-8">
             <div className="flex flex-wrap gap-2">
               {post.categories?.map((cat, idx) => (
-                <Badge key={idx} variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
+                <Badge key={idx} variant="secondary" className="bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 border-0">
                   {cat}
                 </Badge>
               ))}
@@ -131,13 +131,13 @@ const BlogDetailPage = () => {
         {/* Content */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div 
-            className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-slate-300 prose-a:text-primary prose-strong:text-white prose-blockquote:border-l-primary prose-blockquote:bg-slate-900/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-img:rounded-lg prose-th:text-white prose-td:text-slate-300 [&_table]:block [&_table]:overflow-x-auto [&_table]:whitespace-normal"
+            className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-slate-300 prose-a:text-blue-400 hover:prose-a:text-blue-300 prose-strong:text-white prose-blockquote:border-l-primary prose-blockquote:bg-slate-900/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-img:rounded-lg prose-th:text-white prose-td:text-slate-300 [&_table]:block [&_table]:overflow-x-auto [&_table]:whitespace-normal"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content || '', { ADD_ATTR: ['target', 'rel'] }) }}
           />
           
           {/* Footer of Article */}
           <div className="mt-12 pt-8 border-t border-slate-800 flex justify-between items-center">
-             <div className="text-slate-500 text-sm">
+             <div className="text-slate-400 text-sm">
                Tags: {post.tags && post.tags.length > 0 ? post.tags.join(', ') : 'None'}
              </div>
              <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">

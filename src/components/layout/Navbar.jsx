@@ -135,7 +135,7 @@ const Navbar = () => {
 
             {/* Mobile actions */}
             <div className="xl:hidden flex items-center gap-2">
-              <button onClick={() => setIsSearchOpen(true)} className="p-2 text-slate-400 hover:text-white rounded-md transition-colors">
+              <button onClick={() => setIsSearchOpen(true)} className="p-2 text-slate-400 hover:text-white rounded-md transition-colors" aria-label="Search">
                 <Search className="w-5 h-5" />
               </button>
               <button

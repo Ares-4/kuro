@@ -24,7 +24,7 @@ const durationPhrase = (duration) => {
 
 const InfoTile =({ icon: Icon, label, value }) => (
   <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-4">
-    <p className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-500"><Icon className="w-4 h-4 text-blue-400" />{label}</p>
+    <p className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-400"><Icon className="w-4 h-4 text-blue-400" />{label}</p>
     <p className="mt-1.5 text-slate-200">{value}</p>
   </div>
 );
@@ -256,7 +256,7 @@ const CourseDetailPage = () => {
                         </div>
                      )}
                      <div className="absolute top-4 right-4">
-                        <Badge className="bg-blue-600 hover:bg-blue-700 text-lg px-4 py-1">{course.degree_level}</Badge>
+                        <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-4 py-1">{course.degree_level}</Badge>
                      </div>
                   </div>
                   
@@ -316,7 +316,7 @@ const CourseDetailPage = () => {
                               {related.deadlines.map((d) => (
                                  <li key={d.id} className="text-sm">
                                     <p className="text-slate-200">{d.university_name}{d.program_name ? ` – ${d.program_name}` : ''}</p>
-                                    <p className="text-slate-500">{formatDay(d.deadline_date)}{d.intake_season ? ` · ${d.intake_season} ${d.intake_year || ''}` : ''}</p>
+                                    <p className="text-slate-400">{formatDay(d.deadline_date)}{d.intake_season ? ` · ${d.intake_season} ${d.intake_year || ''}` : ''}</p>
                                  </li>
                               ))}
                            </ul>
@@ -330,7 +330,7 @@ const CourseDetailPage = () => {
                               {related.scholarships.map((sch) => (
                                  <li key={sch.id} className="text-sm">
                                     <Link to={`/scholarships/${sch.id}`} className="text-slate-200 hover:text-blue-400">{sch.title}</Link>
-                                    <p className="text-slate-500">{sch.amount ? `${sch.amount} · ` : ''}Deadline {sch.deadline ? formatDay(sch.deadline) : 'rolling'}</p>
+                                    <p className="text-slate-400">{sch.amount ? `${sch.amount} · ` : ''}Deadline {sch.deadline ? formatDay(sch.deadline) : 'rolling'}</p>
                                  </li>
                               ))}
                            </ul>
@@ -347,7 +347,7 @@ const CourseDetailPage = () => {
                         {related.siblings.map((p) => (
                            <Link key={p.id} to={`/courses/${p.id}`} className="rounded-xl border border-slate-800 bg-slate-950/50 p-4 hover:border-blue-500/40 transition-colors">
                               <p className="text-slate-200 font-medium">{p.program_name}</p>
-                              <p className="text-slate-500 text-sm mt-1">{p.degree_level}{p.tuition_fee ? ` · ${formatCurrency(p.tuition_fee, p.currency)}/year` : ''}</p>
+                              <p className="text-slate-400 text-sm mt-1">{p.degree_level}{p.tuition_fee ? ` · ${formatCurrency(p.tuition_fee, p.currency)}/year` : ''}</p>
                            </Link>
                         ))}
                      </div>
@@ -380,7 +380,7 @@ const CourseDetailPage = () => {
                            <div className="text-3xl font-bold text-white mt-1">
                              {formatCurrency(course.tuition_fee, course.currency)}
                            </div>
-                           <span className="text-slate-500 text-sm">per academic year</span>
+                           <span className="text-slate-400 text-sm">per academic year</span>
                         </div>
 
                         <Button 

@@ -440,14 +440,14 @@ const HomePage = ({ contentOverride }) => {
 
         {/* ── Partners marquee ── */}
         <section className="py-12 border-t border-white/5 overflow-hidden">
-          <p className="text-center font-mono text-slate-500 font-semibold tracking-[0.18em] uppercase mb-8" style={{ fontSize: 'var(--fs-xs)' }}>
+          <p className="text-center font-mono text-slate-400 font-semibold tracking-[0.18em] uppercase mb-8" style={{ fontSize: 'var(--fs-xs)' }}>
             Trusted by top institutions
           </p>
           <div className="marquee">
             <div className="marquee-track">
               {[...Array(2)].map((_, pass) =>
                 ['University of Warsaw', 'Melbourne University', 'University of Toronto', 'TU Berlin', 'New York University', 'London Metropolitan', 'University of Vienna', 'Wrocław University', 'McGill University', 'University of Sydney'].map((uni, i) => (
-                  <span key={`${pass}-${i}`} className="text-slate-500 hover:text-slate-300 transition-colors font-semibold text-sm shrink-0">{uni}</span>
+                  <span key={`${pass}-${i}`} className="text-slate-400 hover:text-slate-200 transition-colors font-semibold text-sm shrink-0">{uni}</span>
                 ))
               )}
             </div>

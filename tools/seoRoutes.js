@@ -17,7 +17,7 @@ export const STATIC_ROUTES = [
 // Not prerendered, not in the sitemap, disallowed in robots.txt.
 export const EXCLUDED_PREFIXES = [
   '/admin', '/dashboard', '/login', '/signup', '/forgot-password',
-  '/admin-login', '/payment-success',
+  '/admin-login', '/payment-success', '/welcome',
 ];
 
 export async function getRoutes() {

@@ -17,6 +17,7 @@ import AdminBuilder from '@/components/admin/AdminBuilder';
 import AdminSettings from '@/components/admin/AdminSettings';
 import AdminContentManager from '@/components/admin/content/AdminContentManager';
 import AdminNotices from '@/components/admin/AdminNotices';
+import AdminNotifications from '@/components/admin/AdminNotifications';
 import PromoManager from '@/components/admin/PromoManager';
 import PromoPlacementEditor from '@/components/admin/PromoPlacementEditor';
 import PromoDiagnostics from '@/components/admin/PromoDiagnostics';
@@ -74,6 +75,7 @@ const AdminDashboard = () => {
             <Routes>
               <Route path="/"                       element={<Navigate to="/admin/applications" replace />} />
               <Route path="/overview"               element={<AdminOverview />} />
+              <Route path="/notifications"          element={<AdminNotifications />} />
               <Route path="/applications"           element={<AdminApplications />} />
               <Route path="/leads"                  element={<AdminLeads />} />
               <Route path="/applicants"             element={<AdminApplicants />} />

@@ -58,6 +58,7 @@ const LoginPage = lazyPage(() => import('@/pages/LoginPage'));
 const SignupPage = lazyPage(() => import('@/pages/SignupPage'));
 const ForgotPasswordPage = lazyPage(() => import('@/pages/ForgotPasswordPage'));
 const StudentDashboard = lazyPage(() => import('@/pages/StudentDashboard'));
+const WelcomePage = lazyPage(() => import('@/pages/WelcomePage'));
 const AdminDashboard = lazyPage(() => import('@/pages/AdminDashboard'));
 const DynamicPage = lazyPage(() => import('@/pages/DynamicPage'));
 const CourseDetailPage = lazyPage(() => import('@/pages/CourseDetailPage'));
@@ -129,11 +130,13 @@ function App() {
                 {/* Admin Login Route */}
                 <Route path="/admin-login" element={<AdminLogin />} />
 
+                <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
+
                 {/* Student App */}
                 <Route
                   path="/dashboard/*"
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute requireProfile>
                       <StudentDashboard />
                     </ProtectedRoute>
                   }

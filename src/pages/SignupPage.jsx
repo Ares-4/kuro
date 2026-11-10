@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { GraduationCap, Mail, Lock, User, Phone, MapPin, ArrowLeft, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { notifyAdminOfLead } from '@/lib/pushNotifications';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 const SignupPage = () => {
@@ -77,8 +76,7 @@ const SignupPage = () => {
           country: formData.country
         });
       }
-
-      notifyAdminOfLead('New student signup', `${formData.fullName} (${formData.email}) created an account.`, '/admin/applications');
+      // Admin alert comes from the on_auth_user_created_notify_admin DB trigger.
       toast({
         title: "Check your email",
         description: "Enter the 6-digit code we sent you to confirm your account.",

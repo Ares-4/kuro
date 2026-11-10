@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -6,14 +6,34 @@ import {
   BookOpen, Globe, Edit3, Megaphone, LayoutTemplate, Activity,
   Settings, LogOut, X, ChevronDown, BarChart3, LayoutDashboard,
   Navigation, Plane, BrainCircuit, Radio, CalendarClock,
-  HelpCircle, Image, Mail, MessageSquare, TrendingUp, UserPlus,
+  HelpCircle, Inbox, Image, Mail, MessageSquare, TrendingUp, UserPlus,
 } from 'lucide-react';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
+import { supabase } from '@/lib/customSupabaseClient';
+import { UNREAD_EVENT } from '@/components/admin/AdminNotifications';
+
+// Unread admin_notifications count for the sidebar badge (polled + refreshed on mark-read).
+function useUnreadNotifications() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      const { count: c } = await supabase.from('admin_notifications').select('id', { count: 'exact', head: true }).eq('is_read', false);
+      if (alive) setCount(c || 0);
+    };
+    load();
+    const t = setInterval(load, 60_000);
+    window.addEventListener(UNREAD_EVENT, load);
+    return () => { alive = false; clearInterval(t); window.removeEventListener(UNREAD_EVENT, load); };
+  }, []);
+  return count;
+}
 
 const NAV_GROUPS = [
   {
     label: 'Operations',
     items: [
+      { label: 'Notifications', icon: Inbox, path: '/admin/notifications', badge: 'unread' },
       { label: 'Applications', icon: FileText, path: '/admin/applications' },
       { label: 'Applicants', icon: UserPlus, path: '/admin/applicants' },
       { label: 'Leads', icon: Users, path: '/admin/leads' },
@@ -66,7 +86,7 @@ const NAV_GROUPS = [
   },
 ];
 
-function NavGroup({ group, defaultOpen = true }) {
+function NavGroup({ group, defaultOpen = true, unread = 0 }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
@@ -105,6 +125,11 @@ function NavGroup({ group, defaultOpen = true }) {
                     <>
                       <item.icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-primary' : 'text-slate-500 group-hover:text-slate-300'}`} />
                       <span>{item.label}</span>
+                      {item.badge === 'unread' && unread > 0 && (
+                        <span className="ml-auto min-w-[1.25rem] h-5 px-1.5 rounded-full bg-blue-600 text-white text-[11px] font-semibold flex items-center justify-center">
+                          {unread > 99 ? '99+' : unread}
+                        </span>
+                      )}
                     </>
                   )}
                 </NavLink>
@@ -119,6 +144,7 @@ function NavGroup({ group, defaultOpen = true }) {
 
 const SidebarContent = ({ onClose, isMobile }) => {
   const { logoutAdmin } = useAdminAuth();
+  const unread = useUnreadNotifications();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -149,7 +175,7 @@ const SidebarContent = ({ onClose, isMobile }) => {
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0">
         {NAV_GROUPS.map((group) => (
-          <NavGroup key={group.label} group={group} defaultOpen={['Operations', 'Catalog'].includes(group.label)} />
+          <NavGroup key={group.label} group={group} unread={unread} defaultOpen={['Operations', 'Catalog'].includes(group.label)} />
         ))}
       </nav>
 

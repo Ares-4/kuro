@@ -44,7 +44,21 @@ const CONCURRENCY = 1;
 // Hard limits so a wedged headless browser can never hang the deploy:
 // page.goto() has its own timeout, but newContext()/content()/launch() do not.
 const ROUTE_TIMEOUT_MS = 40_000;
-const TOTAL_BUDGET_MS = 8 * 60_000; // after this, stop prerendering and ship what we have
+// Vercel's build cap is 45 min; the vite build + SEO steps need only ~2 min.
+const TOTAL_BUDGET_MS = 25 * 60_000; // after this, stop prerendering and ship what we have
+// How long to wait for a page to render its own <title> (data loaded).
+const READY_TIMEOUT_MS = 12_000;
+
+// Highest-value pages first, so a slow build that hits the budget still ships
+// the pages that matter most for search. Course pages are the long tail.
+const PRIORITY = ['', 'destinations', 'scholarships', 'universities', 'blog', 'page', 'courses'];
+const priorityOf = (routePath) => {
+  const first = routePath.split('/')[1] || '';
+  const isStatic = routePath.split('/').length <= 2;
+  if (isStatic) return 0;
+  const idx = PRIORITY.indexOf(first);
+  return idx === -1 ? PRIORITY.length : idx;
+};
 
 const withTimeout = (promise, ms, label) =>
   Promise.race([
@@ -89,38 +103,72 @@ function startServer() {
   });
 }
 
-// browserHolder is a mutable { current } box, not a raw browser reference —
-// if the browser process itself dies mid-run (as sparticuz's chromium did
-// under concurrency on Vercel's build container), we relaunch it in place
-// so the rest of the routes still get prerendered instead of the one crash
-// taking down the whole build (and, before this fix, the whole process:
-// newContext() used to be called outside the try/catch here).
-async function prerenderRoute(browserHolder, route, attempt = 1) {
-  let context;
+// browserHolder is a mutable { current, page } box, not a raw browser reference —
+// if the browser process dies mid-run (sparticuz's single-process chromium does
+// on Vercel's build container), we relaunch it in place so the remaining
+// routes still get prerendered instead of one crash taking down the build.
+//
+// One context + page is reused for every route: creating a fresh context per
+// route was the main per-route cost on Vercel's slow serverless Chromium.
+async function openPage(browserHolder) {
+  const context = await withTimeout(browserHolder.current.newContext(), 15_000, 'newContext');
+  await blockNonEssentialRequests(context);
+  browserHolder.context = context;
+  browserHolder.page = await context.newPage();
+}
+
+async function relaunch(browserHolder, reason) {
+  console.warn(`browser unhealthy, relaunching: ${reason}`);
+  browserHolder.current.close().catch(() => {});
+  browserHolder.current = await withTimeout(launchBrowser(), 30_000, 'launchBrowser');
+  browserHolder.all.push(browserHolder.current);
+  await openPage(browserHolder);
+}
+
+// Every page sets its own <title> via react-helmet once its data has loaded,
+// so "title is no longer the shell's" is a reliable, fast ready signal. This
+// replaces waitUntil:'networkidle', which on Vercel often burned its full
+// timeout per route waiting on long-lived connections.
+async function waitUntilRendered(page, route, shellTitles) {
+  if (route.path === '/') {
+    await page.waitForFunction(() => document.querySelector('#root')?.children.length > 0, null, { timeout: READY_TIMEOUT_MS });
+  } else {
+    await page.waitForFunction(
+      (titles) => document.title && !titles.includes(document.title),
+      shellTitles,
+      { timeout: READY_TIMEOUT_MS },
+    );
+  }
+  // Let lists that load after the title (related items, etc.) settle briefly.
+  await page.waitForTimeout(400);
+}
+
+async function prerenderRoute(browserHolder, route, shellTitles, attempt = 1) {
   try {
-    context = await withTimeout(browserHolder.current.newContext(), 15_000, 'newContext');
-    await blockNonEssentialRequests(context);
-    const page = await context.newPage();
-    await page.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'networkidle', timeout: 15000 });
+    if (!browserHolder.page || browserHolder.page.isClosed()) await openPage(browserHolder);
+    const { page } = browserHolder;
+    await page.goto(`http://localhost:${PORT}${route.path}`, { waitUntil: 'domcontentloaded', timeout: 20_000 });
+    await waitUntilRendered(page, route, shellTitles);
     const html = await withTimeout(page.content(), 10_000, 'page.content');
 
     const outDir = route.path === '/' ? DIST_DIR : path.join(DIST_DIR, route.path);
     fs.mkdirSync(outDir, { recursive: true });
     fs.writeFileSync(path.join(outDir, 'index.html'), html, 'utf8');
+    if (route.path === '/') {
+      // Every later route boots from this prerendered home shell, so its title
+      // is the one to wait past.
+      const homeTitle = (html.match(/<title[^>]*>([^<]*)<\/title>/) || [])[1];
+      if (homeTitle) shellTitles.push(homeTitle.replace(/&amp;/g, '&'));
+    }
     console.log(`prerendered ${route.path}`);
   } catch (error) {
-    if (context) await context.close().catch(() => {});
-    if (!browserHolder.current.isConnected() || /timed out/.test(error.message)) {
-      console.warn(`browser unhealthy, relaunching (was processing ${route.path}): ${error.message}`);
-      browserHolder.current.close().catch(() => {});
-      browserHolder.current = await withTimeout(launchBrowser(), 30_000, 'launchBrowser');
-      browserHolder.all.push(browserHolder.current);
+    const crashed = !browserHolder.current.isConnected() || /timed out|Target closed|has been closed/.test(error.message);
+    if (crashed) {
+      try { await relaunch(browserHolder, `${route.path}: ${error.message}`); } catch (e) { console.warn(`relaunch failed: ${e.message}`); }
     }
-    if (attempt < 2) return prerenderRoute(browserHolder, route, attempt + 1);
-    console.warn(`skipped ${route.path}: ${error.message}`);
-    return;
+    if (attempt < 2) return prerenderRoute(browserHolder, route, shellTitles, attempt + 1);
+    console.warn(`skipped ${route.path}: ${error.message.split('\n')[0]}`);
   }
-  await context.close().catch(() => {});
 }
 
 async function runPool(items, size, worker, deadline) {
@@ -145,8 +193,18 @@ async function main() {
     process.exit(1);
   }
 
-  const routes = await getRoutes();
+  const routes = (await getRoutes())
+    .map((route, index) => ({ route, index }))
+    .sort((a, b) => priorityOf(a.route.path) - priorityOf(b.route.path) || a.index - b.index)
+    .map(({ route }) => route);
   console.log(`prerendering ${routes.length} routes...`);
+
+  // Titles a not-yet-rendered page still shows: the raw index.html shell, then
+  // (after '/' is snapshotted over index.html) the home page's title.
+  const shellHtml = fs.readFileSync(path.join(DIST_DIR, 'index.html'), 'utf8');
+  const shellTitles = [(shellHtml.match(/<title[^>]*>([^<]*)<\/title>/) || [])[1]].filter(Boolean);
+  const startedAt = Date.now();
+  let done = 0;
 
   const server = await startServer();
   const firstBrowser = await withTimeout(launchBrowser(), 60_000, 'launchBrowser');
@@ -155,8 +213,11 @@ async function main() {
   try {
     const deadline = Date.now() + TOTAL_BUDGET_MS;
     await runPool(routes, CONCURRENCY, (route) =>
-      withTimeout(prerenderRoute(browserHolder, route), ROUTE_TIMEOUT_MS * 2, `route ${route.path}`)
-        .catch((err) => console.warn(`skipped ${route.path}: ${err.message}`)), deadline);
+      withTimeout(prerenderRoute(browserHolder, route, shellTitles), ROUTE_TIMEOUT_MS * 2, `route ${route.path}`)
+        .catch((err) => console.warn(`skipped ${route.path}: ${err.message}`))
+        .finally(() => { done += 1; }), deadline);
+    const written = routes.filter((r) => fs.existsSync(path.join(r.path === '/' ? DIST_DIR : path.join(DIST_DIR, r.path), 'index.html'))).length;
+    console.log(`prerender finished: ${written}/${routes.length} routes in ${Math.round((Date.now() - startedAt) / 1000)}s (${done} attempted)`);
   } finally {
     // Every browser this run ever launched, not just the current one — a
     // relaunch replaces browserHolder.current but the previous instance

@@ -21,6 +21,8 @@ const COL1_LINKS = [
 ];
 
 const COL2_LINKS = [
+  { label: 'Courses',        to: '/courses' },
+  { label: 'Universities',   to: '/universities' },
   { label: 'Scholarships',   to: '/scholarships' },
   { label: 'Deadlines',       to: '/deadlines' },
   { label: 'Intake planner',  to: '/intake-planner' },

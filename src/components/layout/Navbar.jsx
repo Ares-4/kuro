@@ -10,6 +10,7 @@ import GlobalSearch from '@/components/GlobalSearch';
 const NAV_ITEMS = [
   { label: 'Home', path: '/' },
   { label: 'Destinations', path: '/destinations' },
+  { label: 'Courses', path: '/courses' },
   { label: 'Services', path: '/services' },
   { label: 'Process', path: '/process' },
   { label: 'Intake planner', path: '/intake-planner' },
@@ -79,18 +80,18 @@ const Navbar = () => {
                 </div>
               )}
               <div className="flex flex-col leading-none">
-                <span className="text-base md:text-lg font-bold text-white tracking-tight">{companyName}</span>
+                <span className="text-base md:text-lg font-bold text-white tracking-tight whitespace-nowrap">{companyName}</span>
                 <span className="hidden sm:block text-[9px] text-primary/70 font-semibold tracking-[0.18em] uppercase">Consultancy</span>
               </div>
             </Link>
 
             {/* Desktop nav */}
-            <div className="hidden xl:flex items-center gap-1">
+            <div className="hidden xl:flex items-center gap-0.5 2xl:gap-1">
               {NAV_ITEMS.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`relative px-3.5 py-2 text-sm font-medium transition-colors rounded-md group ${
+                  className={`relative px-2.5 2xl:px-3.5 py-2 text-sm font-medium whitespace-nowrap transition-colors rounded-md group ${
                     isActive(item.path)
                       ? 'text-white'
                       : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -100,7 +101,7 @@ const Navbar = () => {
                   {isActive(item.path) && (
                     <motion.span
                       layoutId="nav-underline"
-                      className="absolute bottom-0 left-3.5 right-3.5 h-[2px] bg-primary rounded-full"
+                      className="absolute bottom-0 left-2.5 right-2.5 2xl:left-3.5 2xl:right-3.5 h-[2px] bg-primary rounded-full"
                     />
                   )}
                 </Link>

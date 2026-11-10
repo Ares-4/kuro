@@ -3,8 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useToast } from '@/components/ui/use-toast';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/config/publicConfig';
 
 // Ask Supabase once per page load whether Google sign-in is switched on, so the
 // button only appears after Google is configured in the Supabase dashboard.

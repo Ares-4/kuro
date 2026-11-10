@@ -1,3 +1,5 @@
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/config/publicConfig';
+
 /**
  * Centralized environment configuration and validation
  */
@@ -13,7 +15,7 @@ const validateEnvironment = () => {
 
   // Check required variables
   requiredVars.forEach(key => {
-    const value = import.meta.env[key];
+    const value = { VITE_SUPABASE_URL: SUPABASE_URL, VITE_SUPABASE_ANON_KEY: SUPABASE_ANON_KEY }[key];
     if (!value) {
       missing.push(key);
     }

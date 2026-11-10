@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/customSupabaseClient';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/config/publicConfig';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -55,13 +56,13 @@ const AdminScholarships = () => {
       const { data: { session } } = await supabase.auth.getSession();
       try {
         res = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scrape-scholarship`,
+          `${SUPABASE_URL}/functions/v1/scrape-scholarship`,
           {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
             },
             body: JSON.stringify({ url: importUrl }),
           }

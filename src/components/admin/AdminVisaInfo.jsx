@@ -6,7 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { Save, Loader2, Plus, Trash2, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Save, Loader2, Plus, Trash2, ExternalLink, ShieldCheck, AlertTriangle, CalendarCheck } from 'lucide-react';
+import { daysSince, isVisaInfoStale, todayIso, VISA_STALE_DAYS } from '@/lib/visaFreshness';
 
 const AdminVisaInfo = () => {
   const [destinations, setDestinations] = useState([]);
@@ -18,12 +19,20 @@ const AdminVisaInfo = () => {
   const [newDoc, setNewDoc] = useState('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [verifiedDates, setVerifiedDates] = useState({});
   const { toast } = useToast();
+
+  const loadVerifiedDates = () =>
+    supabase.from('destination_visa_info').select('destination_slug, last_verified')
+      .then(({ data }) => setVerifiedDates(Object.fromEntries((data || []).map(r => [r.destination_slug, r.last_verified]))));
 
   useEffect(() => {
     supabase.from('destinations').select('name, slug').eq('is_active', true).order('name')
       .then(({ data }) => setDestinations(data || []));
+    loadVerifiedDates();
   }, []);
+
+  const staleDestinations = destinations.filter(d => isVisaInfoStale(verifiedDates[d.slug]));
 
   useEffect(() => {
     if (!selectedSlug) { resetForm(); return; }
@@ -64,12 +73,15 @@ const AdminVisaInfo = () => {
     if (!selectedSlug) return;
     setSaving(true);
     const { error } = await supabase.from('destination_visa_info').upsert(
-      { destination_slug: selectedSlug, ...form, updated_at: new Date() },
+      { destination_slug: selectedSlug, ...form, last_verified: form.last_verified || null, updated_at: new Date() },
       { onConflict: 'destination_slug' }
     );
     setSaving(false);
     if (error) toast({ variant: 'destructive', title: 'Save failed', description: error.message });
-    else toast({ title: 'Visa info saved', description: 'Visible on the destination page immediately.' });
+    else {
+      toast({ title: 'Visa info saved', description: 'Visible on the destination page immediately.' });
+      loadVerifiedDates();
+    }
   };
 
   return (
@@ -84,6 +96,26 @@ const AdminVisaInfo = () => {
           Save Visa Info
         </Button>
       </div>
+
+      {staleDestinations.length > 0 && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-4">
+          <p className="flex items-center gap-2 text-sm font-medium text-amber-300">
+            <AlertTriangle className="w-4 h-4" />
+            {staleDestinations.length} {staleDestinations.length === 1 ? 'country needs' : 'countries need'} re-verification (older than {VISA_STALE_DAYS} days)
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {staleDestinations.map(d => (
+              <button key={d.slug} type="button" onClick={() => setSelectedSlug(d.slug)}
+                className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs text-amber-200 hover:bg-amber-500/20 transition-colors">
+                {d.name}
+                <span className="ml-1.5 text-amber-400/70">
+                  {verifiedDates[d.slug] ? `${daysSince(verifiedDates[d.slug])}d` : 'never'}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label className="text-slate-300">Select Destination</Label>
@@ -139,8 +171,14 @@ const AdminVisaInfo = () => {
               </div>
               <div className="space-y-1">
                 <Label className="text-slate-400 text-xs">Last Verified Date</Label>
-                <Input type="date" value={form.last_verified} onChange={e => setForm(p => ({ ...p, last_verified: e.target.value }))}
-                  className="bg-slate-900 border-slate-700 text-white" />
+                <div className="flex gap-2">
+                  <Input type="date" value={form.last_verified} onChange={e => setForm(p => ({ ...p, last_verified: e.target.value }))}
+                    className="bg-slate-900 border-slate-700 text-white" />
+                  <Button type="button" variant="outline" onClick={() => setForm(p => ({ ...p, last_verified: todayIso() }))}
+                    className="shrink-0 border-slate-600 text-slate-200 hover:bg-slate-700">
+                    <CalendarCheck className="w-4 h-4 mr-1.5" /> Verified today
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

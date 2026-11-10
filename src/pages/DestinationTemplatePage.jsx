@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { isVisaInfoStale } from '@/lib/visaFreshness';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, Clock, ChevronRight, ShieldCheck, CheckCircle2, Plane, ExternalLink, CalendarCheck, FileText, AlertTriangle, Radio } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -203,6 +204,9 @@ const DestinationTemplatePage = () => {
                     <p className="text-xs text-slate-500 flex items-center gap-1.5">
                       <CalendarCheck className="w-3.5 h-3.5" />
                       Last verified: {new Date(visaInfo.last_verified).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      {isVisaInfoStale(visaInfo.last_verified) && (
+                        <span className="text-amber-400">· may be out of date, so confirm on the official portal</span>
+                      )}
                     </p>
                   )}
                   {visaInfo.official_link && (

@@ -6,7 +6,6 @@ import { AuthProvider } from '@/contexts/SupabaseAuthContext';
 import { SystemSettingsProvider } from '@/contexts/SystemSettingsContext';
 import { ReadinessProvider } from '@/contexts/ReadinessContext';
 import ProtectedAdminRoute from '@/components/ProtectedAdminRoute';
-import AdminLogin from '@/pages/AdminLogin';
 
 import { Toaster } from '@/components/ui/toaster';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -18,36 +17,62 @@ import ConsentBanner from '@/components/ConsentBanner';
 import { applyStoredConsent } from '@/utils/consent';
 
 // Pages
+
+// Route-level code splitting. After a deploy, a tab opened on the old build
+// asks for chunk files that no longer exist, so reload once to pick up the new
+// build instead of showing the error boundary.
+const lazyPage = (factory) =>
+  React.lazy(() =>
+    factory()
+      .then((mod) => {
+        try { sessionStorage.removeItem('kuro_chunk_reload'); } catch { /* storage blocked */ }
+        return mod;
+      })
+      .catch((error) => {
+        let alreadyReloaded = true;
+        try {
+          alreadyReloaded = sessionStorage.getItem('kuro_chunk_reload') === '1';
+          if (!alreadyReloaded) sessionStorage.setItem('kuro_chunk_reload', '1');
+        } catch { /* storage blocked */ }
+        if (!alreadyReloaded) {
+          window.location.reload();
+          return new Promise(() => {});
+        }
+        throw error;
+      })
+  );
+
 import HomePage from '@/pages/HomePage';
-import AboutPage from '@/pages/AboutPage';
-import DestinationsPage from '@/pages/DestinationsPage';
-import DestinationResolver from '@/components/DestinationResolver';
-import ContactPage from '@/pages/ContactPage';
-import ServicesPage from '@/pages/ServicesPage';
-import ProcessPage from '@/pages/ProcessPage';
-import WhyKuroPage from '@/pages/WhyKuroPage';
-import FaqsPage from '@/pages/FaqsPage';
-import EligibilityPage from '@/pages/EligibilityPage';
-import ResourcesPage from '@/pages/ResourcesPage';
-import BlogDetailPage from '@/pages/BlogDetailPage';
-import LoginPage from '@/pages/LoginPage';
-import SignupPage from '@/pages/SignupPage';
-import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
-import StudentDashboard from '@/pages/StudentDashboard';
-import AdminDashboard from '@/pages/AdminDashboard';
-import DynamicPage from '@/pages/DynamicPage';
-import CourseDetailPage from '@/pages/CourseDetailPage';
-import ReadinessCheckPage from '@/pages/ReadinessCheckPage';
-import PaymentSuccess from '@/pages/PaymentSuccess';
-import PrivacyPolicy from '@/pages/PrivacyPolicy';
-import TermsOfService from '@/pages/TermsOfService';
-import ScholarshipsPage from '@/pages/ScholarshipsPage';
-import ScholarshipDetailPage from '@/pages/ScholarshipDetailPage';
-import UniversitiesPage from '@/pages/UniversitiesPage';
-import UniversityDetailPage from '@/pages/UniversityDetailPage';
-import DeadlinesPage from '@/pages/DeadlinesPage';
-import IntakePlannerPage from '@/pages/IntakePlannerPage';
-import NotFoundPage from '@/pages/NotFoundPage';
+const AdminLogin = lazyPage(() => import('@/pages/AdminLogin'));
+const AboutPage = lazyPage(() => import('@/pages/AboutPage'));
+const DestinationsPage = lazyPage(() => import('@/pages/DestinationsPage'));
+const DestinationResolver = lazyPage(() => import('@/components/DestinationResolver'));
+const ContactPage = lazyPage(() => import('@/pages/ContactPage'));
+const ServicesPage = lazyPage(() => import('@/pages/ServicesPage'));
+const ProcessPage = lazyPage(() => import('@/pages/ProcessPage'));
+const WhyKuroPage = lazyPage(() => import('@/pages/WhyKuroPage'));
+const FaqsPage = lazyPage(() => import('@/pages/FaqsPage'));
+const EligibilityPage = lazyPage(() => import('@/pages/EligibilityPage'));
+const ResourcesPage = lazyPage(() => import('@/pages/ResourcesPage'));
+const BlogDetailPage = lazyPage(() => import('@/pages/BlogDetailPage'));
+const LoginPage = lazyPage(() => import('@/pages/LoginPage'));
+const SignupPage = lazyPage(() => import('@/pages/SignupPage'));
+const ForgotPasswordPage = lazyPage(() => import('@/pages/ForgotPasswordPage'));
+const StudentDashboard = lazyPage(() => import('@/pages/StudentDashboard'));
+const AdminDashboard = lazyPage(() => import('@/pages/AdminDashboard'));
+const DynamicPage = lazyPage(() => import('@/pages/DynamicPage'));
+const CourseDetailPage = lazyPage(() => import('@/pages/CourseDetailPage'));
+const ReadinessCheckPage = lazyPage(() => import('@/pages/ReadinessCheckPage'));
+const PaymentSuccess = lazyPage(() => import('@/pages/PaymentSuccess'));
+const PrivacyPolicy = lazyPage(() => import('@/pages/PrivacyPolicy'));
+const TermsOfService = lazyPage(() => import('@/pages/TermsOfService'));
+const ScholarshipsPage = lazyPage(() => import('@/pages/ScholarshipsPage'));
+const ScholarshipDetailPage = lazyPage(() => import('@/pages/ScholarshipDetailPage'));
+const UniversitiesPage = lazyPage(() => import('@/pages/UniversitiesPage'));
+const UniversityDetailPage = lazyPage(() => import('@/pages/UniversityDetailPage'));
+const DeadlinesPage = lazyPage(() => import('@/pages/DeadlinesPage'));
+const IntakePlannerPage = lazyPage(() => import('@/pages/IntakePlannerPage'));
+const NotFoundPage = lazyPage(() => import('@/pages/NotFoundPage'));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-slate-950 flex items-center justify-center">

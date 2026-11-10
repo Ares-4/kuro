@@ -8,13 +8,9 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';
+import { answerQuestion } from '@/lib/kuroAssistant';
 
-const STOP_WORDS = new Set(['a','an','the','is','are','was','were','i','my','what','how','do','does','can','will','would','could','should','in','on','at','to','for','of','and','or','but','not','be','have','has','it','this','that','with','about','from']);
-
-const extractKeywords = (text) =>
-  text.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w));
-
-const QUICK_ACTIONS = ['Visa requirements', 'Study in Poland', 'Cost breakdown', 'How to apply', 'IELTS score'];
+const QUICK_ACTIONS = ['Upcoming deadlines', 'Scholarships in Germany', 'Poland visa', 'Cost of studying in the UK', 'How to apply'];
 
 const FALLBACK = "I don't have a specific answer for that. For personalised guidance, book a free consultation with our team — they'll respond within 24 hours.";
 
@@ -35,33 +31,6 @@ const KuroChatWidget = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen]);
 
-  const searchKnowledge = async (text) => {
-    const keywords = extractKeywords(text);
-    if (!keywords.length) return null;
-
-    const orFilters = keywords.map(kw => `question.ilike.%${kw}%`).join(',');
-
-    const { data } = await supabase
-      .from('knowledge_base')
-      .select('question, answer, tags, page_link')
-      .eq('is_active', true)
-      .or(orFilters)
-      .limit(3);
-
-    if (!data?.length) {
-      const tagFilter = keywords.map(kw => `tags.cs.{${kw}}`).join(',');
-      const { data: tagData } = await supabase
-        .from('knowledge_base')
-        .select('question, answer, tags, page_link')
-        .eq('is_active', true)
-        .or(tagFilter)
-        .limit(3);
-      return tagData?.length ? tagData[0] : null;
-    }
-
-    return data[0];
-  };
-
   const handleSend = async (text = input) => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -77,12 +46,17 @@ const KuroChatWidget = () => {
     }
 
     setLoading(true);
-    const match = await searchKnowledge(trimmed);
+    let match = null;
+    try {
+      match = await answerQuestion(trimmed);
+    } catch {
+      match = null;
+    }
     setLoading(false);
 
     const botMsg = {
       role: 'assistant',
-      content: match ? match.answer : FALLBACK,
+      content: match ? match.content : FALLBACK,
       pageLink: match?.page_link || null,
       id: (Date.now() + 1).toString(),
     };
@@ -196,7 +170,7 @@ const KuroChatWidget = () => {
                       }
                     </div>
                     <div className={cn(
-                      "max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
+                      "max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line break-words",
                       msg.role === 'user'
                         ? "bg-blue-600 text-white rounded-tr-sm"
                         : "text-slate-200 rounded-tl-sm"

@@ -52,7 +52,11 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/sbapi/rest/v1/:path*",
+      "destination": "https://akrbfwmqhnbopqlvawhw.supabase.co/rest/v1/:path*"
+    },
+    {
+      "source": "/((?!api/|sbapi/).*)",
       "destination": "/index.html"
     }
   ],
@@ -83,6 +87,15 @@
         {
           "key": "Content-Security-Policy",
           "value": "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com"
+        }
+      ]
+    },
+    {
+      "source": "/sbapi/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
         }
       ]
     }

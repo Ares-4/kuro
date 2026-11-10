@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 
 const SEO = ({ title, description, image, url, schema }) => {
   const siteTitle = "Kuro Education Consultancy";
-  const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+  const fullTitle = !title ? siteTitle : title.includes(siteTitle) ? title : `${title} | ${siteTitle}`;
   const metaDescription = description || "Expert admissions, visa, and relocation support for students from Africa to EU, Australia, USA, Canada, UK and beyond.";
   const metaImage = image || "https://horizons-cdn.hostinger.com/004129ab-b5e0-4c13-bfb3-42b2e547cc84/17af830489377c0bbddafc566e44e4f2.png";
   const metaUrl = url || window.location.href;

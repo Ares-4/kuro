@@ -235,7 +235,7 @@ const IntakePlannerPage = () => {
   return (
     <>
       <SEO
-        title="2027 Intake Planner | Kuro Education Consultancy"
+        title="2027 Intake Planner"
         description="Plan your 2027 study abroad intake: country route, budget readiness, document checklist, deadlines, and next-step actions."
       />
 

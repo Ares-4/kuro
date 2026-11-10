@@ -11,7 +11,6 @@ import { Toaster } from '@/components/ui/toaster';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import KuroChatWidget from '@/components/chat/KuroChatWidget';
-import TawkToWidget from '@/components/TawkToWidget';
 import Layout from '@/components/Layout';
 import ConsentBanner from '@/components/ConsentBanner';
 import { applyStoredConsent } from '@/utils/consent';
@@ -152,8 +151,6 @@ function App() {
 
               </Routes>
             </React.Suspense>
-
-            <TawkToWidget />
             <KuroChatWidget />
             <Toaster />
           </ReadinessProvider>

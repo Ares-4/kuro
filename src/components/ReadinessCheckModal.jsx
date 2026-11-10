@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ChevronRight, AlertCircle, Sparkles, Loader2, AlertTriangle, Info } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { createCheckoutSession } from '@/lib/paymentService';
+import { createReadinessCheckout } from '@/lib/paymentService';
 import { supabase } from '@/lib/customSupabaseClient';
 import { calculateLeadScore } from '@/lib/leadScoringService';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';
@@ -534,13 +534,12 @@ const ReadinessCheckModal = ({ isOpen, onClose }) => {
 
       notifyAdminOfLead('New readiness check', `${formData.email} completed a ${formData.plan} readiness check for ${formData.destination || 'unspecified destination'}.`, '/admin/leads');
 
-      const session = await createCheckoutSession({
-        applicationId: crypto.randomUUID(),
-        amount: formData.plan === "premium" ? 19 : 2.99,
-        programName: formData.plan === "premium" ? "Premium Visa Risk Report" : "Basic Readiness Check",
+      // Price is fixed server-side per product (process-payment).
+      const session = await createReadinessCheckout({
+        product: formData.plan === "premium" ? "readiness_premium" : "readiness_basic",
+        email: formData.email,
         successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${window.location.origin}/?payment=cancelled`,
-        currency: "eur",
       });
 
       if (session?.url) { window.location.href = session.url; return; }
@@ -557,10 +556,10 @@ const ReadinessCheckModal = ({ isOpen, onClose }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-slate-950 border-slate-800 text-white sm:max-w-md p-0 overflow-hidden max-h-[90vh] flex flex-col">
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-center shrink-0">
-          <h2 className="text-xl font-bold text-white">Readiness check</h2>
-          <p className="text-blue-100 text-sm mt-1">
+          <DialogTitle className="text-xl font-bold text-white">Readiness check</DialogTitle>
+          <DialogDescription className="text-blue-100 text-sm mt-1">
             {isPoland && step === 3 ? 'Poland — Syrena requirements' : isGermany && step === 3 ? 'Germany — national visa checklist' : 'Assess your admission & visa eligibility'}
-          </p>
+          </DialogDescription>
         </div>
 
         <div className="p-6 overflow-y-auto flex-1">

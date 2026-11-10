@@ -4,22 +4,26 @@ import { CheckCircle2, ArrowRight, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-// We will add these exports into src/lib/utils.js next
 import { scoreReadiness, buildPremiumAddOns } from '@/lib/utils';
+import { verifyReadinessPayment } from '@/lib/paymentService';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
   const [verifying, setVerifying] = useState(true);
+  const [paidProduct, setPaidProduct] = useState(null);
 
   const [payload, setPayload] = useState(null);
 
   useEffect(() => {
-    // Simulate verification (your current approach)
-    const timer = setTimeout(() => {
-      setVerifying(false);
-    }, 1500);
-    return () => clearTimeout(timer);
+    // Ask Stripe (via process-payment) whether this session was really paid.
+    let cancelled = false;
+    if (!sessionId) { setVerifying(false); return undefined; }
+    verifyReadinessPayment(sessionId)
+      .then((res) => { if (!cancelled && res?.paid) setPaidProduct(res.product); })
+      .catch((err) => console.error('Payment verification failed:', err))
+      .finally(() => { if (!cancelled) setVerifying(false); });
+    return () => { cancelled = true; };
   }, [sessionId]);
 
   useEffect(() => {
@@ -27,22 +31,29 @@ const PaymentSuccess = () => {
     try {
       const raw = localStorage.getItem('kuro_readiness_payload');
       if (!raw) return;
-      setPayload(JSON.parse(raw));
+      const parsed = JSON.parse(raw);
+      setPayload(parsed);
     } catch {
       setPayload(null);
     }
   }, []);
 
+  // Premium extras only for a verified premium payment, whatever the stored plan says.
+  const effectivePayload = useMemo(() => {
+    if (!payload) return null;
+    return { ...payload, plan: paidProduct === 'readiness_premium' ? 'PREMIUM' : 'BASIC' };
+  }, [payload, paidProduct]);
+
   const computed = useMemo(() => {
-    if (!payload?.answers) return null;
-    const scoring = scoreReadiness(payload.answers);
+    if (!effectivePayload?.answers) return null;
+    const scoring = scoreReadiness(effectivePayload.answers);
     const premium =
-      payload.plan === 'PREMIUM'
-        ? buildPremiumAddOns(payload.answers, scoring)
+      effectivePayload.plan === 'PREMIUM'
+        ? buildPremiumAddOns(effectivePayload.answers, scoring)
         : null;
 
     return { scoring, premium };
-  }, [payload]);
+  }, [effectivePayload]);
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
@@ -53,6 +64,17 @@ const PaymentSuccess = () => {
               <Loader2 className="w-16 h-16 text-blue-500 animate-spin mb-4" />
               <h1 className="text-2xl font-bold text-white">Verifying Payment...</h1>
               <p className="text-slate-400">Please wait while we confirm your transaction.</p>
+            </div>
+          ) : !paidProduct ? (
+            <div className="flex flex-col items-center space-y-4">
+              <AlertTriangle className="w-14 h-14 text-yellow-500" />
+              <h1 className="text-2xl font-bold text-white">We couldn't confirm your payment</h1>
+              <p className="text-slate-400">
+                If you were charged, contact us with your receipt email and we'll send your result. Otherwise, please try the readiness check again.
+              </p>
+              <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+                <Link to="/contact">Contact us</Link>
+              </Button>
             </div>
           ) : (
             <>
@@ -101,7 +123,7 @@ const PaymentSuccess = () => {
                     <div className="bg-slate-800/50 rounded p-4 border border-slate-700 text-sm space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-slate-500">Plan:</span>
-                        <span className="text-slate-200 font-semibold">{payload.plan}</span>
+                        <span className="text-slate-200 font-semibold">{effectivePayload.plan}</span>
                       </div>
 
                       <div className="space-y-1">
@@ -127,7 +149,7 @@ const PaymentSuccess = () => {
                       </p>
                     </div>
 
-                    {payload.plan === 'PREMIUM' && computed.premium && (
+                    {effectivePayload.plan === 'PREMIUM' && computed.premium && (
                       <>
                         <div className="bg-slate-800/50 rounded p-4 border border-slate-700 text-sm space-y-2">
                           <p className="text-white font-semibold">Premium Checklist</p>

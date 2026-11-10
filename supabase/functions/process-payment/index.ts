@@ -5,7 +5,17 @@
 // so a student could pay a few cents. Now the caller must be signed in and own the
 // application, and the fee is computed server-side (program fee -> site default -> €50).
 import Stripe from "https://esm.sh/stripe@14.21.0";
-import { corsHeaders, json, serviceClient, getCaller, isAllowedRedirect } from "../_shared/security.ts";
+import { corsHeaders, json, serviceClient, getCaller, isAllowedRedirect, isEmail } from "../_shared/security.ts";
+
+// Readiness check (ReadinessCheckModal) is sold to anonymous visitors, so it has
+// its own path: fixed server-side prices, no application record involved.
+const READINESS_PRODUCTS: Record<string, { cents: number; name: string }> = {
+  readiness_basic: { cents: 299, name: "Basic Readiness Check" },
+  readiness_premium: { cents: 1900, name: "Premium Visa Risk Report" },
+};
+
+const stripeClient = () =>
+  new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { httpClient: Stripe.createFetchHttpClient() });
 
 const parseFee = (v: unknown): number | null => {
   const n = parseFloat(String(v ?? "").replace(/[^0-9.]/g, ""));
@@ -17,10 +27,43 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   try {
+    const body = await req.json().catch(() => ({}));
+
+    // Readiness check: start checkout
+    if (typeof body.product === "string") {
+      const product = READINESS_PRODUCTS[body.product];
+      if (!product) return json({ error: "Unknown product" }, 400);
+      if (!isAllowedRedirect(body.successUrl) || !isAllowedRedirect(body.cancelUrl)) {
+        return json({ error: "Invalid redirect URL" }, 400);
+      }
+      const session = await stripeClient().checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{
+          price_data: { currency: "eur", product_data: { name: product.name }, unit_amount: product.cents },
+          quantity: 1,
+        }],
+        mode: "payment",
+        customer_email: isEmail(body.email) ? body.email : undefined,
+        success_url: body.successUrl,
+        cancel_url: body.cancelUrl,
+        metadata: { product: body.product, expectedAmountCents: String(product.cents) },
+      });
+      return json({ url: session.url });
+    }
+
+    // Readiness check: confirm a returned checkout session really was paid in full
+    if (body.action === "verify-readiness") {
+      if (typeof body.sessionId !== "string" || !body.sessionId.startsWith("cs_")) return json({ error: "Invalid session" }, 400);
+      const session = await stripeClient().checkout.sessions.retrieve(body.sessionId);
+      const product = READINESS_PRODUCTS[session.metadata?.product ?? ""];
+      const paid = !!product && session.payment_status === "paid" && (session.amount_total ?? 0) >= product.cents;
+      return json({ paid, product: paid ? session.metadata?.product : null });
+    }
+
     const user = await getCaller(req);
     if (!user) return json({ error: "Sign in required" }, 401);
 
-    const { applicationId, successUrl, cancelUrl } = await req.json().catch(() => ({}));
+    const { applicationId, successUrl, cancelUrl } = body;
     if (!applicationId) return json({ error: "Missing applicationId" }, 400);
     if (!isAllowedRedirect(successUrl) || !isAllowedRedirect(cancelUrl)) {
       return json({ error: "Invalid redirect URL" }, 400);
@@ -44,8 +87,7 @@ Deno.serve(async (req) => {
       fee = parseFee(setting?.value) ?? 50;
     }
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { httpClient: Stripe.createFetchHttpClient() });
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripeClient().checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [{
         price_data: {

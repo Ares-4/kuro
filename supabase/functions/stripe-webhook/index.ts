@@ -122,6 +122,22 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Readiness check purchases (process-payment, product metadata) have no
+    // application record — notify the admin and stop here.
+    const product = session.metadata?.product ?? "";
+    if (product.startsWith("readiness_")) {
+      await supabaseAdmin.from("admin_notifications").insert({
+        type: "readiness_paid",
+        title: "Readiness check paid",
+        body: `${session.customer_details?.email ?? session.customer_email ?? "A visitor"} paid ${(session.amount_total ?? 0) / 100} ${(session.currency ?? "").toUpperCase()} for ${product.replace("readiness_", "")} readiness check.`,
+        metadata: { stripeSessionId: session.id, product, amountTotal: session.amount_total },
+      });
+      return new Response(JSON.stringify({ received: true, product }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Core values from session
     const stripeSessionId = session.id;
     const paymentIntentId =

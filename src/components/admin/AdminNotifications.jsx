@@ -13,6 +13,7 @@ const TYPE_META = {
   payment_success: { icon: CreditCard, color: 'text-emerald-400', label: 'Payment' },
   payment_orphaned: { icon: AlertTriangle, color: 'text-amber-400', label: 'Payment issue' },
   payment_amount_mismatch: { icon: AlertTriangle, color: 'text-red-400', label: 'Payment issue' },
+  email_failure: { icon: AlertTriangle, color: 'text-red-400', label: 'Email problem' },
 };
 
 const FILTERS = [

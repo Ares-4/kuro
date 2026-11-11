@@ -86,6 +86,24 @@ Deno.serve(async (req) => {
     // cannot reach the mail server) so failures can be fixed without log access.
     // deno-lint-ignore no-explicit-any
     const e = error as any;
+    // Tell admins (at most once an hour): a wrong mailbox password once stopped
+    // every site email for four months without anyone noticing.
+    try {
+      const db = serviceClient();
+      const since = new Date(Date.now() - 3600_000).toISOString();
+      const { count } = await db.from("admin_notifications").select("id", { count: "exact", head: true })
+        .eq("type", "email_failure").gte("created_at", since);
+      if (!count) {
+        await db.from("admin_notifications").insert({
+          type: "email_failure",
+          title: "Site emails are failing",
+          body: e?.code === "EAUTH"
+            ? "The mail server rejected the login (wrong mailbox password?). Update SMTP_PASS in Supabase secrets."
+            : `Sending failed (${e?.code ?? "unknown error"}). Check the mail server settings.`,
+          metadata: { code: e?.code ?? null, smtp: e?.responseCode ?? null },
+        });
+      }
+    } catch { /* never let alerting hide the original error */ }
     return json({ error: "Could not send email", code: e?.code ?? null, smtp: e?.responseCode ?? null, command: e?.command ?? null }, 500);
   }
 });

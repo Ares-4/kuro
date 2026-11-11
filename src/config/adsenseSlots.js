@@ -12,7 +12,5 @@ export const ADSENSE_SLOTS = {
   faqsTop: "",
   faqsBottom: "",
   contactTop: "",
-  contactBottom: "",
-  eligibilityTop: "",
-  eligibilityBottom: ""
+  contactBottom: ""
 };

@@ -107,14 +107,5 @@ export const DEFAULT_CONTENT = {
     success_message: "Message Sent! We'll get back to you shortly.",
     meta_title: 'Contact Us - Kuro Education',
     meta_description: 'Get in touch with Kuro Education Consultancy. We are here to help you with your study abroad journey.'
-  },
-  eligibility: {
-    page_heading: 'Eligibility Assessment',
-    page_intro: 'Get a professional assessment of your study abroad chances. Includes official PDF report and expert tier classification.',
-    form_title: 'Start Assessment',
-    form_subtitle: 'Please provide your details',
-    success_message: 'Assessment Saved. Please complete payment to view your results.',
-    meta_title: 'Check Eligibility - Kuro Education',
-    meta_description: 'Free initial eligibility assessment for studying abroad. Fill out the form to get expert feedback on your chances.'
   }
 };

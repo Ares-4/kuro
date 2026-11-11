@@ -25,7 +25,6 @@ const pages = [
   { id: 'why_kuro', label: 'Why Kuro Page' },
   { id: 'faqs', label: 'FAQs Page' },
   { id: 'contact', label: 'Contact Page' },
-  { id: 'eligibility', label: 'Eligibility Page' },
 ];
 
 const PublicContentForm = ({ onContentChange, onPageChange }) => {

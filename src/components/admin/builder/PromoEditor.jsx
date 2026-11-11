@@ -156,7 +156,7 @@ const PromoEditor = () => {
             <Sparkles className="w-5 h-5 text-blue-400" /> Readiness Check Banner
           </CardTitle>
           <CardDescription className="text-slate-400">
-            Promotes the paid eligibility check service.
+            Promotes the readiness check (EUR 2.99 basic / EUR 19 premium).
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

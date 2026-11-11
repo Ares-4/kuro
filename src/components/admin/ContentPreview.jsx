@@ -8,7 +8,6 @@ import ProcessPage from '@/pages/ProcessPage';
 import WhyKuroPage from '@/pages/WhyKuroPage';
 import FaqsPage from '@/pages/FaqsPage';
 import ContactPage from '@/pages/ContactPage';
-import EligibilityPage from '@/pages/EligibilityPage';
 
 const componentMap = {
   home: HomePage,
@@ -18,7 +17,6 @@ const componentMap = {
   why_kuro: WhyKuroPage,
   faqs: FaqsPage,
   contact: ContactPage,
-  eligibility: EligibilityPage,
 };
 
 const ContentPreview = ({ isOpen, onClose, page, content }) => {

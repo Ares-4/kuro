@@ -11,7 +11,6 @@ import ProcessPage from '@/pages/ProcessPage';
 import WhyKuroPage from '@/pages/WhyKuroPage';
 import FaqsPage from '@/pages/FaqsPage';
 import ContactPage from '@/pages/ContactPage';
-import EligibilityPage from '@/pages/EligibilityPage';
 
 const ContentPreview = ({ isOpen, onClose, pageName, contentOverride }) => {
   const [viewMode, setViewMode] = useState('desktop');
@@ -25,7 +24,6 @@ const ContentPreview = ({ isOpen, onClose, pageName, contentOverride }) => {
       case 'why_kuro': return WhyKuroPage;
       case 'faqs': return FaqsPage;
       case 'contact': return ContactPage;
-      case 'eligibility': return EligibilityPage;
       default: return () => <div className="p-10 text-center">Preview not available</div>;
     }
   };

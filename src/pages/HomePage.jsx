@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import {
   ArrowRight, ShieldCheck, Plane, FileText, CheckCircle2,
-  GraduationCap, User,
+  User, Star,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
@@ -25,11 +25,11 @@ const fadeUp = {
 };
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.09 } } };
 
-function Section({ children, className = '' }) {
+function Section({ children, className = '', style }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
   return (
-    <motion.div ref={ref} variants={stagger} initial="hidden" animate={inView ? 'show' : 'hidden'} className={className}>
+    <motion.div ref={ref} variants={stagger} initial="hidden" animate={inView ? 'show' : 'hidden'} className={className} style={style}>
       {children}
     </motion.div>
   );
@@ -50,18 +50,24 @@ const SERVICES = [
   { title: 'Concierge',           desc: 'Dedicated advisor, priority processing, ongoing support.' },
 ];
 
-const HERO_DESTINATIONS = [
-  { flag: '🇬🇧', name: 'United Kingdom', slug: 'uk',        tag: '24 active applications' },
-  { flag: '🇨🇦', name: 'Canada',         slug: 'canada',    tag: '18 active applications' },
-  { flag: '🇦🇺', name: 'Australia',      slug: 'australia', tag: '12 active applications' },
-];
+// Hero proof card uses only real data: upcoming deadlines from the tracker,
+// the latest visa-verification date, and a featured (real) testimonial.
+const COUNTRY_CODES = {
+  poland: 'PL', germany: 'DE', hungary: 'HU', latvia: 'LV', lithuania: 'LT', austria: 'AT',
+  cyprus: 'CY', malta: 'MT', uk: 'UK', 'united kingdom': 'UK', usa: 'US', 'united states': 'US',
+  canada: 'CA', australia: 'AU',
+};
+const codeFor = (country) => COUNTRY_CODES[String(country || '').toLowerCase()] || String(country || '??').slice(0, 2).toUpperCase();
+const daysUntil = (iso) => Math.ceil((new Date(`${iso}T23:59:59`) - new Date()) / 86400000);
+const shortDate = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+const monthYear = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 
 const DEST_GRID = ['Canada', 'UK', 'Austria', 'Australia', 'USA', 'Poland'];
 
 const DEFAULT_METRICS = {
-  students_placed: '2,400+',
-  visa_success: '91%',
-  partner_unis: '50+',
+  students_placed: '200+',
+  visa_success: '90%+',
+  partner_unis: '35+',
 };
 
 const HomePage = ({ contentOverride }) => {
@@ -69,6 +75,27 @@ const HomePage = ({ contentOverride }) => {
   const [teamContent, setTeam]       = useState(DEFAULT_CONTENT.expert_team);
   const [metrics, setMetrics]        = useState(DEFAULT_METRICS);
   const [showTeam, setShowTeam]      = useState(true);
+  const [deadlines, setDeadlines]    = useState([]);
+  const [story, setStory]            = useState(null);
+  const [verifiedOn, setVerifiedOn]  = useState(null);
+  const [partners, setPartners]      = useState([]);
+
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    Promise.all([
+      supabase.from('university_deadlines').select('id, university_name, program_name, country, deadline_date, intake_season')
+        .eq('is_active', true).gte('deadline_date', today).order('deadline_date').limit(3),
+      supabase.from('testimonials').select('student_name, program, university, rating').eq('is_featured', true).limit(1),
+      supabase.from('destination_visa_info').select('last_verified').not('last_verified', 'is', null)
+        .order('last_verified', { ascending: false }).limit(1),
+      supabase.from('universities').select('name').eq('is_active', true).order('name'),
+    ]).then(([d, t, v, u]) => {
+      setDeadlines(d.data || []);
+      setStory(t.data?.[0] || null);
+      setVerifiedOn(v.data?.[0]?.last_verified || null);
+      setPartners((u.data || []).map((x) => x.name).filter(Boolean));
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -129,7 +156,7 @@ const HomePage = ({ contentOverride }) => {
             <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-16 xl:gap-20 items-center">
 
               {/* Left col */}
-              <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-7">
+              <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-7 min-w-0">
                 <motion.div variants={fadeUp}>
                   <span className="eyebrow">Your gateway to global education</span>
                 </motion.div>
@@ -176,69 +203,92 @@ const HomePage = ({ contentOverride }) => {
                 </motion.div>
               </motion.div>
 
-              {/* Right col — destinations card */}
+              {/* Right col — live deadlines (real urgency, real data) */}
               <motion.div
                 variants={fadeUp} custom={2} initial="hidden" animate="show"
-                className="relative hidden lg:block"
+                className="relative min-w-0"
               >
-                {/* Main card */}
-                <div className="glass p-7 rounded-3xl">
-                  <h3 className="font-display font-bold text-white text-lg mb-1">Top destinations</h3>
-                  <p className="text-slate-400 text-sm mb-5">Where Kuro students are heading this intake</p>
+                <div className="glass p-6 sm:p-7 rounded-3xl">
+                  <div className="flex items-center justify-between gap-3 mb-1">
+                    <h3 className="font-display font-bold text-white text-lg">Next application deadlines</h3>
+                    <span className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" /> Live
+                    </span>
+                  </div>
+                  <p className="text-slate-400 text-sm mb-5">Miss one and you usually wait for the next intake.</p>
 
                   <div className="space-y-3">
-                    {HERO_DESTINATIONS.map((d) => (
-                      <Link
-                        key={d.name}
-                        to={`/destinations/${d.slug}`}
-                        className="flex items-center justify-between p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-blue-500/40 hover:-translate-y-0.5 transition-all group"
-                      >
-                        <div className="flex items-center gap-4">
-                          <span className="text-3xl leading-none">{d.flag}</span>
-                          <div>
-                            <p className="font-semibold text-white text-sm">{d.name}</p>
-                            <p className="text-slate-400 text-xs mt-0.5">{d.tag}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 text-blue-400 text-xs font-semibold group-hover:translate-x-0.5 transition-transform">
-                          View <ArrowRight className="w-3.5 h-3.5" />
-                        </div>
-                      </Link>
+                    {deadlines.length === 0 && [0, 1, 2].map((i) => (
+                      <div key={i} className="h-[74px] rounded-xl bg-slate-950/60 border border-slate-800/80 animate-pulse" />
                     ))}
+                    {deadlines.map((d) => {
+                      const left = daysUntil(d.deadline_date);
+                      const soon = left <= 45;
+                      return (
+                        <Link
+                          key={d.id}
+                          to="/deadlines"
+                          className="flex items-center justify-between gap-3 p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-blue-500/40 hover:-translate-y-0.5 transition-all group"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <span className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/25 text-blue-300 text-xs font-bold tracking-wide flex items-center justify-center shrink-0" title={d.country}>{codeFor(d.country)}</span>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-white text-sm truncate">{d.university_name}</p>
+                              <p className="text-slate-400 text-xs mt-0.5 truncate">{d.intake_season || d.program_name}</p>
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className={`text-xs font-bold ${soon ? 'text-amber-300' : 'text-blue-300'}`}>{left} days left</p>
+                            <p className="text-slate-500 text-[11px] mt-0.5">Closes {shortDate(d.deadline_date)}</p>
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
+                  <Link to="/deadlines" className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-300 hover:text-blue-200">
+                    See all deadlines <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
 
-                {/* Floating toast — top right */}
-                <motion.div
-                  initial={{ opacity: 0, y: -12, x: 12 }}
-                  animate={{ opacity: 1, y: 0, x: 0 }}
-                  transition={{ delay: 1.1, duration: 0.5, ease }}
-                  className="toast-float -top-5 -right-5"
-                >
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-4 h-4" />
+                {/* Proof badge (desktop, bottom right): when visa info was last checked */}
+                {verifiedOn && (
+                  <div className="hidden lg:block">
+                  <motion.div
+                    initial={{ opacity: 0, y: -12, x: 12 }}
+                    animate={{ opacity: 1, y: 0, x: 0 }}
+                    transition={{ delay: 1.1, duration: 0.5, ease }}
+                    className="toast-float -bottom-5 -right-5"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-white">Visa info verified</p>
+                      <p className="text-[10px] text-slate-400">Official sources · {monthYear(verifiedOn)}</p>
+                    </div>
+                  </motion.div>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-white">Visa approved</p>
-                    <p className="text-[10px] text-slate-400">Kemi · UCL London</p>
-                  </div>
-                </motion.div>
+                )}
 
-                {/* Floating toast — bottom left */}
-                <motion.div
-                  initial={{ opacity: 0, y: 12, x: -12 }}
-                  animate={{ opacity: 1, y: 0, x: 0 }}
-                  transition={{ delay: 1.4, duration: 0.5, ease }}
-                  className="toast-float -bottom-5 -left-5"
-                >
-                  <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-                    <GraduationCap className="w-4 h-4" />
+                {/* Proof badge (desktop, top left): a real student review */}
+                {story && (
+                  <div className="hidden lg:block">
+                  <motion.div
+                    initial={{ opacity: 0, y: 12, x: -12 }}
+                    animate={{ opacity: 1, y: 0, x: 0 }}
+                    transition={{ delay: 1.4, duration: 0.5, ease }}
+                    className="toast-float -top-14 -left-6"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-amber-500/15 text-amber-300 flex items-center justify-center shrink-0">
+                      <Star className="w-4 h-4 fill-current" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-white">{'★'.repeat(Math.max(1, Math.min(5, story.rating || 5)))} {story.student_name?.trim()}</p>
+                      <p className="text-[10px] text-slate-400">{[story.program, story.university].filter(Boolean).join(' · ')}</p>
+                    </div>
+                  </motion.div>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-white">Offer received</p>
-                    <p className="text-[10px] text-slate-400">McGill · MSc CS</p>
-                  </div>
-                </motion.div>
+                )}
               </motion.div>
 
             </div>
@@ -395,7 +445,7 @@ const HomePage = ({ contentOverride }) => {
 
             <motion.div variants={fadeUp} className="text-center mt-10">
               <Button size="lg" variant="outline" asChild>
-                <Link to="/destinations">View all 50+ countries</Link>
+                <Link to="/destinations">View all destinations</Link>
               </Button>
             </motion.div>
           </Section>
@@ -438,21 +488,26 @@ const HomePage = ({ contentOverride }) => {
           </Section>
         </section>}
 
-        {/* ── Partners marquee ── */}
-        <section className="py-12 border-t border-white/5 overflow-hidden">
-          <p className="text-center font-mono text-slate-400 font-semibold tracking-[0.18em] uppercase mb-8" style={{ fontSize: 'var(--fs-xs)' }}>
-            Trusted by top institutions
-          </p>
-          <div className="marquee">
-            <div className="marquee-track">
-              {[...Array(2)].map((_, pass) =>
-                ['University of Warsaw', 'Melbourne University', 'University of Toronto', 'TU Berlin', 'New York University', 'London Metropolitan', 'University of Vienna', 'Wrocław University', 'McGill University', 'University of Sydney'].map((uni, i) => (
-                  <span key={`${pass}-${i}`} className="text-slate-400 hover:text-slate-200 transition-colors font-semibold text-sm shrink-0">{uni}</span>
-                ))
-              )}
+        {/* ── Universities we work with (real list from the catalogue) ── */}
+        {partners.length > 0 && (
+          <section className="py-12 border-t border-white/5 overflow-hidden">
+            <p className="text-center font-mono text-slate-400 font-semibold tracking-[0.18em] uppercase mb-8" style={{ fontSize: 'var(--fs-xs)' }}>
+              Universities we work with
+            </p>
+            <div className="marquee">
+              <div className="marquee-track">
+                {[...Array(2)].map((_, pass) =>
+                  partners.map((uni, i) => (
+                    <Link key={`${pass}-${i}`} to="/universities" tabIndex={pass ? -1 : undefined} aria-hidden={pass ? 'true' : undefined}
+                      className="text-slate-400 hover:text-slate-200 transition-colors font-semibold text-sm shrink-0">
+                      {uni.split(' (')[0]}
+                    </Link>
+                  ))
+                )}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* ── Final CTA ── */}
         <section className="relative py-32 border-t border-white/5 overflow-hidden">
@@ -473,12 +528,20 @@ const HomePage = ({ contentOverride }) => {
                 {content.cta_section_title || 'Your study abroad journey starts here'}
               </motion.h2>
               <motion.p variants={fadeUp} custom={2} className="text-slate-400 leading-relaxed max-w-lg mx-auto" style={{ fontSize: 'var(--fs-lg)' }}>
-                {content.cta_section_subtitle || 'Join thousands of African students who trusted Kuro to get them where they wanted to go.'}
+                {content.cta_section_subtitle || 'Join 200+ African students who trusted Kuro to get them where they wanted to go.'}
               </motion.p>
               <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                 <Button size="xl" asChild><Link to="/signup">{content.cta_button_label || 'Create free account'}</Link></Button>
                 <Button size="xl" variant="outline" asChild><Link to="/eligibility">Check eligibility</Link></Button>
               </motion.div>
+              <motion.p variants={fadeUp} custom={4} className="text-sm text-slate-400 pt-4">
+                Founded by{' '}
+                <a href="https://www.linkedin.com/in/ronald-kahoka-946178192/" target="_blank" rel="noopener noreferrer"
+                  className="font-semibold text-slate-200 hover:text-blue-300 underline-offset-4 hover:underline">
+                  Ronald Kahoka
+                </a>
+                {' '}· Harare, Zimbabwe · {metrics.students_placed} students placed
+              </motion.p>
             </div>
           </Section>
         </section>

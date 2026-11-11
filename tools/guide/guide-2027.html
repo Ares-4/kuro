@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Ultimate Study in Europe Guide 2027 — Kuro Educational Consultancy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Source for public/guides/kuro-study-in-europe-guide-2027.pdf.
+     Rebuild with: node tools/build-guide.cjs  (needs local Chrome). */
+  @page { size: A4; margin: 18mm 17mm 20mm; }
+  @page :first { margin: 0; }
+  :root {
+    --ink: #0b1224; --body: #24324a; --muted: #5b6b86; --line: #dbe3ef;
+    --blue: #2563eb; --teal: #0d9488; --amber: #d97706; --violet: #7c3aed;
+    --paper: #ffffff; --tint: #f3f6fb;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font-family: Inter, Arial, sans-serif; color: var(--body); font-size: 10.5pt; line-height: 1.55; background: var(--paper); }
+  h1, h2, h3 { font-family: 'Space Grotesk', Inter, sans-serif; color: var(--ink); letter-spacing: -0.02em; line-height: 1.15; }
+  h2 { font-size: 22pt; margin: 0 0 4mm; }
+  h3 { font-size: 13pt; margin: 6mm 0 2mm; }
+  p { margin: 0 0 3mm; }
+  a { color: var(--blue); text-decoration: none; }
+  ul, ol { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1.2mm; }
+  strong { color: var(--ink); }
+  .chapter { break-before: page; }
+  .kicker { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 9pt; color: var(--blue); margin-bottom: 2mm; }
+  .lead { font-size: 12pt; color: var(--ink); margin-bottom: 5mm; }
+  .note { background: var(--tint); border-left: 3px solid var(--blue); padding: 3mm 4mm; border-radius: 0 6px 6px 0; margin: 4mm 0; font-size: 10pt; }
+  .note.amber { border-color: var(--amber); background: #fff8eb; }
+  .note.teal { border-color: var(--teal); background: #ecfbf8; }
+  .note.violet { border-color: var(--violet); background: #f5f0ff; }
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0 5mm; break-inside: avoid; }
+  th { text-align: left; background: var(--ink); color: #fff; font-weight: 600; padding: 2mm 2.5mm; }
+  td { padding: 2mm 2.5mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--tint); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 4mm; break-inside: avoid; }
+  .card h3 { margin-top: 0; }
+  .tick li { list-style: none; position: relative; padding-left: 5mm; }
+  .tick li::before { content: ''; position: absolute; left: 0; top: 1.9mm; width: 2.4mm; height: 2.4mm; border-radius: 1px; border: 1.3px solid var(--teal); }
+  .step { display: grid; grid-template-columns: 16mm 1fr; gap: 3mm; margin-bottom: 4mm; break-inside: avoid; }
+  .step .when { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--blue); font-size: 10pt; }
+  .small { font-size: 8.5pt; color: var(--muted); }
+
+  /* Cover */
+  .cover { height: 297mm; width: 210mm; background: #070c1c; color: #fff; position: relative; overflow: hidden; padding: 26mm 22mm; }
+  .cover .glow1 { position: absolute; width: 170mm; height: 170mm; border-radius: 50%; left: -50mm; top: -60mm; background: radial-gradient(circle, rgba(37,99,235,0.55), transparent 65%); }
+  .cover .glow2 { position: absolute; width: 150mm; height: 150mm; border-radius: 50%; right: -55mm; bottom: -40mm; background: radial-gradient(circle, rgba(124,58,237,0.45), transparent 65%); }
+  .cover svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .cover .inner { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+  .cover .brand { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13pt; letter-spacing: -0.01em; }
+  .cover .brand span { color: #60a5fa; font-weight: 600; font-size: 8pt; display: block; letter-spacing: 0.16em; }
+  .cover h1 { color: #fff; font-size: 44pt; margin: 58mm 0 6mm; line-height: 1.02; }
+  .cover h1 em { font-style: normal; color: #60a5fa; }
+  .cover .sub { font-size: 13pt; color: #cbd5e1; max-width: 140mm; }
+  .cover .chips { margin-top: 10mm; display: flex; gap: 3mm; flex-wrap: wrap; }
+  .cover .chip { font-size: 9pt; padding: 1.6mm 3.4mm; border-radius: 99px; border: 1px solid rgba(148,163,184,0.35); color: #e2e8f0; }
+  .cover .foot { margin-top: auto; font-size: 9pt; color: #94a3b8; display: flex; justify-content: space-between; }
+  .toc { columns: 2; column-gap: 10mm; font-size: 10.5pt; }
+  .toc li { break-inside: avoid; margin-bottom: 2mm; }
+</style>
+</head>
+<body>
+
+<!-- ───────────────────────── COVER ───────────────────────── -->
+<section class="cover">
+  <div class="glow1"></div><div class="glow2"></div>
+  <svg viewBox="0 0 210 297" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="none" stroke-width="0.35" stroke-dasharray="1 1.6">
+      <path d="M140 270 Q 90 190 120 70" stroke="#60a5fa" opacity="0.6"/>
+      <path d="M140 270 Q 170 180 104 78" stroke="#2dd4bf" opacity="0.55"/>
+      <path d="M140 270 Q 60 170 132 52" stroke="#a78bfa" opacity="0.5"/>
+      <path d="M140 270 Q 200 210 164 120" stroke="#fbbf24" opacity="0.5"/>
+      <path d="M140 270 Q 110 220 96 126" stroke="#2dd4bf" opacity="0.45"/>
+    </g>
+    <g><circle cx="140" cy="270" r="1.6" fill="#fbbf24"/><circle cx="120" cy="70" r="1" fill="#60a5fa"/><circle cx="104" cy="78" r="1" fill="#2dd4bf"/><circle cx="132" cy="52" r="1" fill="#a78bfa"/><circle cx="164" cy="120" r="1" fill="#fbbf24"/><circle cx="96" cy="126" r="1" fill="#2dd4bf"/></g>
+  </svg>
+  <div class="inner">
+    <div class="brand">Kuro Educational<span>CONSULTANCY</span></div>
+    <h1>The Ultimate<br>Study in Europe<br>Guide <em>2027</em></h1>
+    <p class="sub">A practical, month-by-month guide for students from Zimbabwe and Southern Africa: choosing a country, real costs, deadlines, documents, student visas and your first weeks abroad.</p>
+    <div class="chips">
+      <span class="chip">12 countries compared</span><span class="chip">2026 visa fees</span><span class="chip">2027 deadlines</span><span class="chip">Scholarships</span>
+    </div>
+    <div class="foot"><span>kuroeduconsultancy.com</span><span>Edition: November 2026</span></div>
+  </div>
+</section>
+
+<!-- ───────────────────────── CONTENTS ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Inside this guide</div>
+  <h2>Contents</h2>
+  <ol class="toc">
+    <li>How to use this guide</li>
+    <li>Choosing your country</li>
+    <li>What it really costs</li>
+    <li>Your 2027 timeline</li>
+    <li>Entry requirements and English</li>
+    <li>Your document checklist</li>
+    <li>The student visa, step by step</li>
+    <li>Country visa notes</li>
+    <li>Scholarships worth applying for</li>
+    <li>Working while you study, and after</li>
+    <li>Arrival: your first 30 days</li>
+    <li>Avoiding scams and costly mistakes</li>
+    <li>How Kuro can help</li>
+  </ol>
+
+  <h3>1. How to use this guide</h3>
+  <p class="lead">Studying in Europe is very achievable from Southern Africa, but the students who succeed usually start early, budget honestly and get their documents right the first time.</p>
+  <p>Read chapters 2 and 3 first: your budget decides which countries are realistic. Then use the timeline in chapter 4 to plan backwards from your intake. Chapters 6 to 8 are your reference when you prepare your application and visa.</p>
+  <div class="note amber"><strong>Figures change.</strong> Fees, visa costs and proof-of-funds amounts in this guide were checked in November 2026 against official and university sources. Governments update them often, so always confirm the current figure on the official website before you pay anything. Our destination pages at kuroeduconsultancy.com/destinations show the date each country was last verified.</div>
+  <p>This guide is free and you may share it. It is general information, not legal or immigration advice for your personal case.</p>
+</section>
+
+<!-- ───────────────────────── 2. COUNTRIES ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 2</div>
+  <h2>Choosing your country</h2>
+  <p class="lead">For most students from Southern Africa, the choice comes down to three things: total cost, how easy the visa is, and whether English-taught programmes exist in your field.</p>
+
+  <table>
+    <thead><tr><th>Country</th><th>Tuition per year</th><th>Living per month</th><th>Good to know</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Poland</strong></td><td>€2,000 – €6,000</td><td>€500 – €800</td><td>Wide choice of English-taught degrees; full-time students with a residence permit can generally work.</td></tr>
+      <tr><td><strong>Germany</strong></td><td>€0 – €3,000 (mostly semester fees)</td><td>€700 – €1,100</td><td>Public universities mostly charge no tuition; you need a blocked account for living costs.</td></tr>
+      <tr><td><strong>Hungary</strong></td><td>€3,000 – €10,000</td><td>€500 – €900</td><td>Home of the Stipendium Hungaricum scholarship; strong English-taught medicine.</td></tr>
+      <tr><td><strong>Latvia</strong></td><td>€2,500 – €6,000</td><td>€600 – €900</td><td>Small, safe and affordable; residence permit decided in about 30 days.</td></tr>
+      <tr><td><strong>Lithuania</strong></td><td>€2,000 – €5,000</td><td>€600 – €900</td><td>Applications through the MIGRIS online system.</td></tr>
+      <tr><td><strong>Austria</strong></td><td>€1,500 – €5,000</td><td>€900 – €1,400</td><td>Non-EU students at public universities pay about €726.72 per semester.</td></tr>
+      <tr><td><strong>Cyprus</strong></td><td>€5,000 – €12,000</td><td>€700 – €1,100</td><td>English widely spoken; your university files the entry permit for you.</td></tr>
+      <tr><td><strong>Malta</strong></td><td>€5,000 – €14,000</td><td>€800 – €1,300</td><td>English is an official language.</td></tr>
+      <tr><td><strong>UK</strong></td><td>£10,000 – £30,000</td><td>£800 – £1,500</td><td>Short degrees (3-year bachelor's, 1-year master's) but high fees and visa costs.</td></tr>
+      <tr><td><strong>Canada</strong></td><td>CAD 15,000 – 35,000</td><td>CAD 1,000 – 1,800</td><td>Clear post-graduation work routes; study permit takes 8–12 weeks.</td></tr>
+      <tr><td><strong>Australia</strong></td><td>AUD 20,000 – 45,000</td><td>AUD 1,400 – 2,500</td><td>High quality, but the student visa now costs AUD 2,500.</td></tr>
+      <tr><td><strong>USA</strong></td><td>USD 20,000 – 55,000</td><td>USD 1,000 – 2,500</td><td>Most expensive; scholarships and assistantships are key.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid2">
+    <div class="card"><h3>If your budget is tight</h3><p>Look first at <strong>Poland, Hungary, Latvia and Lithuania</strong>: low tuition and living costs, English-taught programmes, and the EU degree is recognised internationally. Germany is excellent if you can fund the blocked account.</p></div>
+    <div class="card"><h3>If you want the shortest route</h3><p>UK degrees are shorter, which lowers total living costs, but tuition and the health surcharge are high. Compare the <em>total</em> cost of the whole degree, not just one year.</p></div>
+  </div>
+  <div class="note">Ask yourself: Can I pay the first year's tuition plus show the required proof of funds before my visa appointment? If not, choose a cheaper country or build in a scholarship plan.</div>
+</section>
+
+<!-- ───────────────────────── 3. COSTS ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 3</div>
+  <h2>What it really costs</h2>
+  <p class="lead">Your budget has two parts: what you will actually spend, and what the embassy wants to see in your account before it gives you a visa. They are not the same number.</p>
+
+  <h3>Typical monthly spending</h3>
+  <ul>
+    <li><strong>Accommodation, 40–50%</strong>: a dormitory or shared flat. Apply for a dorm as soon as you accept your offer; places go fast.</li>
+    <li><strong>Food, 20–25%</strong>: cooking at home and using student canteens keeps this low.</li>
+    <li><strong>Transport, about 5%</strong>: student discounts of 50% or more on city passes are common.</li>
+    <li><strong>Health insurance</strong>: required for your visa or residence permit.</li>
+    <li><strong>Phone, books and personal costs</strong>: budget €50–€100 a month.</li>
+  </ul>
+
+  <h3>Proof of funds: the legal minimums</h3>
+  <table>
+    <thead><tr><th>Country</th><th>What you must show (2026 figures)</th></tr></thead>
+    <tbody>
+      <tr><td>Germany</td><td>Blocked account with €992 per month, so €11,904 for 12 months</td></tr>
+      <tr><td>Austria</td><td>About €722.58 per month if under 24; €1,308.39 per month if 24 or older</td></tr>
+      <tr><td>Latvia</td><td>Roughly €780 per month</td></tr>
+      <tr><td>Other countries</td><td>Usually 12 months of living costs plus the first year's tuition, shown in bank statements or a sponsor letter. Check the exact rule for your country of application.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>One-off costs people forget</h3>
+  <ul class="tick">
+    <li>Visa or residence permit fees (chapter 7) and visa centre service fees</li>
+    <li>Certified copies, translations and apostille or legalisation of documents</li>
+    <li>English test fees, if your programme requires a test</li>
+    <li>University application fees and tuition deposits</li>
+    <li>Flights, first month's rent plus a deposit, and winter clothing</li>
+  </ul>
+  <div class="note teal"><strong>Rule of thumb:</strong> arrive with at least one extra month of living costs as an emergency fund. Many problems in the first weeks (delayed bank account, deposit for a room) are simply cash-flow problems.</div>
+</section>
+
+<!-- ───────────────────────── 4. TIMELINE ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 4</div>
+  <h2>Your 2027 timeline</h2>
+  <p class="lead">Most of Europe starts in September or October. Some Polish and German programmes also have a February or March intake. Work backwards from your start date.</p>
+
+  <h3>Key 2027 deadlines we track</h3>
+  <table>
+    <thead><tr><th>Deadline</th><th>What</th><th>Intake</th></tr></thead>
+    <tbody>
+      <tr><td>15 Dec 2026</td><td>Kuro Poland partner universities</td><td>February 2027</td></tr>
+      <tr><td>15 Jan 2027</td><td>Stipendium Hungaricum (Hungary)</td><td>September 2027</td></tr>
+      <tr><td>1 Feb 2027</td><td>Hamburg University of Technology, international master's</td><td>October 2027</td></tr>
+      <tr><td>15 Mar 2027</td><td>DAAD EPOS INEMA, Germany</td><td>October 2027</td></tr>
+      <tr><td>30 Apr 2027</td><td>Australia Awards Africa</td><td>January 2028</td></tr>
+      <tr><td>30 Jun 2027</td><td>Kuro Poland partner universities</td><td>October 2027</td></tr>
+      <tr><td>15 Jul 2027</td><td>Hamburg University of Technology MSc; Schmalkalden UAS</td><td>October 2027</td></tr>
+      <tr><td>31 Aug 2027</td><td>Hochschule Merseburg, admission-free programmes</td><td>October 2027</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Live and updated list: kuroeduconsultancy.com/deadlines</p>
+
+  <h3>Month by month for a September/October 2027 start</h3>
+  <div class="step"><div class="when">Nov–Dec 2026</div><div>Choose 2–3 countries on budget. Check your passport is valid at least 12 months beyond arrival and renew it now if not. Shortlist programmes.</div></div>
+  <div class="step"><div class="when">Jan–Feb 2027</div><div>Order certified copies of certificates and transcripts, and arrange apostille or legalisation if needed. Book an English test if required. Submit scholarship applications (Stipendium Hungaricum closes 15 January).</div></div>
+  <div class="step"><div class="when">Mar–May 2027</div><div>Send university applications, earliest deadlines first. Write a clear motivation letter for each programme.</div></div>
+  <div class="step"><div class="when">May–Jul 2027</div><div>Accept your offer and pay the deposit. Book your visa appointment immediately: appointment slots, not processing time, are often the real bottleneck. Arrange proof of funds.</div></div>
+  <div class="step"><div class="when">Aug–Sep 2027</div><div>Once the visa is approved: accommodation, flights, insurance, and copies of every document in your hand luggage.</div></div>
+  <div class="note">For a February 2027 start, compress the same steps: apply by mid-December 2026 and book your visa appointment as soon as you receive your acceptance.</div>
+</section>
+
+<!-- ───────────────────────── 5. REQUIREMENTS ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 5</div>
+  <h2>Entry requirements and English</h2>
+
+  <h3>Bachelor's degrees</h3>
+  <p>You need a recognised school-leaving qualification: <strong>A-levels (ZIMSEC or Cambridge), the South African NSC/Matric, NSSC (Namibia), BGCSE (Botswana) or an equivalent</strong>. Requirements vary by university and subject. For example, the Polish consulate generally expects Zimbabwean undergraduate applicants to have at least <strong>3 A-level passes</strong>. Science and engineering programmes usually want maths, and often physics or chemistry.</p>
+  <p>If your qualification is not accepted for direct entry, a <strong>foundation year</strong> can bridge the gap.</p>
+
+  <h3>Master's degrees</h3>
+  <p>A recognised bachelor's degree in a related field. Some programmes ask for a minimum grade, work experience or a portfolio.</p>
+
+  <h3>English</h3>
+  <ul>
+    <li>Most English-taught programmes ask for <strong>IELTS 5.5–6.5</strong> or an equivalent such as TOEFL or the Duolingo English Test.</li>
+    <li>Many universities accept an <strong>English Medium of Instruction (MOI) letter</strong> from your school or university if you studied in English.</li>
+    <li>Visa authorities can have their own English rules (the UK in particular), so check both the university and the visa requirement.</li>
+  </ul>
+  <div class="note violet"><strong>Recognition at home:</strong> if you plan to work in a regulated profession (medicine, nursing, law, engineering) back home, check before you apply that your home country's professional body recognises the degree.</div>
+</section>
+
+<!-- ───────────────────────── 6. DOCUMENTS ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 6</div>
+  <h2>Your document checklist</h2>
+  <p class="lead">Missing or badly prepared documents are the most common reason applications and visas are delayed. Start collecting these early.</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>For your university application</h3>
+      <ul class="tick">
+        <li>Passport (valid 12+ months beyond arrival)</li>
+        <li>School-leaving certificate and results</li>
+        <li>Transcripts; degree certificate for master's</li>
+        <li>Certified copies, translated if not in English</li>
+        <li>English test result or MOI letter</li>
+        <li>Motivation letter / statement of purpose</li>
+        <li>CV, and references if requested</li>
+        <li>Passport photos</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>For your visa or residence permit</h3>
+      <ul class="tick">
+        <li>Acceptance letter from the university</li>
+        <li>Proof of tuition payment or deposit</li>
+        <li>Proof of funds (bank statements, sponsor letter, or blocked account)</li>
+        <li>Health insurance for your stay</li>
+        <li>Proof of accommodation</li>
+        <li>Completed visa application form and fee</li>
+        <li>Apostilled or legalised documents where required</li>
+        <li>Biometrics appointment confirmation</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note amber"><strong>Sponsor funding?</strong> Embassies look closely at where the money comes from. If a parent or relative is paying, prepare a signed sponsor letter, their ID, recent bank statements and proof of income. Large sudden deposits without explanation are a common red flag.</div>
+</section>
+
+<!-- ───────────────────────── 7. VISA ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 7</div>
+  <h2>The student visa, step by step</h2>
+  <ol>
+    <li><strong>Get your acceptance letter</strong> and pay any deposit your university requires.</li>
+    <li><strong>Check the official requirements</strong> for your country of residence on the embassy or immigration website.</li>
+    <li><strong>Book the appointment immediately.</strong> In peak season (May–August) slots can be weeks away.</li>
+    <li><strong>Prepare funds and documents</strong> exactly as listed; bring originals and copies.</li>
+    <li><strong>Attend the appointment</strong> for biometrics and sometimes a short interview about your studies and funding.</li>
+    <li><strong>Wait for the decision</strong>; do not book non-refundable flights before you have your visa.</li>
+    <li><strong>After arrival</strong>, register your address and collect or apply for your residence permit where required.</li>
+  </ol>
+
+  <h3>Student visa fees and processing times (checked November 2026)</h3>
+  <table>
+    <thead><tr><th>Country</th><th>Visa / permit</th><th>Main fees</th><th>Processing</th></tr></thead>
+    <tbody>
+      <tr><td>UK</td><td>Student visa</td><td>£558 + Immigration Health Surcharge £776/year</td><td>About 3 weeks</td></tr>
+      <tr><td>USA</td><td>F-1 visa</td><td>$185 + $350 SEVIS (+ $250 integrity fee where collected)</td><td>2–4 weeks after interview</td></tr>
+      <tr><td>Canada</td><td>Study permit</td><td>CAD 150 + CAD 85 biometrics</td><td>8–12 weeks</td></tr>
+      <tr><td>Australia</td><td>Subclass 500</td><td>AUD 2,500 (from 1 July 2026)</td><td>4–6 weeks</td></tr>
+      <tr><td>Germany</td><td>National student visa</td><td>€75</td><td>6–12 weeks</td></tr>
+      <tr><td>Austria</td><td>Student residence permit</td><td>€218</td><td>Up to 3 months</td></tr>
+      <tr><td>Hungary</td><td>Visa + residence permit</td><td>€110 via a consulate</td><td>3–4 weeks</td></tr>
+      <tr><td>Latvia</td><td>Temporary residence permit</td><td>About €160–€180 + €45 card</td><td>30 days (express available)</td></tr>
+      <tr><td>Lithuania</td><td>Temporary residence permit (MIGRIS)</td><td>About €80–€160 + VFS fee</td><td>Up to 2 months</td></tr>
+      <tr><td>Malta</td><td>Type D visa + Identità permit</td><td>About €50 permit; visa fee varies</td><td>4–8 weeks</td></tr>
+      <tr><td>Cyprus</td><td>Entry permit + residence permit</td><td>€70</td><td>Several weeks</td></tr>
+      <tr><td>Poland</td><td>National visa (Type D)</td><td>See the official consulate site</td><td>About 15 working days</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────────────────── 8. COUNTRY NOTES ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 8</div>
+  <h2>Country visa notes</h2>
+  <div class="grid2">
+    <div class="card"><h3>Poland</h3><p>Apply for a national (Type D) visa at the Polish embassy or consulate responsible for your country after receiving your acceptance letter and paying your tuition deposit. Decisions usually take about 15 working days, up to 30 in complex cases. After arrival you can apply for a temporary residence permit for the length of your degree.</p></div>
+    <div class="card"><h3>Germany</h3><p>You need a national visa, a blocked account (€992/month for 2026) and health insurance. Processing is 6–12 weeks, so open the blocked account early. Many German-taught programmes require B2–C1 German.</p></div>
+    <div class="card"><h3>Hungary</h3><p>Student visa through a consular mission, then a residence permit. Stipendium Hungaricum scholars apply through their home country's partner ministry first.</p></div>
+    <div class="card"><h3>Austria</h3><p>For stays over 6 months you need a student residence permit applied for before travel. Register your address (Meldezettel) within 3 days of arrival.</p></div>
+    <div class="card"><h3>Cyprus</h3><p>Your university files the entry permit with the Migration Department while you are still outside Cyprus. You cannot switch to student status after entering as a tourist. Register within 7–10 days of arrival.</p></div>
+    <div class="card"><h3>Latvia, Lithuania, Malta</h3><p>Latvia: temporary residence permit from PMLP, usually through an embassy. Lithuania: start in the MIGRIS online system, then attend an appointment. Malta: national (Type D) visa, then an Identità residence permit after arrival.</p></div>
+  </div>
+  <div class="note"><strong>Never travel on a tourist visa planning to switch to student status.</strong> Most countries do not allow it, and it can damage future applications.</div>
+</section>
+
+<!-- ───────────────────────── 9. SCHOLARSHIPS ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 9</div>
+  <h2>Scholarships worth applying for</h2>
+  <table>
+    <thead><tr><th>Scholarship</th><th>Covers</th><th>Level / deadline</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Stipendium Hungaricum</strong> (Hungary)</td><td>Tuition waiver, monthly stipend, accommodation contribution, medical insurance</td><td>All levels · 15 Jan 2027</td></tr>
+      <tr><td><strong>DAAD EPOS</strong> (Germany)</td><td>€992/month for master's students, insurance, travel; tuition where applicable</td><td>Master's/PhD · varies (INEMA: 15 Mar 2027)</td></tr>
+      <tr><td><strong>Erasmus Mundus Joint Masters</strong> (EU)</td><td>Tuition, travel, installation and about €1,400 a month</td><td>Master's · per programme, often Oct–Feb</td></tr>
+      <tr><td><strong>NAWA Łukasiewicz</strong> (Poland)</td><td>Tuition waiver and monthly stipend</td><td>Master's</td></tr>
+      <tr><td><strong>Chevening</strong> (UK)</td><td>Tuition, stipend, flights, allowances</td><td>Master's · 2028/29 round</td></tr>
+      <tr><td><strong>Commonwealth Master's</strong> (UK)</td><td>Tuition, airfare, stipend, allowances</td><td>Master's · 2028/29 round</td></tr>
+      <tr><td><strong>Australia Awards</strong></td><td>Full tuition, airfare, living allowance, health cover</td><td>Master's · 30 Apr 2027</td></tr>
+      <tr><td><strong>Fulbright</strong> (USA)</td><td>Tuition, stipend, airfare, health benefits</td><td>Master's/PhD · 2028/29 cycle</td></tr>
+    </tbody>
+  </table>
+  <h3>How to stand out</h3>
+  <ol>
+    <li><strong>Start 12 months early</strong>: most deadlines fall 8–12 months before the course.</li>
+    <li><strong>Match the scholarship's purpose</strong>: development scholarships want to know how you will use the degree at home.</li>
+    <li><strong>Get strong references</strong> from people who know your work, and give them time.</li>
+    <li><strong>Apply to several</strong>: treat scholarships like university applications.</li>
+  </ol>
+  <p class="small">Open scholarships with live deadlines: kuroeduconsultancy.com/scholarships</p>
+</section>
+
+<!-- ───────────────────────── 10. WORK ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 10</div>
+  <h2>Working while you study, and after</h2>
+  <table>
+    <thead><tr><th>Country</th><th>During studies (check your permit)</th></tr></thead>
+    <tbody>
+      <tr><td>Poland</td><td>Full-time students with a residence permit can generally work without a separate work permit</td></tr>
+      <tr><td>Germany</td><td>140 full days or 280 half days per year</td></tr>
+      <tr><td>Canada</td><td>Part-time off campus during term, full-time in scheduled breaks, as printed on your permit</td></tr>
+      <tr><td>Australia</td><td>Up to 48 hours per fortnight in term, unlimited in breaks</td></tr>
+      <tr><td>UK</td><td>Usually up to 20 hours a week in term for degree students</td></tr>
+      <tr><td>Other EU countries</td><td>Commonly around 20 hours a week in term; the exact limit is on your residence permit</td></tr>
+    </tbody>
+  </table>
+  <p>Part-time work helps with costs and builds experience, but <strong>it cannot replace your proof of funds</strong>, and failing courses can put your residence permit at risk.</p>
+  <h3>After graduation</h3>
+  <p>Many destinations let graduates stay to look for work: the UK Graduate Route, Canada's Post-Graduation Work Permit, Australia's Temporary Graduate visa, and job-seeker residence permits in Germany and Poland. Lengths and conditions change, so check the rules in your final year.</p>
+</section>
+
+<!-- ───────────────────────── 11. ARRIVAL ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 11</div>
+  <h2>Arrival: your first 30 days</h2>
+  <div class="grid2">
+    <div class="card"><h3>First week</h3><ul class="tick"><li>Register your address where required (Austria: within 3 days)</li><li>Collect or apply for your residence permit; in Cyprus register within 7–10 days</li><li>Local SIM card</li><li>Attend university orientation</li></ul></div>
+    <div class="card"><h3>First month</h3><ul class="tick"><li>Open a bank account</li><li>Confirm health insurance and register with a doctor if needed</li><li>Get a student transport pass</li><li>Find the African student association and international office</li></ul></div>
+  </div>
+  <h3>What surprises students most</h3>
+  <ul>
+    <li><strong>Independent study</strong>: fewer contact hours, more reading and group work. Steady work beats cramming.</li>
+    <li><strong>Winter</strong>: below freezing from December to February in Poland, Germany, Latvia and Lithuania. Buy a proper coat and boots locally.</li>
+    <li><strong>Homesickness</strong> peaks in the first winter: keep a routine, stay in touch, and use your university's counselling service.</li>
+  </ul>
+</section>
+
+<!-- ───────────────────────── 12. SCAMS ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 12</div>
+  <h2>Avoiding scams and costly mistakes</h2>
+  <p class="lead">Every year students lose money to fake agents, fake accommodation and "guaranteed visa" promises. Protect yourself:</p>
+  <ul class="tick">
+    <li><strong>Nobody can guarantee a visa.</strong> Only the embassy decides. Walk away from anyone who promises otherwise.</li>
+    <li><strong>Pay tuition to the university's own account</strong>, shown on its official website or invoice, never to a personal account.</li>
+    <li><strong>Never pay a rental deposit before seeing a contract</strong>, and be wary of rooms that seem too cheap.</li>
+    <li><strong>Check that the university and programme are accredited</strong> and listed on the official national register.</li>
+    <li><strong>Never submit false documents or bank statements.</strong> It can lead to a refusal and a ban from future applications.</li>
+    <li><strong>Keep copies of everything</strong> you submit and every receipt.</li>
+  </ul>
+  <div class="note amber">If an offer feels rushed ("pay today or lose your place"), slow down and verify with the university directly.</div>
+</section>
+
+<!-- ───────────────────────── 13. KURO ───────────────────────── -->
+<section class="chapter">
+  <div class="kicker">Chapter 13</div>
+  <h2>How Kuro can help</h2>
+  <p class="lead">Kuro Educational Consultancy was founded by Ronald Kahoka in Harare, Zimbabwe, and has helped more than 200 students get placed at universities abroad.</p>
+  <div class="grid2">
+    <div class="card"><h3>Free tools</h3><ul><li>2027 intake planner</li><li>Live deadline tracker</li><li>Scholarship alerts</li><li>Course and university search</li></ul></div>
+    <div class="card"><h3>Readiness check</h3><ul><li><strong>€2.99</strong>: instant readiness score</li><li><strong>€19</strong>: expert-reviewed report with visa risk rating, financial check and 3 destination comparisons</li></ul></div>
+  </div>
+  <div class="card" style="margin-top:5mm">
+    <h3>Full application service</h3>
+    <p>University shortlisting and applications, document preparation and review, student visa support, and pre-departure and arrival help, with one advisor from start to finish. If you bought the €19 report, it is deducted from the fee.</p>
+  </div>
+  <h3>Get in touch</h3>
+  <p><strong>Website:</strong> kuroeduconsultancy.com<br>
+     <strong>Email:</strong> kuro.agents@kuroeduconsultancy.com<br>
+     <strong>Phone:</strong> +48 783 042 776<br>
+     <strong>Office:</strong> George Silundika, Harare, Zimbabwe</p>
+  <p class="small" style="margin-top:8mm">© 2026 Kuro Educational Consultancy. Free to share unchanged. Information checked November 2026; always confirm current fees and rules with official sources before you pay or apply. This guide is general information, not legal or immigration advice.</p>
+</section>
+
+</body>
+</html>

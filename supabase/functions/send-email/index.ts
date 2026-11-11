@@ -22,6 +22,9 @@ const transporter = nodemailer.createTransport({
 const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") || "kuro.agents@kuroeduconsultancy.com";
 const PUBLIC_TEMPLATES = new Set(["guide_download", "readiness_results", "admin_notification"]);
 const PUBLIC_PER_RECIPIENT_PER_HOUR = 3;
+// The guide link is fixed server-side: callers must not be able to put their
+// own URL into an email sent from our address (phishing).
+const GUIDE_URL = "https://kuroeduconsultancy.com/guides/kuro-study-in-europe-guide-2027.pdf";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -40,6 +43,10 @@ Deno.serve(async (req) => {
       if (!PUBLIC_TEMPLATES.has(templateName)) return json({ error: "Not allowed" }, 403);
       if (templateName === "admin_notification") to = ADMIN_EMAIL;
       subjectOverride = undefined;
+    }
+    if (templateName === "guide_download") {
+      for (const k of Object.keys(data)) delete data[k];
+      data.link = GUIDE_URL;
     }
     if (!isEmail(to)) return json({ error: "Invalid recipient" }, 400);
 

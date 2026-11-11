@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import CountUp from '@/components/CountUp';
 import { supabase } from '@/lib/customSupabaseClient';
-import { ShieldCheck, GraduationCap, Globe2, Users, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, GraduationCap, Globe2, Users, Wallet, CalendarClock, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 
 const CredibilityBlock = ({ className = "" }) => {
@@ -60,29 +61,25 @@ const CredibilityBlock = ({ className = "" }) => {
           ))}
         </div>
 
-        {/* Trust Indicators */}
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8 md:p-12">
-          <div className="grid md:grid-cols-3 gap-8 text-center md:text-left items-center">
-             <div>
-                <h3 className="text-xl font-bold text-white mb-2">Certified Excellence</h3>
-                <p className="text-slate-400 text-sm">Recognized by top European institutions for compliance and student support quality.</p>
-             </div>
-             
-             <div className="md:col-span-2 flex flex-col sm:flex-row justify-center md:justify-end gap-6">
-                <div className="flex items-center gap-3 bg-slate-950 px-5 py-3 rounded-lg border border-slate-800">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-slate-300 font-medium">Official University Reps</span>
-                </div>
-                <div className="flex items-center gap-3 bg-slate-950 px-5 py-3 rounded-lg border border-slate-800">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-slate-300 font-medium">Legal Compliance Checks</span>
-                </div>
-                <div className="flex items-center gap-3 bg-slate-950 px-5 py-3 rounded-lg border border-slate-800">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-slate-300 font-medium">Transparent Pricing</span>
-                </div>
-             </div>
-          </div>
+        {/* What students actually worry about, each answered with something
+            the site really does (and links to it). Replaces an unverifiable
+            'Certified Excellence' claim. */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {[
+            { icon: Wallet, title: 'Prices before you pay', body: '€2.99 or €19 for the readiness check, shown upfront. The €19 comes off our full service fee.', to: '/readiness-check', cta: 'See prices' },
+            { icon: ShieldCheck, title: 'Visa rules checked', body: 'Visa fees and steps are checked against official sources, with the date on every country page.', to: '/destinations', cta: 'Check your country' },
+            { icon: CalendarClock, title: 'Deadlines you can see', body: 'University and scholarship deadlines for 2027, updated as they change, so you never miss an intake.', to: '/deadlines', cta: 'View deadlines' },
+            { icon: BookOpen, title: 'Free 2027 guide', body: '15 pages on costs, documents, visas, scholarships and avoiding scams, written for Southern African students.', to: '/guides/kuro-study-in-europe-guide-2027.pdf', cta: 'Download PDF', external: true },
+          ].map(({ icon: Icon, title, body, to, cta, external }) => (
+            <div key={title} className="bento-cell flex flex-col">
+              <div className="accent-chip w-11 h-11 rounded-xl flex items-center justify-center mb-4"><Icon className="w-5 h-5" /></div>
+              <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed flex-1">{body}</p>
+              {external
+                ? <a href={to} target="_blank" rel="noopener noreferrer" className="accent-text mt-4 text-sm font-semibold hover:underline underline-offset-4">{cta}</a>
+                : <Link to={to} className="accent-text mt-4 text-sm font-semibold hover:underline underline-offset-4">{cta}</Link>}
+            </div>
+          ))}
         </div>
 
       </div>

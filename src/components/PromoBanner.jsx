@@ -38,8 +38,8 @@ const DEFAULTS = {
   },
   guide: {
     title: 'The Ultimate Study in Europe Guide 2027',
-    text: 'Download our 50-page PDF covering tuition fees...',
-    buttonText: 'Get Guide',
+    text: 'Free 15-page PDF: 12 countries compared, real costs, 2027 deadlines, visa fees and steps, scholarships and document checklists.',
+    buttonText: 'Email me the guide',
     price: '',
     visible_pages: []
   }

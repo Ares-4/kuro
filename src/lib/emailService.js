@@ -30,7 +30,7 @@ export const emailTriggers = {
     return sendEmail({
       to: email,
       templateName: 'guide_download',
-      data: { link: 'https://kuroeduconsultancy.com/resources/guide-2025.pdf' }
+      data: {} // link is set server-side by send-email (guide_download)
     });
   },
 

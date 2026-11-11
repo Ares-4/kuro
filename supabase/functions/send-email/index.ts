@@ -8,7 +8,7 @@
 //   * Template variables are HTML-escaped.
 import nodemailer from "npm:nodemailer@6.9.7";
 import {
-  corsHeaders, json, serviceClient, isPrivileged, escapeHtml, isEmail, recentEmailCount,
+  corsHeaders, json, serviceClient, isPrivileged, escapeHtml, isEmail, recentEmailCount, getCaller,
 } from "../_shared/security.ts";
 
 const SMTP_USER = Deno.env.get("SMTP_USER")!;
@@ -39,7 +39,15 @@ Deno.serve(async (req) => {
     let to = String(body.to ?? "").trim();
     let subjectOverride: string | undefined = privileged && typeof body.subject === "string" ? body.subject.slice(0, 200) : undefined;
 
-    if (!privileged) {
+    // welcome_student: a signed-in student may send it only to their own address.
+    const selfOnly = !privileged && templateName === "welcome_student";
+    if (selfOnly) {
+      const caller = await getCaller(req);
+      if (!caller?.email || caller.email.toLowerCase() !== String(body.to ?? "").trim().toLowerCase()) {
+        return json({ error: "Not allowed" }, 403);
+      }
+    }
+    if (!privileged && !selfOnly) {
       if (!PUBLIC_TEMPLATES.has(templateName)) return json({ error: "Not allowed" }, 403);
       if (templateName === "admin_notification") to = ADMIN_EMAIL;
       subjectOverride = undefined;

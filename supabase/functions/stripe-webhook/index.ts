@@ -147,6 +147,12 @@ Deno.serve(async (req) => {
         delivered_at: premium ? null : new Date().toISOString(),
       }, { onConflict: "stripe_session_id", ignoreDuplicates: true });
 
+      // Purchase confirmation to the student (what they bought, what happens next).
+      const buyer = session.customer_details?.email ?? session.customer_email ?? null;
+      if (buyer) {
+        await sendEmailSafe({ to: buyer, templateName: premium ? "readiness_premium_confirm" : "readiness_basic_confirm", data: {} });
+      }
+
       await supabaseAdmin.from("admin_notifications").insert({
         type: "readiness_paid",
         title: "Readiness check paid",

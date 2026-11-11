@@ -176,6 +176,10 @@ const WelcomePage = () => {
     }
     await supabase.auth.updateUser({ data: { full_name: row.full_name, phone: row.phone, country: row.country } }).catch(() => {});
     try { sessionStorage.setItem(`kuro_profile_done_${user.id}`, '1'); } catch { /* ignore */ }
+    // Welcome email (send-email only allows this to the student's own address).
+    supabase.functions.invoke('send-email', {
+      body: { to: user.email, templateName: 'welcome_student', data: { name: row.full_name.split(' ')[0], destination: form.destination } },
+    }).catch(() => {});
     toast({ title: 'Profile saved', description: 'Welcome to Kuro. An advisor will review your details.' });
     navigate('/dashboard', { replace: true });
   };

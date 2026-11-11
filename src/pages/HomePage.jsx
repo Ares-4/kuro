@@ -15,6 +15,7 @@ import { ADSENSE_SLOTS } from '@/config/adsenseSlots';
 import { supabase } from '@/lib/customSupabaseClient';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import CredibilityBlock from '@/components/CredibilityBlock';
+import CountUp from '@/components/CountUp';
 import AdSlot from '@/components/ads/AdSlot';
 
 /* ---- animation helpers ---- */
@@ -196,7 +197,7 @@ const HomePage = ({ contentOverride }) => {
                     { n: metrics.partner_unis,    lbl: 'Partner universities' },
                   ].map((s, i) => (
                     <div key={i}>
-                      <p className="font-display font-bold text-white tabular leading-none" style={{ fontSize: 'var(--fs-2xl)' }}>{s.n}</p>
+                      <CountUp value={s.n} className="block font-display font-bold text-white tabular leading-none" style={{ fontSize: 'var(--fs-2xl)' }} />
                       <p className="text-slate-400 mt-1" style={{ fontSize: 'var(--fs-xs)' }}>{s.lbl}</p>
                     </div>
                   ))}
@@ -325,7 +326,7 @@ const HomePage = ({ contentOverride }) => {
                 ].map(([title, desc], i) => (
                   <div key={title} className="bento-cell spotlight-card">
                     <div className="relative z-10">
-                      <p className="font-mono text-blue-400/60 text-xs mb-3">{String(i + 1).padStart(2, '0')}</p>
+                      <p className="accent-text font-mono text-xs mb-3 opacity-80">{String(i + 1).padStart(2, '0')}</p>
                       <h3 className="font-display font-semibold text-white text-lg mb-2">{title}</h3>
                       <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
                     </div>
@@ -347,17 +348,16 @@ const HomePage = ({ contentOverride }) => {
             </motion.div>
 
             <div className="grid md:grid-cols-4 gap-0 relative">
-              <div className="hidden md:block absolute top-8 left-[12.5%] right-[12.5%] h-px"
-                style={{ background: 'linear-gradient(90deg, rgba(37,99,235,0.4), rgba(37,99,235,0.2), rgba(37,99,235,0.4))' }}
+              <div className="hidden md:block absolute top-16 left-[12.5%] right-[12.5%] h-px opacity-60"
+                style={{ background: 'linear-gradient(90deg, rgb(96 165 250), rgb(45 212 191), rgb(251 191 36), rgb(167 139 250))' }}
               />
               {PROCESS_STEPS.map((step, i) => (
-                <motion.div key={i} variants={fadeUp} custom={i} className="relative p-8 group">
-                  <div className="w-16 h-16 rounded-2xl mb-6 flex items-center justify-center border transition-colors group-hover:border-blue-500/40"
-                    style={{ background: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)' }}
-                  >
-                    <step.icon className="w-7 h-7 text-blue-400" />
+                <motion.div key={i} variants={fadeUp} custom={i}
+                  className={`relative p-8 group ${['accent-blue', 'accent-teal', 'accent-amber', 'accent-violet'][i % 4]}`}>
+                  <div className="accent-chip w-16 h-16 rounded-2xl mb-6 flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-1 group-hover:rotate-[-4deg]">
+                    <step.icon className="w-7 h-7" />
                   </div>
-                  <span className="font-mono text-blue-400/50 text-xs font-bold tracking-wider block mb-2">{step.step}</span>
+                  <span className="accent-text font-mono text-xs font-bold tracking-wider block mb-2 opacity-80">{step.step}</span>
                   <h3 className="font-display font-bold text-white text-lg mb-2">{step.title}</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
                 </motion.div>
@@ -395,7 +395,7 @@ const HomePage = ({ contentOverride }) => {
                   className="bento-cell spotlight-card group"
                 >
                   <div className="relative z-10 flex items-start gap-5">
-                    <div className="font-mono text-blue-400/50 text-xs font-bold w-8 shrink-0 mt-1">{String(i + 1).padStart(2,'0')}</div>
+                    <div className="accent-text font-mono text-xs font-bold w-8 shrink-0 mt-1 opacity-80">{String(i + 1).padStart(2,'0')}</div>
                     <div>
                       <h3 className="font-display font-semibold text-white text-lg mb-2">{s.title}</h3>
                       <p className="text-slate-400 text-sm leading-relaxed">{s.desc}</p>

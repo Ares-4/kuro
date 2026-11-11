@@ -179,11 +179,41 @@
     radial-gradient(ellipse 90% 60% at 50% 110%, rgba(34,211,238,0.12), transparent 60%),
     linear-gradient(180deg, #05060a 0%, #070a12 40%, #05060a 100%);
 }
+/* The blobs are already soft radial gradients; the old filter: blur(90px) on
+   55vmax layers cost a lot of paint time on phones for almost no visual gain. */
 .aurora-blob {
-  position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5;
+  position: absolute; border-radius: 50%; opacity: 0.5;
   animation: drift 28s var(--ease-in-out) infinite alternate;
   will-change: transform;
 }
+
+/* ---- Flight paths (looping background, see FlightPaths.jsx) ---- */
+.flight-paths {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none; opacity: 0.7;
+}
+.flight-route { --hue: 96 165 250; }
+.flight-route.hue-teal   { --hue: 45 212 191; }
+.flight-route.hue-amber  { --hue: 251 191 36; }
+.flight-route.hue-violet { --hue: 167 139 250; }
+.flight-track {
+  fill: none; stroke: rgb(var(--hue) / 0.14); stroke-width: 1; stroke-dasharray: 2 6;
+}
+.flight-comet {
+  fill: none; stroke: rgb(var(--hue) / 0.9); stroke-width: 1.6; stroke-linecap: round;
+  stroke-dasharray: 60 940; stroke-dashoffset: 1000;
+  filter: drop-shadow(0 0 4px rgb(var(--hue) / 0.8));
+  animation: flight-travel 16s linear infinite;
+}
+.flight-city   { fill: rgb(var(--hue) / 0.9); animation: city-pulse 4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.flight-origin { fill: #fbbf24; filter: drop-shadow(0 0 6px rgba(251,191,36,0.9)); }
+@keyframes flight-travel { to { stroke-dashoffset: 0; } }
+@keyframes city-pulse { 0%, 100% { opacity: 0.35; transform: scale(1); } 50% { opacity: 1; transform: scale(1.6); } }
+@media (prefers-reduced-motion: reduce) {
+  .flight-comet { animation: none; stroke-dashoffset: 0; stroke-dasharray: none; stroke: rgb(var(--hue) / 0.18); filter: none; }
+  .flight-city { animation: none; opacity: 0.6; }
+}
+@media (max-width: 640px) { .flight-paths { opacity: 0.4; } }
 .aurora-blob.one   { width: 55vmax; height: 55vmax; top: -15vmax; left: -10vmax;  background: radial-gradient(circle, rgba(37,99,235,0.55), transparent 70%); }
 .aurora-blob.two   { width: 50vmax; height: 50vmax; top: 30vmax;  right: -15vmax; background: radial-gradient(circle, rgba(124,58,237,0.45), transparent 70%); animation-delay: -9s; }
 .aurora-blob.three { width: 40vmax; height: 40vmax; bottom: -10vmax; left: 20%;    background: radial-gradient(circle, rgba(34,211,238,0.3), transparent 70%);  animation-delay: -18s; }
@@ -218,17 +248,59 @@
 
 /* ---- Bento grid ------------------------------------------- */
 .bento { display: grid; gap: var(--s-4); grid-template-columns: repeat(12, 1fr); grid-auto-rows: minmax(clamp(140px, 14vw, 220px), auto); }
+/* Cards with depth: each gets an accent hue (cycled automatically, or set with
+   .accent-*). Layers: corner colour wash + glass gradient fill, a 1px gradient
+   border (::after, masked to the edge), a top highlight, and a shadow tinted
+   with the accent. Hover lifts the card and brightens border and glow. */
 .bento-cell {
-  position: relative; overflow: hidden;
+  --accent: 96 165 250;
+  position: relative; overflow: hidden; isolation: isolate;
   padding: var(--s-6);
   border-radius: var(--r-lg);
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(148,163,184,0.1);
-  transition: transform 0.35s var(--ease-out-expo), box-shadow 0.35s ease;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgb(var(--accent) / 0.16), transparent 55%),
+    radial-gradient(90% 70% at 100% 100%, rgb(var(--accent) / 0.06), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 1px 2px rgba(0,0,0,0.45),
+    0 22px 44px -26px rgb(var(--accent) / 0.45);
+  transition: transform 0.45s var(--ease-out-expo), box-shadow 0.45s ease;
+}
+.bento-cell::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(140deg, rgb(var(--accent) / 0.65), rgb(var(--accent) / 0.08) 38%, rgba(255,255,255,0.05) 62%, rgb(var(--accent) / 0.35));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0.7; transition: opacity 0.45s ease;
 }
 .bento-cell:hover {
-  transform: translateY(-4px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px rgba(96,165,250,0.3), 0 30px 60px -30px rgba(37,99,235,0.35);
+  transform: translateY(-6px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 1px 2px rgba(0,0,0,0.45),
+    0 34px 60px -26px rgb(var(--accent) / 0.6);
+}
+.bento-cell:hover::after { opacity: 1; }
+/* Automatic hue rotation within any grid of cards: blue, teal, amber, violet. */
+.bento-cell:nth-child(4n+2) { --accent: 45 212 191; }
+.bento-cell:nth-child(4n+3) { --accent: 251 191 36; }
+.bento-cell:nth-child(4n+4) { --accent: 167 139 250; }
+.accent-blue   { --accent: 96 165 250; }
+.accent-teal   { --accent: 45 212 191; }
+.accent-amber  { --accent: 251 191 36; }
+.accent-violet { --accent: 167 139 250; }
+.bento-cell.accent-blue   { --accent: 96 165 250; }
+.bento-cell.accent-teal   { --accent: 45 212 191; }
+.bento-cell.accent-amber  { --accent: 251 191 36; }
+.bento-cell.accent-violet { --accent: 167 139 250; }
+/* Accent-coloured details inside a card */
+.accent-text { color: rgb(var(--accent)); }
+.accent-chip {
+  /* solid base so lines/backgrounds behind the chip do not show through */
+  background: linear-gradient(rgb(var(--accent) / 0.14), rgb(var(--accent) / 0.14)), #0a0f1c;
+  box-shadow: inset 0 0 0 1px rgb(var(--accent) / 0.3), 0 8px 20px -10px rgb(var(--accent) / 0.6);
+  color: rgb(var(--accent));
 }
 .col-3 { grid-column: span 3; } .col-4 { grid-column: span 4; }
 .col-5 { grid-column: span 5; } .col-6 { grid-column: span 6; }
@@ -236,7 +308,7 @@
 .col-9 { grid-column: span 9; } .col-12 { grid-column: span 12; }
 .row-2 { grid-row: span 2; }
 @media (max-width: 900px)  { .bento { grid-template-columns: repeat(6, 1fr); } .col-3,.col-4 { grid-column: span 3; } .col-5,.col-6,.col-7,.col-8,.col-9 { grid-column: span 6; } }
-@media (max-width: 560px)  { .bento { grid-template-columns: 1fr; } .bento-cell { grid-column: 1 / -1 !important; } }
+@media (max-width: 560px)  { .bento { grid-template-columns: 1fr; } .bento > .bento-cell { grid-column: 1 / -1 !important; } }
 
 /* ---- Gradient text ---------------------------------------- */
 .grad-text {
@@ -283,7 +355,7 @@
 .spotlight-card { position: relative; overflow: hidden; }
 .spotlight-card::before {
   content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; z-index: 0;
-  background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(59,130,246,0.07), transparent 40%);
+  background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgb(var(--accent, 59 130 246) / 0.12), transparent 40%);
   opacity: 0; transition: opacity 0.3s ease;
 }
 .spotlight-card:hover::before { opacity: 1; }

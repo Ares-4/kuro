@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import CountUp from '@/components/CountUp';
 import { supabase } from '@/lib/customSupabaseClient';
 import { ShieldCheck, GraduationCap, Globe2, Users, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const CredibilityBlock = ({ className = "" }) => {
   const [metrics, setMetrics] = useState([
-    { icon: 'ShieldCheck', value: '98%', label: 'Visa Success Rate' },
-    { icon: 'Users', value: '500+', label: 'Students Placed' },
+    { icon: 'ShieldCheck', value: '90%+', label: 'Visa Success Rate' },
+    { icon: 'Users', value: '200+', label: 'Students Placed' },
     { icon: 'GraduationCap', value: '35+', label: 'Partner Universities' },
-    { icon: 'Globe2', value: '12', label: 'Countries Served' }
+    { icon: 'Globe2', value: '5+', label: 'Countries Served' }
   ]);
 
   useEffect(() => {
@@ -30,10 +31,6 @@ const CredibilityBlock = ({ className = "" }) => {
     return <Icon className="w-10 h-10" />;
   };
 
-  const getIconColor = (index) => {
-    const colors = ['text-green-500', 'text-blue-500', 'text-purple-500', 'text-cyan-500'];
-    return colors[index % colors.length];
-  };
 
   return (
     <section className={`py-20 bg-slate-950 border-y border-slate-900 ${className}`}>
@@ -53,12 +50,12 @@ const CredibilityBlock = ({ className = "" }) => {
         {/* Metrics Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {metrics.map((metric, index) => (
-            <div key={index} className="text-center p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
-              <div className={`flex justify-center mb-4 ${getIconColor(index)}`}>
+            <div key={index} className="bento-cell text-center">
+              <div className="accent-text relative z-10 flex justify-center mb-4">
                 {getIcon(metric.icon)}
               </div>
-              <div className="text-4xl font-bold text-white mb-2">{metric.value}</div>
-              <div className="text-sm text-slate-400 uppercase tracking-wider font-semibold">{metric.label}</div>
+              <CountUp value={metric.value} className="relative z-10 block text-4xl font-bold text-white mb-2 tabular" />
+              <div className="relative z-10 text-sm text-slate-300 font-semibold">{metric.label}</div>
             </div>
           ))}
         </div>

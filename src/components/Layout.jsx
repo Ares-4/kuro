@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
 import PromoBanners from './layout/PromoBanners';
+import FlightPaths from './FlightPaths';
 
 const Layout = () => {
   return (
@@ -14,6 +15,7 @@ const Layout = () => {
         <div className="aurora-blob three" />
       </div>
       <div className="grid-overlay" aria-hidden="true" />
+      <FlightPaths />
 
       <Navbar />
 

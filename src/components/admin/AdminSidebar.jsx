@@ -6,7 +6,7 @@ import {
   BookOpen, Globe, Edit3, Megaphone, LayoutTemplate, Activity,
   Settings, LogOut, X, ChevronDown, BarChart3, LayoutDashboard,
   Navigation, Plane, BrainCircuit, Radio, CalendarClock,
-  HelpCircle, Inbox, Image, Mail, MessageSquare, TrendingUp, UserPlus,
+  HelpCircle, Inbox, ClipboardCheck, Image, Mail, MessageSquare, TrendingUp, UserPlus,
 } from 'lucide-react';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { supabase } from '@/lib/customSupabaseClient';
@@ -34,6 +34,7 @@ const NAV_GROUPS = [
     label: 'Operations',
     items: [
       { label: 'Notifications', icon: Inbox, path: '/admin/notifications', badge: 'unread' },
+      { label: 'Readiness orders', icon: ClipboardCheck, path: '/admin/readiness-orders' },
       { label: 'Applications', icon: FileText, path: '/admin/applications' },
       { label: 'Applicants', icon: UserPlus, path: '/admin/applicants' },
       { label: 'Leads', icon: Users, path: '/admin/leads' },

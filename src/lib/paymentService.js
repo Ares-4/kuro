@@ -6,9 +6,9 @@ import { supabase } from "@/lib/customSupabaseClient";
  * @param {{ product: 'readiness_basic'|'readiness_premium', email?: string, successUrl: string, cancelUrl: string }} args
  * @returns {Promise<{ url: string }>}
  */
-export async function createReadinessCheckout({ product, email, successUrl, cancelUrl }) {
+export async function createReadinessCheckout({ product, email, successUrl, cancelUrl, leadId }) {
   const { data, error } = await supabase.functions.invoke("process-payment", {
-    body: { product, email, successUrl, cancelUrl },
+    body: { product, email, successUrl, cancelUrl, leadId },
   });
 
   if (error) {

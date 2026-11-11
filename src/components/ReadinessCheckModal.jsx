@@ -516,7 +516,11 @@ const ReadinessCheckModal = ({ isOpen, onClose }) => {
         createdAt: new Date().toISOString(),
       }));
 
+      // Client-side id: anonymous visitors can insert leads but not read them back,
+      // and the id travels through checkout so the paid order links to these answers.
+      const leadId = crypto.randomUUID();
       await supabase.from('leads').insert({
+        id: leadId,
         email: formData.email,
         name: 'Student',
         whatsapp: formData.phone,
@@ -536,6 +540,7 @@ const ReadinessCheckModal = ({ isOpen, onClose }) => {
 
       // Price is fixed server-side per product (process-payment).
       const session = await createReadinessCheckout({
+        leadId,
         product: formData.plan === "premium" ? "readiness_premium" : "readiness_basic",
         email: formData.email,
         successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,

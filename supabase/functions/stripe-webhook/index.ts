@@ -126,6 +126,27 @@ Deno.serve(async (req) => {
     // application record — notify the admin and stop here.
     const product = session.metadata?.product ?? "";
     if (product.startsWith("readiness_")) {
+      // Trackable order (Admin > Premium orders). Premium is due 24h after payment.
+      const leadId = session.metadata?.leadId ?? null;
+      let answers = null;
+      if (leadId) {
+        const { data: lead } = await supabaseAdmin.from("leads").select("intake_form, whatsapp").eq("id", leadId).maybeSingle();
+        try { answers = lead?.intake_form ? { ...JSON.parse(lead.intake_form), whatsapp: lead.whatsapp ?? null } : null; } catch { answers = null; }
+      }
+      const premium = product === "readiness_premium";
+      await supabaseAdmin.from("readiness_orders").upsert({
+        stripe_session_id: session.id,
+        product,
+        amount_cents: session.amount_total ?? null,
+        currency: session.currency ?? null,
+        email: session.customer_details?.email ?? session.customer_email ?? null,
+        lead_id: leadId,
+        answers,
+        status: premium ? "paid" : "delivered",
+        due_at: premium ? new Date(Date.now() + 24 * 3600_000).toISOString() : null,
+        delivered_at: premium ? null : new Date().toISOString(),
+      }, { onConflict: "stripe_session_id", ignoreDuplicates: true });
+
       await supabaseAdmin.from("admin_notifications").insert({
         type: "readiness_paid",
         title: "Readiness check paid",

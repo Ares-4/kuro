@@ -46,7 +46,11 @@ Deno.serve(async (req) => {
         customer_email: isEmail(body.email) ? body.email : undefined,
         success_url: body.successUrl,
         cancel_url: body.cancelUrl,
-        metadata: { product: body.product, expectedAmountCents: String(product.cents) },
+        metadata: {
+          product: body.product,
+          expectedAmountCents: String(product.cents),
+          ...(typeof body.leadId === "string" && /^[0-9a-f-]{36}$/i.test(body.leadId) ? { leadId: body.leadId } : {}),
+        },
       });
       return json({ url: session.url });
     }

@@ -82,6 +82,10 @@ Deno.serve(async (req) => {
     return json({ success: true });
   } catch (error) {
     console.error("send-email error:", error);
-    return json({ error: "Could not send email" }, 500);
+    // Non-secret diagnostics (e.g. EAUTH = login rejected, ECONNECTION/ETIMEDOUT =
+    // cannot reach the mail server) so failures can be fixed without log access.
+    // deno-lint-ignore no-explicit-any
+    const e = error as any;
+    return json({ error: "Could not send email", code: e?.code ?? null, smtp: e?.responseCode ?? null, command: e?.command ?? null }, 500);
   }
 });

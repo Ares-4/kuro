@@ -129,9 +129,10 @@ Studying in Warsaw, Poland's capital and business centre, puts students close to
 
 It suits outgoing students who enjoy travel and working with people. Graduates work for tour operators and travel agencies, hotels, tourist boards, event companies and leisure facilities.`,
 
-  '8438d6f7': `LSBU Management is a management degree linked to London South Bank University (LSBU) in the UK. The curriculum covers management and leadership, marketing, finance, human resources and business strategy, with an international, case-based approach.
+  // Updated by 20261111170000_course_data_fixes.sql after checking Vistula's site.
+  '8438d6f7': `LSBU Management is Vistula's Polish-British double diploma programme with London South Bank University (LSBU) in the UK. The curriculum covers management and leadership, marketing, finance, human resources and business strategy, with an international, case-based approach.
 
-It suits students who want a business degree with a UK connection while studying in Warsaw. Ask your advisor to confirm exactly how the LSBU award works for your intake before you apply.`,
+Students spend their first two years in Warsaw and can choose to complete their final year at LSBU in London, where Vistula students receive a discount on LSBU tuition. It suits students who want a business degree with a UK award. Your advisor can walk you through the costs of the London year before you apply.`,
 
   '3f4f8460': `Graphic Design teaches visual communication: typography, layout, branding and identity, illustration, photography basics and digital design software, applied to print, web and social media. Students build a professional portfolio through briefs and projects.
 

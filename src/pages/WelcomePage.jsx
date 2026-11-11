@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/customSupabaseClient';
 import { STUDY_LEVELS, INTAKES } from '@/lib/studyOptions';
+import { trackSignUp } from '@/lib/analytics';
 
 // Required profile step after the first sign-in (Google or email), before the
 // dashboard. Collects what an advisor needs to avoid wrong advice, then shows a
@@ -175,6 +176,8 @@ const WelcomePage = () => {
     }
     await supabase.auth.updateUser({ data: { full_name: row.full_name, phone: row.phone, country: row.country } }).catch(() => {});
     try { sessionStorage.setItem(`kuro_profile_done_${user.id}`, '1'); } catch { /* ignore */ }
+    // Completed profile = finished sign-up (runs once: onboarded students skip /welcome).
+    trackSignUp(user.app_metadata?.provider || 'email');
     // Welcome email (send-email only allows this to the student's own address).
     supabase.functions.invoke('send-email', {
       body: { to: user.email, templateName: 'welcome_student', data: { name: row.full_name.split(' ')[0], destination: form.destination } },

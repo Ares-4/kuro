@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { createReadinessCheckout } from '@/lib/paymentService';
+import { trackLead, trackBeginCheckout } from '@/lib/analytics';
 import { supabase } from '@/lib/customSupabaseClient';
 import { calculateLeadScore } from '@/lib/leadScoringService';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';
@@ -536,18 +537,20 @@ const ReadinessCheckModal = ({ isOpen, onClose }) => {
         intake_form: JSON.stringify(formData),
       });
 
+      trackLead('readiness_check', { plan: formData.plan });
       notifyAdminOfLead('New readiness check', `${formData.email} completed a ${formData.plan} readiness check for ${formData.destination || 'unspecified destination'}.`, '/admin/leads');
 
       // Price is fixed server-side per product (process-payment).
+      const product = formData.plan === "premium" ? "readiness_premium" : "readiness_basic";
       const session = await createReadinessCheckout({
         leadId,
-        product: formData.plan === "premium" ? "readiness_premium" : "readiness_basic",
+        product,
         email: formData.email,
         successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${window.location.origin}/?payment=cancelled`,
       });
 
-      if (session?.url) { window.location.href = session.url; return; }
+      if (session?.url) { trackBeginCheckout(product, () => { window.location.href = session.url; }); return; }
       toast({ title: "Payment error", description: "Could not start checkout.", variant: "destructive" });
     } catch (error) {
       console.error(error);

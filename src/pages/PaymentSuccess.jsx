@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 import { scoreReadiness, buildPremiumAddOns } from '@/lib/utils';
 import { verifyReadinessPayment } from '@/lib/paymentService';
+import { trackPurchase } from '@/lib/analytics';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -20,7 +21,9 @@ const PaymentSuccess = () => {
     let cancelled = false;
     if (!sessionId) { setVerifying(false); return undefined; }
     verifyReadinessPayment(sessionId)
-      .then((res) => { if (!cancelled && res?.paid) setPaidProduct(res.product); })
+      .then((res) => {
+        if (!cancelled && res?.paid) { setPaidProduct(res.product); trackPurchase(sessionId, res.product); }
+      })
       .catch((err) => console.error('Payment verification failed:', err))
       .finally(() => { if (!cancelled) setVerifying(false); });
     return () => { cancelled = true; };

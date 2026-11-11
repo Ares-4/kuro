@@ -1,3 +1,4 @@
+import { trackLead } from '@/lib/analytics';
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Loader2, Send } from 'lucide-react';
@@ -53,6 +54,7 @@ const ContactPage = ({ contentOverride }) => {
         score: scoringResult.score, tier: scoringResult.tier, scored_at: scoringResult.scored_at,
       }]);
       if (error) throw error;
+      trackLead('contact_form');
       notifyAdminOfLead('New contact message', `${formData.name} (${formData.email}) sent a message.`, '/admin/leads');
       toast({ title: "Message sent", description: content.success_message, className: "bg-green-600 text-white border-none" });
       setFormData({ name: '', email: '', whatsapp: '', message: '' });

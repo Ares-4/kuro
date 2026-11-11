@@ -1,3 +1,4 @@
+import { trackLead } from '@/lib/analytics';
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/customSupabaseClient';
 import { X, Mail, CheckCircle2 } from 'lucide-react';
@@ -125,6 +126,7 @@ const PromoBanner = ({ variant = 'readiness', className = '' }) => {
     setIsSubmitting(true);
     try {
       await emailTriggers.sendGuideDownload(email);
+      trackLead('guide_download');
 
       toast({
         title: 'Guide Sent',

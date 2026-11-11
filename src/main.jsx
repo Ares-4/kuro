@@ -9,6 +9,9 @@ import { PublicSiteSettingsProvider } from '@/contexts/PublicSiteSettingsContext
 import { AdminAuthProvider } from '@/contexts/AdminAuthContext';
 import { envConfig } from '@/config/environment';
 import StartupErrorModal from '@/components/StartupErrorModal';
+import { initContactClickTracking } from '@/lib/analytics';
+
+initContactClickTracking();
 
 const Root = () => {
   const [isConfigValid, setIsConfigValid] = useState(envConfig.isValid);

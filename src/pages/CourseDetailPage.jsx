@@ -265,7 +265,7 @@ const CourseDetailPage = () => {
                      <h2 className="text-2xl font-bold text-white mb-4">About this Program</h2>
                      <p className={`text-slate-300 leading-relaxed text-lg ${course.description ? 'mb-4' : 'mb-8'}`}>{summary}</p>
                      {course.description && (
-                        <p className="text-slate-300 leading-relaxed text-lg mb-8">{course.description}</p>
+                        <p className="text-slate-300 leading-relaxed text-lg mb-8 whitespace-pre-line">{course.description}</p>
                      )}
 
                      <h3 className="text-xl font-bold text-white mb-4">Requirements</h3>

@@ -169,7 +169,7 @@ const DestinationDetailPage = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
               {universities.map(u => (
                 <Link key={u.id} to={`/universities/${u.id}`}
-                  className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-blue-500/30 transition-colors flex flex-col gap-3">
+                  className="bento-cell flex flex-col gap-3">
                   <UniversityMark name={u.name} imageUrl={u.image_url} className="aspect-video rounded-xl" />
                   <h3 className="font-semibold text-white text-sm leading-snug">{u.name}</h3>
                   {u.ranking && (

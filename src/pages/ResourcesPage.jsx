@@ -85,7 +85,7 @@ const ResourcesPage = () => {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {blogs.map((post) => (
                   <Link key={post.id} to={`/blog/${post.slug}`} className="group h-full">
-                    <Card className="bg-slate-900 border-slate-800 h-full hover:border-primary/50 transition-colors overflow-hidden flex flex-col">
+                    <Card className="bento-cell !p-0 border-0 h-full overflow-hidden flex flex-col">
                       <div className="h-48 overflow-hidden bg-slate-800">
                         {post.featured_image ? (
                           <img src={sizedImage(post.featured_image, 640)} alt={post.title} loading="lazy" decoding="async" width={640} height={360} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />

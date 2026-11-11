@@ -24,18 +24,18 @@ const DeadlineBadge = ({ date }) => {
 };
 
 const ScholarshipCard = ({ s, subscribed, onToggle }) => (
-  <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-slate-700 transition-colors flex flex-col gap-3">
-    <div className="flex items-start justify-between gap-3">
-      <div className="flex-1 min-w-0">
-        <Link to={`/scholarships/${s.id}`} className="font-semibold text-white text-sm leading-snug hover:text-blue-400 transition-colors">{s.title}</Link>
-        <p className="text-xs text-slate-400 mt-0.5">{s.provider}</p>
-      </div>
-      {s.amount && (
-        <span className="shrink-0 text-xs font-bold text-green-400 bg-green-900/20 border border-green-800/40 px-2 py-1 rounded-lg whitespace-nowrap">
-          {s.amount}
-        </span>
-      )}
+  <div className="bento-cell flex flex-col gap-3">
+    {/* Award text can be a long sentence, so it sits under the title and wraps
+        (it used to share the title row with nowrap and squeeze the title). */}
+    <div className="min-w-0">
+      <Link to={`/scholarships/${s.id}`} className="block font-semibold text-white text-base leading-snug hover:text-blue-300 transition-colors">{s.title}</Link>
+      <p className="text-xs text-slate-400 mt-1">{s.provider}</p>
     </div>
+    {s.amount && (
+      <p className="self-start text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1.5 rounded-lg leading-snug line-clamp-2">
+        {s.amount}
+      </p>
+    )}
 
     {s.description && (
       <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">{s.description}</p>

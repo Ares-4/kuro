@@ -83,7 +83,7 @@ const UniversitiesPage = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map(u => (
               <Link key={u.id} to={`/universities/${u.id}`}
-                className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-slate-700 transition-colors flex flex-col gap-3">
+                className="bento-cell flex flex-col gap-3">
                 <UniversityMark name={u.name} imageUrl={u.image_url} className="aspect-video rounded-xl" />
                 <h3 className="font-semibold text-white text-sm leading-snug">{u.name}</h3>
                 <div className="flex items-center justify-between text-xs text-slate-400">

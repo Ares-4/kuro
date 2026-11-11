@@ -113,10 +113,10 @@ const CoursesPage = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((p) => (
               <Link key={p.id} to={`/courses/${p.id}`}
-                className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-slate-700 transition-colors flex flex-col gap-3">
+                className="bento-cell flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-3">
                   <h2 className="font-semibold text-white text-base leading-snug">{p.program_name}</h2>
-                  {p.degree_level && <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-full bg-blue-950/60 text-blue-300 border border-blue-900">{p.degree_level}</span>}
+                  {p.degree_level && <span className="accent-chip shrink-0 text-[11px] px-2 py-0.5 rounded-full">{p.degree_level}</span>}
                 </div>
                 <p className="text-sm text-slate-400">{shortUni(p.university)}</p>
                 <div className="mt-auto flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-slate-400">

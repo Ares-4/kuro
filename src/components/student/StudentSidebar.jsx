@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, FileText, User, Settings, LogOut, X, 
   GraduationCap, MessageSquare, Bell, FolderOpen

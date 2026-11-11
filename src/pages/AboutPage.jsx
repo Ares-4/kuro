@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Target, Users, ShieldCheck } from 'lucide-react';
 import SEO from '@/components/SEO';
 import AdSlot from '@/components/ads/AdSlot';

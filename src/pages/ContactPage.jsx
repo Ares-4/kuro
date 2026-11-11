@@ -1,6 +1,6 @@
 import { trackLead } from '@/lib/analytics';
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

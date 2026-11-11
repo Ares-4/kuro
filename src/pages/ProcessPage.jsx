@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { ClipboardList, Search, FileText, CheckCircle, Plane, Home } from 'lucide-react';
 import SEO from '@/components/SEO';
 import { getPageContent } from '@/lib/contentService';

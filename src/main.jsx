@@ -10,8 +10,18 @@ import { AdminAuthProvider } from '@/contexts/AdminAuthContext';
 import { envConfig } from '@/config/environment';
 import StartupErrorModal from '@/components/StartupErrorModal';
 import { initContactClickTracking } from '@/lib/analytics';
+import { LazyMotion } from 'framer-motion';
 
 initContactClickTracking();
+
+// Animation features load as their own chunk; components use the slim `m`
+// component (imported as `motion`). Starting the fetch now overlaps it with
+// the rest of startup.
+const motionFeatures = import('@/lib/motionFeatures').then((mod) => {
+  window.__kuroMotionReady = true; // tools/prerender.js waits for this
+  return mod.default;
+});
+const loadMotionFeatures = () => motionFeatures;
 
 const Root = () => {
   const [isConfigValid, setIsConfigValid] = useState(envConfig.isValid);
@@ -39,7 +49,9 @@ const Root = () => {
     <BrowserRouter>
       <PublicSiteSettingsProvider>
         <AdminAuthProvider>
-          <App />
+          <LazyMotion features={loadMotionFeatures}>
+            <App />
+          </LazyMotion>
           <SpeedInsights />
         </AdminAuthProvider>
       </PublicSiteSettingsProvider>

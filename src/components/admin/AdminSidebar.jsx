@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import {
   FileText, Users, Bell, Map, Building, GraduationCap, Shield,
   BookOpen, Globe, Edit3, Megaphone, LayoutTemplate, Activity,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Check, Circle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { MessageSquare, X, Send, User, Bot, Minimize2, Loader2, Phone, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';
 import { answerQuestion } from '@/lib/kuroAssistant';

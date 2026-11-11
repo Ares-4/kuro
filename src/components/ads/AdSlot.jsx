@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getPromoBanners } from '@/lib/settingsStore';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useAdPlacementContext } from '@/contexts/AdPlacementContext';

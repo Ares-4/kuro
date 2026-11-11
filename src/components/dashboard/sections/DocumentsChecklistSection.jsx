@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { FileText, CheckCircle, Circle, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import { Button } from '@/components/ui/button';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Clock, AlertTriangle, Info, CalendarCheck, ExternalLink, CheckCircle2 } from 'lucide-react';
 import CountdownTimer from './CountdownTimer';
 import AddToCalendarButton from './AddToCalendarButton';

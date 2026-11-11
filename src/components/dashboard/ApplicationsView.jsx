@@ -1,6 +1,6 @@
 // src/components/dashboard/ApplicationsView.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { FileText, Upload, CheckCircle, Clock, AlertCircle, Loader2, Eye, ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useAuth } from '@/contexts/SupabaseAuthContext';

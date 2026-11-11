@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { MapPin, Wallet, Calendar, GraduationCap, ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import { Link } from 'react-router-dom';

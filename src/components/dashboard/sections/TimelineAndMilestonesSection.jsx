@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Calendar, Flag, Plane, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 

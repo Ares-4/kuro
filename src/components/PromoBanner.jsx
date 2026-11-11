@@ -5,7 +5,7 @@ import { X, Mail, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import FunnelButton from '@/components/FunnelButton';
 import { emailTriggers } from '@/lib/emailService';
 import { notifyAdminOfLead } from '@/lib/pushNotifications';

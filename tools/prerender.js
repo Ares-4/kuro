@@ -150,7 +150,11 @@ async function waitUntilRendered(page, route, shellTitles) {
   // Sections that load after the title (related courses, deadlines...) get a
   // short, capped chance to finish so they land in the snapshot too.
   await page.waitForLoadState('networkidle', { timeout: 1_500 }).catch(() => {});
-  await page.waitForTimeout(300);
+  // Animation features load as a lazy chunk (LazyMotion in main.jsx); entrance
+  // animations only start once it arrives, so wait for it and let them finish,
+  // otherwise above-the-fold content is snapshotted at opacity 0.
+  await page.waitForFunction(() => window.__kuroMotionReady === true, null, { timeout: 3_000 }).catch(() => {});
+  await page.waitForTimeout(700);
 }
 
 // The snapshot is the DOM after the page has run, so it contains things the

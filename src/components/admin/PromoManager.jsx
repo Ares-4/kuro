@@ -20,7 +20,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Plus, Edit2, Trash2, Loader2, Save, Eye, Smartphone, Monitor } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { getPromoBanners, savePromoBanners } from '@/lib/settingsStore';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 
 const PAGE_OPTIONS = [
   { value: '/', label: 'Home Page' },

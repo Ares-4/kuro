@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/customSupabaseClient';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { Search, MapPin, Clock, DollarSign, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BackButton } from '@/components/ui/back-button';

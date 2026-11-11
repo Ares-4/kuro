@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, ArrowLeft, ArrowRight, Loader2, CheckCircle2, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';

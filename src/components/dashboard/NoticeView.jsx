@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { BackButton } from '@/components/ui/back-button';
 import { useToast } from '@/components/ui/use-toast';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 
 const NoticeView = () => {
   const { user } = useAuth();

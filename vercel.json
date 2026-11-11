@@ -48,6 +48,11 @@
       "source": "/blog",
       "destination": "/resources",
       "permanent": true
+    },
+    {
+      "source": "/eligibility",
+      "destination": "/readiness-check",
+      "permanent": true
     }
   ],
   "rewrites": [

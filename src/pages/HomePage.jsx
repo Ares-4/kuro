@@ -37,7 +37,7 @@ function Section({ children, className = '', style }) {
 
 /* ---- static data ---- */
 const PROCESS_STEPS = [
-  { step: '01', title: 'Check eligibility', desc: 'Free profile assessment in under 5 minutes.', icon: ShieldCheck },
+  { step: '01', title: 'Check your readiness', desc: 'Instant profile score for €2.99, or an expert report for €19.', icon: ShieldCheck },
   { step: '02', title: 'Apply with us',    desc: 'We handle docs and university submissions.',  icon: FileText },
   { step: '03', title: 'Get your visa',    desc: 'Country-specific strategy, paperwork to approval.', icon: CheckCircle2 },
   { step: '04', title: 'Fly and study',    desc: 'Relocation and settlement support on arrival.', icon: Plane },
@@ -178,7 +178,7 @@ const HomePage = ({ contentOverride }) => {
 
                 <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3">
                   <Button size="xl" asChild>
-                    <Link to="/eligibility">
+                    <Link to="/readiness-check">
                       {content.hero_cta_label || 'Start readiness check'}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
@@ -532,7 +532,7 @@ const HomePage = ({ contentOverride }) => {
               </motion.p>
               <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                 <Button size="xl" asChild><Link to="/signup">{content.cta_button_label || 'Create free account'}</Link></Button>
-                <Button size="xl" variant="outline" asChild><Link to="/eligibility">Check eligibility</Link></Button>
+                <Button size="xl" variant="outline" asChild><Link to="/readiness-check">Check your readiness</Link></Button>
               </motion.div>
               <motion.p variants={fadeUp} custom={4} className="text-sm text-slate-400 pt-4">
                 Founded by{' '}

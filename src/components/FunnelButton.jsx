@@ -68,7 +68,7 @@ const FunnelButton = ({
   // If it's a link type
   if (config.to) {
     return (
-      <Link to={config.to}>
+      <Link to={config.to} className={/w-full/.test(className) ? 'block w-full' : undefined}>
         <Button 
           variant={config.variant} 
           size={size} 

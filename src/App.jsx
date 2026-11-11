@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 import { AuthProvider } from '@/contexts/SupabaseAuthContext';
@@ -73,7 +73,6 @@ const ServicesPage = lazyPage(() => import('@/pages/ServicesPage'));
 const ProcessPage = lazyPage(() => import('@/pages/ProcessPage'));
 const WhyKuroPage = lazyPage(() => import('@/pages/WhyKuroPage'));
 const FaqsPage = lazyPage(() => import('@/pages/FaqsPage'));
-const EligibilityPage = lazyPage(() => import('@/pages/EligibilityPage'));
 const ResourcesPage = lazyPage(() => import('@/pages/ResourcesPage'));
 const BlogDetailPage = lazyPage(() => import('@/pages/BlogDetailPage'));
 const LoginPage = lazyPage(() => import('@/pages/LoginPage'));
@@ -108,7 +107,6 @@ const PRELOAD_ROUTES = [
   [/^\/process$/, ProcessPage],
   [/^\/why-kuro$/, WhyKuroPage],
   [/^\/faqs$/, FaqsPage],
-  [/^\/eligibility$/, EligibilityPage],
   [/^\/courses$/, CoursesPage],
   [/^\/courses\/[^/]+$/, CourseDetailPage],
   [/^\/readiness-check$/, ReadinessCheckPage],
@@ -161,7 +159,8 @@ function App() {
                   <Route path="/process" element={<ProcessPage />} />
                   <Route path="/why-kuro" element={<WhyKuroPage />} />
                   <Route path="/faqs" element={<FaqsPage />} />
-                  <Route path="/eligibility" element={<EligibilityPage />} />
+                  {/* The USD 29 eligibility check was retired (Nov 2026) in favour of the readiness check ladder. */}
+                  <Route path="/eligibility" element={<Navigate to="/readiness-check" replace />} />
                   <Route path="/courses" element={<CoursesPage />} />
                   <Route path="/courses/:id" element={<CourseDetailPage />} />
                   <Route path="/readiness-check" element={<ReadinessCheckPage />} />

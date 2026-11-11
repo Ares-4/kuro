@@ -117,7 +117,7 @@ const WhyKuroPage = ({ contentOverride }) => {
                 Begin your journey with us
               </h2>
               <Button size="xl" className="bg-blue-600 hover:bg-blue-500" asChild>
-                <Link to="/eligibility">Start readiness check</Link>
+                <Link to="/readiness-check">Start readiness check</Link>
               </Button>
             </motion.div>
           </div>

@@ -105,7 +105,7 @@ const DestinationsPage = ({ contentOverride }) => {
             </motion.p>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
               <Button size="xl" className="bg-blue-600 hover:bg-blue-500" asChild>
-                <Link to="/eligibility">Check your eligibility</Link>
+                <Link to="/readiness-check">Check your readiness</Link>
               </Button>
             </motion.div>
           </div>

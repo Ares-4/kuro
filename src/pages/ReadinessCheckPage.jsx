@@ -25,7 +25,7 @@ const ReadinessCheckPage = () => {
       metaDesc.name = "description";
       document.head.appendChild(metaDesc);
     }
-    metaDesc.content = "Assess your readiness for studying abroad. Free self-assessment tool covering academics, finances, language skills, and personal factors.";
+    metaDesc.content = "Know your chances before you apply: an instant readiness score for €2.99, or a €19 expert-reviewed report on your admission, finances and visa risk.";
   }, []);
 
   return (
@@ -53,16 +53,16 @@ const ReadinessCheckPage = () => {
           </h1>
           
           <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-16 leading-relaxed">
-            Stop guessing. Get an assessment of your admission and visa profile. 
-            Choose the depth of analysis that fits your needs.
+            Stop guessing. Start with a quick score, get an expert report when you are serious, then let us handle the full application.
           </p>
 
           {/* Pricing Grid */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             
             {/* Basic Tier */}
             <Card className="bg-slate-900 border-slate-800 relative hover:border-slate-700 transition-colors">
               <CardHeader className="text-center pb-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Step 1</p>
                 <CardTitle className="text-2xl text-white">Basic Check</CardTitle>
                 <div className="text-4xl font-bold text-white mt-4">€2.99</div>
                 <p className="text-slate-400 text-sm mt-2">Instant eligibility score</p>
@@ -109,6 +109,7 @@ const ReadinessCheckPage = () => {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-400" />
               
               <CardHeader className="text-center pb-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-blue-300 mb-2">Step 2</p>
                 <CardTitle className="text-2xl text-white flex items-center justify-center gap-2">
                   <Sparkles className="w-5 h-5 text-yellow-400" /> Premium Check
                 </CardTitle>
@@ -145,6 +146,33 @@ const ReadinessCheckPage = () => {
                    text="Get Premium Report" 
                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold" 
                  />
+              </CardFooter>
+            </Card>
+
+            {/* Step 3 — full service; the Premium fee is deducted (see FAQ) */}
+            <Card className="bg-slate-900 border-slate-800 relative hover:border-slate-700 transition-colors md:col-span-2 lg:col-span-1">
+              <CardHeader className="text-center pb-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Step 3</p>
+                <CardTitle className="text-2xl text-white">Full Application Service</CardTitle>
+                <div className="text-2xl font-bold text-white mt-5">Priced for your case</div>
+                <p className="text-emerald-300 text-sm mt-2">Your €19 Premium fee is deducted</p>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <ul className="space-y-4 text-left">
+                  {['University shortlisting and applications', 'Document preparation and review', 'Student visa application support', 'Pre-departure and arrival help', 'One advisor from start to finish'].map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm text-slate-300">
+                      <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <FunnelButton
+                  action="consultation"
+                  text="Talk to an advisor"
+                  className="w-full"
+                />
               </CardFooter>
             </Card>
 

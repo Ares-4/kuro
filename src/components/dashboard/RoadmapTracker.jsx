@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle2, Circle, Map, ArrowRight, Loader2, FileText } from 'lucide-react';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useToast } from '@/components/ui/use-toast';
+import { planDestination } from '@/lib/studyOptions';
 
 /**
  * Student-facing application roadmap for the student's chosen destination.
@@ -18,16 +19,19 @@ const RoadmapTracker = ({ student, onStudentChange }) => {
   const [savingOrder, setSavingOrder] = useState(null);
   const [expanded, setExpanded] = useState(null);
 
+  // Destination picked at onboarding; older profiles only have country.
+  const target = planDestination(student) || student?.country;
+
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      if (!student?.country) { setLoading(false); return; }
+      if (!target) { setLoading(false); return; }
       setLoading(true);
       const { data: dest } = await supabase
         .from('destinations')
         .select('name, slug')
         .eq('is_active', true)
-        .ilike('name', student.country.trim())
+        .ilike('name', target.trim())
         .limit(1)
         .maybeSingle();
       if (!dest) { if (!cancelled) { setDestination(null); setLoading(false); } return; }
@@ -43,7 +47,7 @@ const RoadmapTracker = ({ student, onStudentChange }) => {
     };
     load();
     return () => { cancelled = true; };
-  }, [student?.country]);
+  }, [target]);
 
   const done = useMemo(() => {
     const list = student?.preferences?.roadmap_progress?.[destination?.slug];

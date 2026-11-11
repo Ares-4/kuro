@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import CountryUpdateCard from '@/components/CountryUpdateCard';
 import RoadmapTracker from '@/components/dashboard/RoadmapTracker';
+import MyPlanCard from '@/components/dashboard/MyPlanCard';
+import { planDestination, programLevelPrefix } from '@/lib/studyOptions';
 import { Button } from '@/components/ui/button';
 
 const ease = [0.16, 1, 0.3, 1];
@@ -69,6 +71,22 @@ const STUDY_TIPS = [
   'Research accommodation before your visa arrives — popular student housing fills fast.',
 ];
 
+// Programs matching the student's plan: destination + level, then destination only, then any.
+async function recommendedPrograms(student) {
+  const country = planDestination(student);
+  const level = programLevelPrefix(student?.preferences?.study_level);
+  const base = () => supabase.from('programs').select('id, program_name, university, country, degree_level').eq('is_active', true).limit(3);
+  const tries = [];
+  if (country && level) tries.push(base().ilike('country', country).ilike('degree_level', `${level}%`));
+  if (country) tries.push(base().ilike('country', country));
+  if (level) tries.push(base().ilike('degree_level', `${level}%`));
+  for (const q of tries) {
+    const res = await q;
+    if (res.data?.length) return res;
+  }
+  return base();
+}
+
 const DashboardHome = () => {
   const { user } = useAuth();
   const [student, setStudent]       = useState(null);
@@ -90,7 +108,7 @@ const DashboardHome = () => {
           supabase.from('applications').select('*', { count: 'exact', head: true }).eq('student_id', s?.id ?? ''),
           supabase.from('programs').select('*', { count: 'exact', head: true }).eq('is_active', true),
           supabase.from('applications').select('id, status, created_at, programs(program_name, university)').eq('student_id', s?.id ?? '').order('created_at', { ascending: false }).limit(4),
-          supabase.from('programs').select('id, program_name, university').eq('is_active', true).limit(3),
+          recommendedPrograms(s),
           supabase.from('country_updates').select('*').eq('is_active', true)
             .or(`expires_at.is.null,expires_at.gt.${now}`)
             .order('appointment_at', { ascending: true, nullsFirst: false })
@@ -167,7 +185,7 @@ const DashboardHome = () => {
             label: 'Active applications',
             value: stats.applications,
             icon: <FileText className="w-4 h-4" style={{ color: 'var(--blue-400)' }} />,
-            sub: stats.applications > 0 ? `+${stats.applications > 1 ? stats.applications - 1 : 0} this week` : 'None yet',
+            sub: stats.applications > 0 ? 'Track them below' : 'None yet',
             subColor: 'var(--emerald-400)',
           },
           {
@@ -181,7 +199,7 @@ const DashboardHome = () => {
             label: 'Docs pending',
             value: docsOk ? 0 : 2,
             icon: <AlertTriangle className="w-4 h-4" style={{ color: 'var(--amber-400)' }} />,
-            sub: docsOk ? 'All uploaded' : 'Due in 5 days',
+            sub: docsOk ? 'All uploaded' : 'Add before applying',
             subColor: docsOk ? 'var(--emerald-400)' : 'var(--amber-400)',
           },
           {
@@ -223,6 +241,13 @@ const DashboardHome = () => {
           <div className="grid sm:grid-cols-2 gap-3">
             {countryAlerts.map(u => <CountryUpdateCard key={u.id} update={u} />)}
           </div>
+        </motion.div>
+      )}
+
+      {/* ── Personalised plan: intake countdown, deadlines, scholarships ── */}
+      {student && (
+        <motion.div variants={fadeUp} custom={1} initial="hidden" animate="show">
+          <MyPlanCard student={student} onStudentChange={setStudent} />
         </motion.div>
       )}
 
@@ -382,7 +407,7 @@ const DashboardHome = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-blue-400" />
-              <h2 className="font-display font-semibold text-white">Recommended programs</h2>
+              <h2 className="font-display font-semibold text-white">{planDestination(student) ? `Programs in ${planDestination(student)}` : 'Recommended programs'}</h2>
             </div>
             <Link to="/dashboard/programs" className="text-xs font-semibold flex items-center gap-1 hover:text-blue-300 transition-colors"
               style={{ color: 'var(--blue-400)' }}
@@ -402,7 +427,7 @@ const DashboardHome = () => {
                     >
                       <GraduationCap className="w-4 h-4 text-blue-400" />
                     </div>
-                    <span className="pill">{prog.level}</span>
+                    {prog.degree_level && <span className="pill">{prog.degree_level}</span>}
                   </div>
                   <p className="font-semibold text-white text-sm leading-snug mb-1">{prog.program_name}</p>
                   <p className="text-xs mb-4" style={{ color: 'var(--fg-4)' }}>{prog.university}</p>

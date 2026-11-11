@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/customSupabaseClient';
+import { STUDY_LEVELS, INTAKES } from '@/lib/studyOptions';
 
 // Required profile step after the first sign-in (Google or email), before the
 // dashboard. Collects what an advisor needs to avoid wrong advice, then shows a
@@ -21,8 +22,6 @@ const QUALIFICATIONS = [
   'O-level / IGCSE', 'A-level / Matric / NSSC / Grade 12', 'Certificate or Diploma',
   "Bachelor's degree", "Master's degree",
 ];
-const STUDY_LEVELS = ['Foundation / Pre-university', "Bachelor's", "Master's"];
-const INTAKES = ['February 2027', 'September 2027', 'February 2028', 'September 2028', 'Not sure yet'];
 const ENGLISH = ['IELTS', 'TOEFL', 'Duolingo English Test', 'Studied in English (school letter)', 'None yet'];
 const REFERRALS = ['Google search', 'Facebook', 'Instagram', 'TikTok', 'WhatsApp', 'Friend or family', 'Other'];
 

@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import FunnelButton from '@/components/FunnelButton';
 import AdSlot from '@/components/ads/AdSlot';
+import TestimonialsSection from '@/components/TestimonialsSection';
 
 const ReadinessCheckPage = () => {
   useEffect(() => {
@@ -152,6 +153,9 @@ const ReadinessCheckPage = () => {
       </section>
 
       {/* --- DETAILS: WHAT IS ANALYZED --- */}
+      {/* Real student reviews right after the prices, where people decide */}
+      <TestimonialsSection />
+
       <section className="py-20 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">

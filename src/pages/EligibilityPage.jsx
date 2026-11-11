@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText, Lock, Mail, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ELIGIBILITY_CHECK_FEE } from '@/config/paymentConfig';
+import TestimonialsSection from '@/components/TestimonialsSection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -120,7 +123,7 @@ const EligibilityPage = ({ contentOverride }) => {
         <section className="relative pt-28 pb-16 border-b border-white/5">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(37,99,235,0.18), transparent 65%)' }} />
           <div style={{ width: 'var(--container-narrow)', marginInline: 'auto', padding: '0 1rem' }} className="text-center">
-            <span className="eyebrow">Free assessment</span>
+            <span className="eyebrow">Paid assessment · USD {ELIGIBILITY_CHECK_FEE} one-time</span>
             <h1 className="font-display font-bold text-white mt-4 mb-5"
               style={{ fontSize: 'var(--fs-4xl)', letterSpacing: '-0.03em', lineHeight: 1.04 }}>
               {content.page_heading}
@@ -134,6 +137,22 @@ const EligibilityPage = ({ contentOverride }) => {
         <AdUnit slotId={ADSENSE_SLOTS.eligibilityTop} />
 
         <section className="py-12" style={{ width: 'min(640px, 92vw)', marginInline: 'auto', padding: '3rem 1rem' }}>
+          {/* What you pay and what you get, shown before any details are asked for */}
+          <div className="rounded-2xl border border-blue-500/25 bg-blue-950/20 p-6 mb-6">
+            <div className="flex items-baseline justify-between gap-4 flex-wrap">
+              <p className="font-display font-bold text-white text-3xl">USD {ELIGIBILITY_CHECK_FEE}<span className="text-slate-400 text-base font-medium"> · one-time</span></p>
+              <p className="flex items-center gap-1.5 text-xs text-slate-300"><Lock className="w-3.5 h-3.5 text-emerald-400" /> Secure card payment by Stripe</p>
+            </div>
+            <ul className="mt-4 space-y-2.5 text-sm text-slate-300">
+              <li className="flex gap-2.5"><FileText className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" /> A PDF report with your eligibility tier and score out of 100, based on your destination, study level, budget and intake.</li>
+              <li className="flex gap-2.5"><Mail className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" /> Sent to your email straight after payment.</li>
+              <li className="flex gap-2.5"><CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" /> You see the price again and confirm before anything is charged.</li>
+            </ul>
+            <p className="mt-4 text-xs text-slate-400">
+              Want a quicker self-check first? The <Link to="/readiness-check" className="text-blue-300 hover:text-blue-200 underline underline-offset-2">readiness check</Link> starts at €2.99.
+            </p>
+          </div>
+
           <div className="glass p-8 rounded-2xl">
             <h3 className="text-xl font-bold text-white mb-2">{content.form_title}</h3>
             <p className="text-slate-400 mb-6">{content.form_subtitle}</p>
@@ -256,11 +275,13 @@ const EligibilityPage = ({ contentOverride }) => {
                 </div>
 
               <Button type="submit" disabled={loading} className="w-full h-12 text-lg bg-blue-600 hover:bg-blue-700 mt-4">
-                {loading ? <Loader2 className="animate-spin" /> : 'Start Assessment'}
+                {loading ? <Loader2 className="animate-spin" /> : `Continue to payment (USD ${ELIGIBILITY_CHECK_FEE})`}
               </Button>
             </form>
           </div>
         </section>
+        <TestimonialsSection />
+
 
         <AdUnit slotId={ADSENSE_SLOTS.eligibilityBottom} />
 

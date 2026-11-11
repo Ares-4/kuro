@@ -55,7 +55,7 @@ export const generateEligibilityPDF = async (leadData) => {
 
   doc.setFontSize(12);
   doc.setTextColor(80);
-  doc.text(`Lead Score: ${score}/100`, 105, 155, null, null, "center");
+  doc.text(`Eligibility score: ${score}/100`, 105, 155, null, null, "center");
 
   // Disclaimer
   doc.setFontSize(10);

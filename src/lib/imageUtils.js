@@ -1,6 +1,6 @@
 // Utility functions for handling image fallbacks and country-specific assets
 
-export const DEFAULT_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=70&auto=format&fit=crop';
+export const DEFAULT_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=70&auto=format&fit=crop';
 
 // SINGLE SOURCE OF TRUTH - Proven Unsplash URLs that are guaranteed to load
 // Updated with high-quality destination images

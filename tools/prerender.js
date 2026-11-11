@@ -29,6 +29,9 @@ async function launchBrowser() {
 }
 
 const DIST_DIR = path.join(process.cwd(), 'dist');
+// Written to dist/prerender-report.json so a deploy's prerender result can be
+// read from the live site (Vercel build logs are not always at hand).
+const report = { skipped: [], relaunches: 0, budgetHit: false, unattempted: 0 };
 const PORT = 4321;
 // sparticuz/chromium's single-process build disconnected on nearly every
 // route on Vercel even at concurrency 3 (fine locally with a normal system
@@ -44,8 +47,9 @@ const CONCURRENCY = 1;
 // Hard limits so a wedged headless browser can never hang the deploy:
 // page.goto() has its own timeout, but newContext()/content()/launch() do not.
 const ROUTE_TIMEOUT_MS = 40_000;
-// Vercel's build cap is 45 min; the vite build + SEO steps need only ~2 min.
-const TOTAL_BUDGET_MS = 25 * 60_000; // after this, stop prerendering and ship what we have
+// Vercel's build cap is 45 min; vite build + SEO steps take ~2 min. 25 min ran out
+// before the course pages (prerendered last), leaving 60 of them unrendered.
+const TOTAL_BUDGET_MS = 33 * 60_000; // after this, stop prerendering and ship what we have
 // How long to wait for a page to render its own <title> (data loaded).
 const READY_TIMEOUT_MS = 12_000;
 
@@ -119,6 +123,7 @@ async function openPage(browserHolder) {
 
 async function relaunch(browserHolder, reason) {
   console.warn(`browser unhealthy, relaunching: ${reason}`);
+  report.relaunches += 1;
   browserHolder.current.close().catch(() => {});
   browserHolder.current = await withTimeout(launchBrowser(), 30_000, 'launchBrowser');
   browserHolder.all.push(browserHolder.current);
@@ -141,7 +146,7 @@ async function waitUntilRendered(page, route, shellTitles) {
   }
   // Sections that load after the title (related courses, deadlines...) get a
   // short, capped chance to finish so they land in the snapshot too.
-  await page.waitForLoadState('networkidle', { timeout: 3_000 }).catch(() => {});
+  await page.waitForLoadState('networkidle', { timeout: 1_500 }).catch(() => {});
   await page.waitForTimeout(300);
 }
 
@@ -189,6 +194,7 @@ async function prerenderRoute(browserHolder, route, shellTitles, attempt = 1) {
     }
     if (attempt < 2) return prerenderRoute(browserHolder, route, shellTitles, attempt + 1);
     console.warn(`skipped ${route.path}: ${error.message.split('\n')[0]}`);
+    report.skipped.push({ path: route.path, reason: error.message.split('\n')[0].slice(0, 160) });
   }
 }
 
@@ -198,6 +204,8 @@ async function runPool(items, size, worker, deadline) {
     if (cursor >= items.length) return;
     if (Date.now() > deadline) {
       console.warn(`prerender time budget used up; ${items.length - cursor} routes left client-rendered`);
+      report.budgetHit = true;
+      report.unattempted = items.length - cursor;
       cursor = items.length;
       return;
     }
@@ -239,6 +247,10 @@ async function main() {
         .finally(() => { done += 1; }), deadline);
     const written = routes.filter((r) => fs.existsSync(path.join(r.path === '/' ? DIST_DIR : path.join(DIST_DIR, r.path), 'index.html'))).length;
     console.log(`prerender finished: ${written}/${routes.length} routes in ${Math.round((Date.now() - startedAt) / 1000)}s (${done} attempted)`);
+    fs.writeFileSync(path.join(DIST_DIR, 'prerender-report.json'), JSON.stringify({
+      builtAt: new Date().toISOString(), onVercel: !!process.env.VERCEL,
+      seconds: Math.round((Date.now() - startedAt) / 1000), written, total: routes.length, attempted: done, ...report,
+    }, null, 2));
   } finally {
     // Every browser this run ever launched, not just the current one — a
     // relaunch replaces browserHolder.current but the previous instance

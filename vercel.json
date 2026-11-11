@@ -57,7 +57,7 @@
     },
     {
       "source": "/((?!api/|sbapi/).*)",
-      "destination": "/index.html"
+      "destination": "/shell.html"
     }
   ],
   "headers": [
@@ -92,6 +92,15 @@
     },
     {
       "source": "/sbapi/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/(shell.html|prerender-report.json)",
       "headers": [
         {
           "key": "X-Robots-Tag",

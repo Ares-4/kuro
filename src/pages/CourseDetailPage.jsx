@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { sizedImage } from '@/lib/imageUtils';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { supabase } from '@/lib/customSupabaseClient';
@@ -249,7 +250,7 @@ const CourseDetailPage = () => {
                <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
                   <div className="aspect-video bg-slate-800 relative">
                      {course.image_url ? (
-                        <img src={course.image_url} alt={course.program_name} className="w-full h-full object-cover" />
+                        <img src={sizedImage(course.image_url, 1200)} alt={course.program_name} className="w-full h-full object-cover" fetchPriority="high" decoding="async" />
                      ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-600">
                            <Building2 className="w-16 h-16" />

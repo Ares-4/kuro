@@ -138,7 +138,7 @@ const CourseEditor = ({ course, onSave, onCancel }) => {
       setFormData({
         ...course,
         requirements: course.requirements || [],
-        image_url: course.image_url || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop',
+        image_url: course.image_url || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=70&auto=format&fit=crop',
         application_fee: course.application_fee || '',
         processing_time: course.processing_time || '2-4 Weeks',
         // Ensure currency has a fallback if undefined in existing records

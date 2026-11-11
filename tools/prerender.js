@@ -115,7 +115,10 @@ function startServer() {
 // One context + page is reused for every route: creating a fresh context per
 // route was the main per-route cost on Vercel's slow serverless Chromium.
 async function openPage(browserHolder) {
-  const context = await withTimeout(browserHolder.current.newContext(), 15_000, 'newContext');
+  // reducedMotion: the looping background animations (flight paths, aurora) stop
+  // under prefers-reduced-motion. Without this, Vercel's single-process
+  // Chromium repainted constantly and crashed: 24 relaunches, 27/125 pages.
+  const context = await withTimeout(browserHolder.current.newContext({ reducedMotion: 'reduce' }), 15_000, 'newContext');
   await blockNonEssentialRequests(context);
   browserHolder.context = context;
   browserHolder.page = await context.newPage();

@@ -60,12 +60,20 @@
 				gtag('js', new Date());
 				gtag('config', 'G-XWHNTFSP8W');
 				function load(src) { var s = document.createElement('script'); s.async = true; s.src = src; document.head.appendChild(s); }
-				window.addEventListener('load', function () {
-					setTimeout(function () {
-						load('https://www.googletagmanager.com/gtag/js?id=G-XWHNTFSP8W');
-						load('https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js');
-					}, 2500);
-				});
+				// gtag.js costs ~0.7s of main-thread time on a phone, so it waits for the
+				// visitor's first interaction, or 6s after load, whichever comes first.
+				// Events fired before then queue in dataLayer and are sent once it loads.
+				var started = false;
+				var events = ['pointerdown', 'keydown', 'scroll', 'touchstart'];
+				function start() {
+					if (started) return;
+					started = true;
+					events.forEach(function (e) { window.removeEventListener(e, start, { passive: true }); });
+					load('https://www.googletagmanager.com/gtag/js?id=G-XWHNTFSP8W');
+					load('https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js');
+				}
+				events.forEach(function (e) { window.addEventListener(e, start, { passive: true }); });
+				window.addEventListener('load', function () { setTimeout(start, 6000); });
 			})();
 		</script>
 	</head>

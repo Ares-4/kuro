@@ -1,6 +1,7 @@
 // daily-followups: run once a day by pg_cron (see migration 20261111150000).
 //  1. Guide follow-up: leads who downloaded the study guide 3+ days ago.
 //  2. Scholarship deadline reminders: subscribers, 30 and 7 days before.
+//  3. Readiness check reminder: questions done but payment not finished.
 // Idempotent: every send is recorded in followup_sends (unique per kind+ref+email),
 // so calling it again, or by someone else, never repeats an email; it only
 // sends what is due. Emails go through send-email with the service role.
@@ -58,6 +59,33 @@ Deno.serve(async () => {
         })) sent++;
       }
     }
+  }
+
+  // 3. Readiness check started but not paid: one reminder per email address ever,
+  //    for leads 20 hours to 7 days old with no readiness order (by lead or email).
+  const { data: started } = await db.from("leads").select("id, email, goal, created_at")
+    .in("goal", ["readiness_check_basic", "readiness_check_premium"]).not("email", "is", null)
+    .lte("created_at", new Date(Date.now() - 20 * 3600000).toISOString())
+    .gte("created_at", new Date(Date.now() - 7 * 86400000).toISOString())
+    .order("created_at", { ascending: false })
+    .limit(MAX_PER_RUN);
+  const seen = new Set<string>();
+  for (const l of started ?? []) {
+    if (sent >= MAX_PER_RUN) break;
+    const email = String(l.email).trim().toLowerCase();
+    if (seen.has(email)) continue;
+    seen.add(email);
+    const [byLead, byEmail] = await Promise.all([
+      db.from("readiness_orders").select("id", { count: "exact", head: true }).eq("lead_id", l.id),
+      db.from("readiness_orders").select("id", { count: "exact", head: true }).ilike("email", email),
+    ]);
+    if (byLead.error || byEmail.error) continue; // unsure: never remind someone who may have paid
+    if ((byLead.count ?? 0) + (byEmail.count ?? 0) > 0) continue; // paid (this lead or another one)
+    const premium = l.goal === "readiness_check_premium";
+    if (await sendOnce("readiness_reminder", "readiness-2027", email, "readiness_checkout_reminder", {
+      plan: premium ? "Premium report" : "Basic check",
+      price: premium ? "EUR 19" : "EUR 2.99",
+    })) sent++;
   }
 
   return json({ ok: true, sent });

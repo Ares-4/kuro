@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { isVisaInfoStale } from '@/lib/visaFreshness';
 import { useParams, Link, Navigate, useLocation } from 'react-router-dom';
 import { breadcrumbs } from '@/lib/schema';
+import { useWhatsAppMessage } from '@/components/WhatsAppButton';
 import { CheckCircle2, DollarSign, GraduationCap, Plane, AlertTriangle, ShieldCheck, ExternalLink, CalendarCheck, Clock, FileText, ChevronRight, Radio, Building2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -77,6 +78,8 @@ const DestinationDetailPage = () => {
       }
     });
   }, [slug]);
+
+  useWhatsAppMessage(slug ? `Hi Kuro, I'd like to study in ${dbDest?.name || slug.charAt(0).toUpperCase() + slug.slice(1)}. Can you help?` : null);
 
   if (!slug) return <Navigate to="/destinations" replace />;
 

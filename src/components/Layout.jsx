@@ -6,11 +6,13 @@ import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
 import PromoBanners from './layout/PromoBanners';
 import FlightPaths from './FlightPaths';
+import WhatsAppButton, { WhatsAppProvider } from './WhatsAppButton';
 
 const Layout = () => {
   const { pathname } = useLocation();
   const canonical = canonicalUrl(pathname);
   return (
+    <WhatsAppProvider>
     <div className="flex flex-col min-h-dvh relative" style={{ background: 'var(--ink)' }}>
       {/* Default canonical/og:url for every public page; pages using <SEO> set the same value. */}
       <Helmet>
@@ -37,7 +39,9 @@ const Layout = () => {
       </main>
 
       <Footer />
+      <WhatsAppButton />
     </div>
+    </WhatsAppProvider>
   );
 };
 

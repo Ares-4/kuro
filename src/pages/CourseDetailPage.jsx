@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { sizedImage } from '@/lib/imageUtils';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { breadcrumbs } from '@/lib/schema';
+import { useWhatsAppMessage } from '@/components/WhatsAppButton';
 import { Helmet } from 'react-helmet';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
@@ -43,6 +44,7 @@ const CourseDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
   const [related, setRelated] = useState({ destination: null, visa: null, deadlines: [], scholarships: [], siblings: [] });
+  useWhatsAppMessage(course ? `Hi Kuro, I'm interested in ${course.program_name} at ${course.university}. Can you help me apply?` : null);
 
   useEffect(() => {
     const fetchCourse = async () => {

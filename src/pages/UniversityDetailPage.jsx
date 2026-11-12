@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { breadcrumbs, collegeOrUniversity } from '@/lib/schema';
+import { useWhatsAppMessage } from '@/components/WhatsAppButton';
 import { supabase } from '@/lib/customSupabaseClient';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ const UniversityDetailPage = () => {
   const { id } = useParams();
   const { pathname } = useLocation();
   const [university, setUniversity] = useState(null);
+  useWhatsAppMessage(university ? `Hi Kuro, I'm interested in studying at ${university.name}. Can you help?` : null);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 

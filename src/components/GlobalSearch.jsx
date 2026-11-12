@@ -119,7 +119,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
                       <FileText className="w-4 h-4 mr-3 text-amber-400 group-hover:text-amber-300" />
                       <div>
                         <div className="font-medium">{page.title}</div>
-                        <div className="text-xs text-slate-500">{page.description}</div>
+                        <div className="text-xs text-slate-400">{page.description}</div>
                       </div>
                     </div>
                   ))}
@@ -156,7 +156,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
                       <Building2 className="w-4 h-4 mr-3 text-blue-400 group-hover:text-blue-300" />
                       <div>
                         <div className="font-medium">{uni.name}</div>
-                        <div className="text-xs text-slate-500">{uni.destinations?.name}</div>
+                        <div className="text-xs text-slate-400">{uni.destinations?.name}</div>
                       </div>
                     </div>
                   ))}
@@ -176,7 +176,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
                       <GraduationCap className="w-4 h-4 mr-3 text-green-400 group-hover:text-green-300" />
                       <div>
                         <div className="font-medium">{prog.program_name}</div>
-                        <div className="text-xs text-slate-500">{prog.university}, {prog.country}</div>
+                        <div className="text-xs text-slate-400">{prog.university}, {prog.country}</div>
                       </div>
                     </div>
                   ))}

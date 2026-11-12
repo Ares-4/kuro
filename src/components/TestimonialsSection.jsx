@@ -68,7 +68,7 @@ const TestimonialsSection = () => {
                   </div>
                   <div>
                     <div className="font-bold text-white text-sm">{testimonial.student_name}</div>
-                    <div className="text-xs text-slate-500">{testimonial.program} at {testimonial.university}</div>
+                    <div className="text-xs text-slate-400">{testimonial.program} at {testimonial.university}</div>
                   </div>
                 </div>
               </CardContent>

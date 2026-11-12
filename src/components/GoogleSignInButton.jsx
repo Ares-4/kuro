@@ -74,7 +74,7 @@ const GoogleSignInButton = ({ label = 'Continue with Google' }) => {
       </button>
       <div className="flex items-center gap-3 mt-6">
         <span className="h-px flex-1 bg-slate-700" />
-        <span className="text-xs text-slate-500 uppercase tracking-wider">or use email</span>
+        <span className="text-xs text-slate-400 uppercase tracking-wider">or use email</span>
         <span className="h-px flex-1 bg-slate-700" />
       </div>
     </div>

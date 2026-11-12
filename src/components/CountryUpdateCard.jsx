@@ -66,7 +66,7 @@ const CountryUpdateCard = ({ update, compact = false }) => {
               <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${cfg.badge}`}>
                 {cfg.label}
               </span>
-              <span className="text-xs text-slate-500 capitalize">{update.destination_slug}</span>
+              <span className="text-xs text-slate-400 capitalize">{update.destination_slug}</span>
             </div>
             <p className="text-sm font-semibold text-white">{update.title}</p>
           </div>

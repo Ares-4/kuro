@@ -228,7 +228,7 @@ const PromoBanner = ({ variant = 'readiness', className = '' }) => {
               {isSubmitting ? 'Sending...' : content.buttonText}
             </Button>
           </div>
-          <p className="text-xs text-slate-500 text-center md:text-left">
+          <p className="text-xs text-slate-400 text-center md:text-left">
             We email the PDF immediately. No spam.
           </p>
         </form>

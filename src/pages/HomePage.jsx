@@ -211,7 +211,7 @@ const HomePage = ({ contentOverride }) => {
               >
                 <div className="glass p-6 sm:p-7 rounded-3xl">
                   <div className="flex items-center justify-between gap-3 mb-1">
-                    <h3 className="font-display font-bold text-white text-lg">Next application deadlines</h3>
+                    <h2 className="font-display font-bold text-white text-lg">Next application deadlines</h2>
                     <span className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-300">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" /> Live
                     </span>

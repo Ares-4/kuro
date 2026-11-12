@@ -29,7 +29,7 @@ const PolandStep = ({ formData, updateField }) => (
     {/* A-levels */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">A-level passes</Label>
-      <p className="text-xs text-slate-500 mb-2">Syrena requires a minimum of 3 A-level passes for undergraduate admission.</p>
+      <p className="text-xs text-slate-400 mb-2">Syrena requires a minimum of 3 A-level passes for undergraduate admission.</p>
       <Select onValueChange={v => updateField('alevels', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="How many A-level passes do you have?" />
@@ -47,7 +47,7 @@ const PolandStep = ({ formData, updateField }) => (
     {/* Passport */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Passport validity</Label>
-      <p className="text-xs text-slate-500 mb-2">Must be valid for at least 1 year and 3 months (15 months) after your planned departure date, with 2 blank consecutive visa pages.</p>
+      <p className="text-xs text-slate-400 mb-2">Must be valid for at least 1 year and 3 months (15 months) after your planned departure date, with 2 blank consecutive visa pages.</p>
       <Select onValueChange={v => updateField('passportMonthsRemaining', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Validity from your planned departure date" />
@@ -64,7 +64,7 @@ const PolandStep = ({ formData, updateField }) => (
     {/* NAWA recognition */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">NAWA recognition statement</Label>
-      <p className="text-xs text-slate-500 mb-2">This is a written confirmation from NAWA (Poland's academic exchange agency) that your high school diploma qualifies you to study in Poland. Apply directly: dyplom@nawa.gov.pl</p>
+      <p className="text-xs text-slate-400 mb-2">This is a written confirmation from NAWA (Poland's academic exchange agency) that your high school diploma qualifies you to study in Poland. Apply directly: dyplom@nawa.gov.pl</p>
       <Select onValueChange={v => updateField('nawaStatement', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Status" />
@@ -81,7 +81,7 @@ const PolandStep = ({ formData, updateField }) => (
     {/* Final acceptance letter */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Final acceptance letter + tuition fees paid</Label>
-      <p className="text-xs text-slate-500 mb-2">Must be a signed final (not conditional) letter from the university stating you're accepted and all fees are paid — with bank proof of payment. Also requires a Certificate of Student Status (Zaświadczenie).</p>
+      <p className="text-xs text-slate-400 mb-2">Must be a signed final (not conditional) letter from the university stating you're accepted and all fees are paid — with bank proof of payment. Also requires a Certificate of Student Status (Zaświadczenie).</p>
       <Select onValueChange={v => updateField('admissionLetter', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Status" />
@@ -99,7 +99,7 @@ const PolandStep = ({ formData, updateField }) => (
     {/* School certificates legalization */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">School certificates — legalized by Zimbabwe MFA</Label>
-      <p className="text-xs text-slate-500 mb-2">Originals AND copies required. For Zimbabwe, certificates must be legalized by the Ministry of Foreign Affairs (not apostilled — apostille is for SA/Botswana). Also need a letter of no objection from Zimbabwe's Ministry of Education.</p>
+      <p className="text-xs text-slate-400 mb-2">Originals AND copies required. For Zimbabwe, certificates must be legalized by the Ministry of Foreign Affairs (not apostilled — apostille is for SA/Botswana). Also need a letter of no objection from Zimbabwe's Ministry of Education.</p>
       <Select onValueChange={v => updateField('certLegalization', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Status" />
@@ -116,7 +116,7 @@ const PolandStep = ({ formData, updateField }) => (
     {/* Accommodation */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Proof of accommodation for first year</Label>
-      <p className="text-xs text-slate-500 mb-2">A signed letter from the university confirming accommodation, or a lease agreement.</p>
+      <p className="text-xs text-slate-400 mb-2">A signed letter from the university confirming accommodation, or a lease agreement.</p>
       <Select onValueChange={v => updateField('accommodation', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Status" />
@@ -131,7 +131,7 @@ const PolandStep = ({ formData, updateField }) => (
     {/* Sponsor financial documents */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Financial sponsor documents</Label>
-      <p className="text-xs text-slate-500 mb-2">Sponsor needs: a declaration of costs (notarized + legalized by Zimbabwe MFA), employment letter, last 3 months payslips and bank statements (originals). Account must show at least R100,000. Scholarship confirmation is also accepted.</p>
+      <p className="text-xs text-slate-400 mb-2">Sponsor needs: a declaration of costs (notarized + legalized by Zimbabwe MFA), employment letter, last 3 months payslips and bank statements (originals). Account must show at least R100,000. Scholarship confirmation is also accepted.</p>
       <Select onValueChange={v => updateField('sponsorType', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Financial proof situation" />
@@ -148,7 +148,7 @@ const PolandStep = ({ formData, updateField }) => (
     {/* Medical insurance */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Travel medical insurance</Label>
-      <p className="text-xs text-slate-500 mb-2">Must cover 30,000 EUR, be valid for 365 days from departure, and be from an approved insurer (e.g. AIG, AXA, Hollard, Old Mutual, Santam).</p>
+      <p className="text-xs text-slate-400 mb-2">Must cover 30,000 EUR, be valid for 365 days from departure, and be from an approved insurer (e.g. AIG, AXA, Hollard, Old Mutual, Santam).</p>
       <Select onValueChange={v => updateField('insurance', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Status" />
@@ -176,7 +176,7 @@ const GermanyStep = ({ formData, updateField }) => (
     {/* Visa type awareness */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Visa type</Label>
-      <p className="text-xs text-slate-500 mb-2">Studying in Germany requires a <strong className="text-slate-300">National visa</strong> (for stays longer than 90 days). The visa fee is EUR 75. Fee is waived if you receive a public scholarship.</p>
+      <p className="text-xs text-slate-400 mb-2">Studying in Germany requires a <strong className="text-slate-300">National visa</strong> (for stays longer than 90 days). The visa fee is EUR 75. Fee is waived if you receive a public scholarship.</p>
       <Select onValueChange={v => updateField('germanyVisaType', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Which visa are you applying for?" />
@@ -192,7 +192,7 @@ const GermanyStep = ({ formData, updateField }) => (
     {/* Passport */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Valid passport</Label>
-      <p className="text-xs text-slate-500 mb-2">A valid travel document is required. Applications must be submitted in person at the German mission — your original passport will be checked.</p>
+      <p className="text-xs text-slate-400 mb-2">A valid travel document is required. Applications must be submitted in person at the German mission — your original passport will be checked.</p>
       <Select onValueChange={v => updateField('passportMonthsRemaining', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Passport status" />
@@ -208,7 +208,7 @@ const GermanyStep = ({ formData, updateField }) => (
     {/* Consular Services Portal */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Online application — Consular Services Portal</Label>
-      <p className="text-xs text-slate-500 mb-2">Since January 2025, study visa applications can be submitted online via <strong className="text-slate-300">digital.diplo.de</strong>. You upload documents online, then attend in person for fingerprints, biometric photo, and fee payment.</p>
+      <p className="text-xs text-slate-400 mb-2">Since January 2025, study visa applications can be submitted online via <strong className="text-slate-300">digital.diplo.de</strong>. You upload documents online, then attend in person for fingerprints, biometric photo, and fee payment.</p>
       <Select onValueChange={v => updateField('germanyPortal', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Portal status" />
@@ -224,7 +224,7 @@ const GermanyStep = ({ formData, updateField }) => (
     {/* German mission / appointment */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">German Embassy appointment</Label>
-      <p className="text-xs text-slate-500 mb-2">Applications must be submitted in person at the German mission responsible for your place of residence. The in-person appointment is required for biometric data (fingerprints and photo) and to pay the EUR 75 fee in person.</p>
+      <p className="text-xs text-slate-400 mb-2">Applications must be submitted in person at the German mission responsible for your place of residence. The in-person appointment is required for biometric data (fingerprints and photo) and to pay the EUR 75 fee in person.</p>
       <Select onValueChange={v => updateField('germanyAppointment', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Appointment status" />
@@ -241,7 +241,7 @@ const GermanyStep = ({ formData, updateField }) => (
     {/* Processing time / lead time */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Processing lead time</Label>
-      <p className="text-xs text-slate-500 mb-2">National visa applications "may take several months to process." You must start well before your intended study date.</p>
+      <p className="text-xs text-slate-400 mb-2">National visa applications "may take several months to process." You must start well before your intended study date.</p>
       <Select onValueChange={v => updateField('germanyLeadTime', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="How far in advance are you applying?" />
@@ -258,7 +258,7 @@ const GermanyStep = ({ formData, updateField }) => (
     {/* University admission */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">University admission</Label>
-      <p className="text-xs text-slate-500 mb-2">A study visa requires proof of your purpose of stay. The Consular Services Portal specifically supports visa applications "to pursue your studies."</p>
+      <p className="text-xs text-slate-400 mb-2">A study visa requires proof of your purpose of stay. The Consular Services Portal specifically supports visa applications "to pursue your studies."</p>
       <Select onValueChange={v => updateField('admissionLetter', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Admission status" />
@@ -275,7 +275,7 @@ const GermanyStep = ({ formData, updateField }) => (
     {/* Scholarship */}
     <div className="space-y-1">
       <Label className="text-slate-200 text-sm font-semibold">Scholarship or financial proof</Label>
-      <p className="text-xs text-slate-500 mb-2">If you receive funding from public funds (e.g. DAAD, government scholarship), the EUR 75 visa fee is waived. Otherwise, proof of financial resources is required.</p>
+      <p className="text-xs text-slate-400 mb-2">If you receive funding from public funds (e.g. DAAD, government scholarship), the EUR 75 visa fee is waived. Otherwise, proof of financial resources is required.</p>
       <Select onValueChange={v => updateField('sponsorType', v)}>
         <SelectTrigger className="bg-slate-900 border-slate-700 text-sm">
           <SelectValue placeholder="Financial situation" />

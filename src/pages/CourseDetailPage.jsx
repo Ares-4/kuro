@@ -3,6 +3,8 @@ import { sizedImage } from '@/lib/imageUtils';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { breadcrumbs } from '@/lib/schema';
 import { useWhatsAppMessage } from '@/components/WhatsAppButton';
+import CourseEnquiryCard from '@/components/CourseEnquiryCard';
+import { pickRelatedPosts } from '@/lib/relatedPosts';
 import { Helmet } from 'react-helmet';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
@@ -43,7 +45,7 @@ const CourseDetailPage = () => {
   const [universityId, setUniversityId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
-  const [related, setRelated] = useState({ destination: null, visa: null, deadlines: [], scholarships: [], siblings: [] });
+  const [related, setRelated] = useState({ destination: null, visa: null, deadlines: [], scholarships: [], siblings: [], guides: [] });
   useWhatsAppMessage(course ? `Hi Kuro, I'm interested in ${course.program_name} at ${course.university}. Can you help me apply?` : null);
 
   useEffect(() => {
@@ -79,13 +81,15 @@ const CourseDetailPage = () => {
   const loadRelated = async (program) => {
     const countryName = titleCase(program.country);
     const today = new Date().toISOString().slice(0, 10);
-    const [destination, deadlines, scholarships, siblings] = await Promise.all([
+    const [destination, deadlines, scholarships, siblings, posts] = await Promise.all([
       supabase.from('destinations').select('name, slug, tuition_cost, living_cost').ilike('name', countryName).eq('is_active', true).maybeSingle(),
       supabase.from('university_deadlines').select('id, university_name, program_name, deadline_date, intake_season, intake_year')
         .ilike('country', countryName).eq('is_active', true).gte('deadline_date', today).order('deadline_date').limit(3),
       supabase.from('scholarships').select('id, title, amount, deadline, countries').eq('is_active', true).limit(60),
       supabase.from('programs').select('id, program_name, degree_level, tuition_fee, currency')
         .eq('university', program.university).eq('is_active', true).neq('id', program.id).limit(6),
+      supabase.from('blog_posts').select('slug, title, excerpt, tags, categories, published_at')
+        .eq('status', 'published').order('published_at', { ascending: false }).limit(60),
     ]);
     let visa = null;
     if (destination.data?.slug) {
@@ -102,6 +106,7 @@ const CourseDetailPage = () => {
         .filter((sch) => (!sch.deadline || sch.deadline >= today) && (sch.countries || []).some((c) => String(c).toLowerCase() === lowerCountry))
         .slice(0, 3),
       siblings: siblings.data || [],
+      guides: pickRelatedPosts(posts.data, program),
     });
   };
 
@@ -285,6 +290,10 @@ const CourseDetailPage = () => {
                   </div>
                </div>
 
+               <div id="ask" className="scroll-mt-28">
+                  <CourseEnquiryCard course={course} countryName={countryName} />
+               </div>
+
                {(related.destination || related.visa) && (
                   <section className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
                      <h2 className="text-2xl font-bold text-white mb-6">Studying in {countryName}</h2>
@@ -343,6 +352,20 @@ const CourseDetailPage = () => {
                            <Link to="/scholarships" className="inline-block mt-4 text-sm text-blue-400 hover:text-blue-300">All scholarships</Link>
                         </div>
                      )}
+                  </section>
+               )}
+
+               {related.guides.length > 0 && (
+                  <section className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                     <h3 className="flex items-center gap-2 text-lg font-bold text-white mb-4"><FileText className="w-5 h-5 text-blue-400" /> Guides for this course</h3>
+                     <div className="space-y-3">
+                        {related.guides.map((g) => (
+                           <Link key={g.slug} to={`/blog/${g.slug}`} className="block rounded-xl border border-slate-800 bg-slate-950/50 p-4 hover:border-blue-500/40 transition-colors group">
+                              <p className="text-slate-200 font-medium group-hover:text-blue-300 transition-colors">{g.title}</p>
+                              {g.excerpt && <p className="text-slate-400 text-sm mt-1 line-clamp-2">{g.excerpt}</p>}
+                           </Link>
+                        ))}
+                     </div>
                   </section>
                )}
 
@@ -405,8 +428,8 @@ const CourseDetailPage = () => {
                   </Card>
 
                   <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 text-center">
-                     <p className="text-slate-400 text-sm mb-2">Need help choosing?</p>
-                     <Link to="/contact" className="text-blue-400 hover:underline text-sm font-medium">Contact an Advisor</Link>
+                     <p className="text-slate-400 text-sm mb-2">Not ready to apply yet?</p>
+                     <a href="#ask" className="text-blue-400 hover:underline text-sm font-medium">Ask an advisor about this course</a>
                   </div>
                </div>
             </div>

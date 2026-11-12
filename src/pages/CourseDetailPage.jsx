@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { sizedImage } from '@/lib/imageUtils';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
+import { breadcrumbs } from '@/lib/schema';
 import { Helmet } from 'react-helmet';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
@@ -32,6 +33,7 @@ const InfoTile =({ icon: Icon, label, value }) => (
 
 const CourseDetailPage = () => {
   const { id } = useParams();
+  const { pathname } = useLocation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -211,6 +213,7 @@ const CourseDetailPage = () => {
         <title>{course.program_name} at {course.university} | Apply Now</title>
         <meta name="description" content={`${course.degree_level || 'Study'} ${course.program_name} at ${course.university}.${tuition ? ` Tuition ${tuition}/year.` : ''} Entry requirements, visa, deadlines and how to apply with Kuro.`} />
         <script type="application/ld+json">{JSON.stringify(courseSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbs([['Courses', '/courses'], [course.program_name, pathname]]))}</script>
       </Helmet>
 
       <div className="min-h-screen bg-slate-950 pt-24 pb-20">

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { sizedImage } from '@/lib/imageUtils';
-import { useParams, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import SEO from '@/components/SEO';
+import { blogPosting, breadcrumbs } from '@/lib/schema';
 import { supabase } from '@/lib/customSupabaseClient';
 import { Loader2, ArrowLeft, Calendar, User, Clock, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import DOMPurify from 'dompurify';
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
+  const { pathname } = useLocation();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,10 +70,12 @@ const BlogDetailPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{post.title} - Kuro Educational</title>
-        <meta name="description" content={post.excerpt || post.title} />
-      </Helmet>
+      <SEO
+        title={post.title}
+        description={post.excerpt || post.title}
+        image={post.featured_image || undefined}
+        schema={[blogPosting(post, pathname), breadcrumbs([['Resources', '/resources'], [post.title, pathname]])]}
+      />
 
       <article className="min-h-screen bg-slate-950 pt-24 pb-16">
         {/* Header / Hero */}

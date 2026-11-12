@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { breadcrumbs, collegeOrUniversity } from '@/lib/schema';
 import { supabase } from '@/lib/customSupabaseClient';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import UniversityMark from '@/components/UniversityMark';
 
 const UniversityDetailPage = () => {
   const { id } = useParams();
+  const { pathname } = useLocation();
   const [university, setUniversity] = useState(null);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +65,7 @@ const UniversityDetailPage = () => {
         title={u.name}
         description={u.description || `${u.name}${destName ? ` in ${destName}` : ''} — programs, admissions, and application guidance from Kuro Education Consultancy.`}
         image={u.image_url}
+        schema={[collegeOrUniversity(u, pathname), breadcrumbs([['Universities', '/universities'], [u.name, pathname]])]}
       />
 
       <div className="min-h-screen bg-slate-950 pt-24 pb-20 text-slate-50">

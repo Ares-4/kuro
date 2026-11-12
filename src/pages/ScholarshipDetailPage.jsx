@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { breadcrumbs } from '@/lib/schema';
 import { supabase } from '@/lib/customSupabaseClient';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ const DeadlineBadge = ({ date }) => {
 
 const ScholarshipDetailPage = () => {
   const { id } = useParams();
+  const { pathname } = useLocation();
   const [scholarship, setScholarship] = useState(null);
   const [loading, setLoading] = useState(true);
   const [subscribed, setSubscribed] = useState(false);
@@ -82,6 +84,7 @@ const ScholarshipDetailPage = () => {
       <SEO
         title={`${s.title} — ${s.provider || 'Scholarship'}`}
         description={metaDescription || `Scholarship opportunity: ${s.title}. Funding for international students.`}
+        schema={breadcrumbs([['Scholarships', '/scholarships'], [s.title, pathname]])}
       />
 
       <div className="min-h-screen bg-slate-950 pt-24 pb-20 text-slate-50">

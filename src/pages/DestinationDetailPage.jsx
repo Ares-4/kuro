@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { isVisaInfoStale } from '@/lib/visaFreshness';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link, Navigate, useLocation } from 'react-router-dom';
+import { breadcrumbs } from '@/lib/schema';
 import { CheckCircle2, DollarSign, GraduationCap, Plane, AlertTriangle, ShieldCheck, ExternalLink, CalendarCheck, Clock, FileText, ChevronRight, Radio, Building2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -35,6 +36,7 @@ const SLUG_ALIASES = {
 
 const DestinationDetailPage = () => {
   const params = useParams();
+  const { pathname } = useLocation();
   const rawSlug = (params?.country || '').toLowerCase().trim();
   const slug = SLUG_ALIASES[rawSlug] || rawSlug;
   const name = nameMap[slug];
@@ -103,6 +105,7 @@ const DestinationDetailPage = () => {
       <SEO
         title={`Study in ${displayName}`}
         description={`Everything you need to know about studying in ${displayName}. Visa info, costs, roadmap, and more.`}
+        schema={breadcrumbs([['Destinations', '/destinations'], [`Study in ${displayName}`, pathname]])}
       />
       <div className="min-h-screen text-slate-50">
 

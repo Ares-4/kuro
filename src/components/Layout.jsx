@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { canonicalUrl } from '@/lib/siteUrl';
+import { canonicalUrl, DEFAULT_SHARE_IMAGE } from '@/lib/siteUrl';
 import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
 import PromoBanners from './layout/PromoBanners';
@@ -18,6 +18,13 @@ const Layout = () => {
       <Helmet>
         <link rel="canonical" href={canonical} />
         <meta property="og:url" content={canonical} />
+        {/* Default share preview; pages with their own image (SEO image prop) override it. */}
+        <meta property="og:image" content={DEFAULT_SHARE_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Kuro Educational Consultancy: study in Europe from Southern Africa" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={DEFAULT_SHARE_IMAGE} />
       </Helmet>
       {/* Aurora — fixed behind all public pages */}
       <div className="aurora" aria-hidden="true">

@@ -3,8 +3,10 @@ import { sizedImage } from '@/lib/imageUtils';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import { blogPosting, breadcrumbs } from '@/lib/schema';
+import { canonicalUrl } from '@/lib/siteUrl';
+import ShareButtons from '@/components/ShareButtons';
 import { supabase } from '@/lib/customSupabaseClient';
-import { Loader2, ArrowLeft, Calendar, User, Clock, Share2 } from 'lucide-react';
+import { Loader2, ArrowLeft, Calendar, User, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import DOMPurify from 'dompurify';
@@ -140,13 +142,11 @@ const BlogDetailPage = () => {
           />
           
           {/* Footer of Article */}
-          <div className="mt-12 pt-8 border-t border-slate-800 flex justify-between items-center">
+          <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
              <div className="text-slate-400 text-sm">
                Tags: {post.tags && post.tags.length > 0 ? post.tags.join(', ') : 'None'}
              </div>
-             <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-               <Share2 className="w-4 h-4 mr-2" /> Share Article
-             </Button>
+             <ShareButtons url={canonicalUrl(pathname)} title={post.title} id={post.slug} />
           </div>
         </div>
       </article>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; overflow: hidden; font-family: Inter, system-ui, sans-serif; color: #e2e8f0;
+    background:
+      radial-gradient(ellipse 60% 70% at 12% 0%, rgba(37,99,235,0.45), transparent 60%),
+      radial-gradient(ellipse 55% 60% at 95% 30%, rgba(124,58,237,0.35), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% 115%, rgba(34,211,238,0.22), transparent 60%),
+      #05060a; }
+  .grid { position: absolute; inset: 0; background-image:
+      linear-gradient(rgba(148,163,184,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,163,184,0.07) 1px, transparent 1px);
+    background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 70% at 40% 40%, black, transparent 85%); }
+  .wrap { position: relative; height: 100%; padding: 64px 72px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand img { width: 64px; height: 64px; }
+  .brand .name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 30px; color: #fff; letter-spacing: -0.01em; }
+  .brand .sub { font-size: 14px; letter-spacing: 0.32em; color: #60a5fa; font-weight: 600; margin-top: 2px; }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 76px; line-height: 1.02; letter-spacing: -0.035em; color: #fff; margin-top: 70px; max-width: 900px; }
+  h1 span { background: linear-gradient(90deg, #60a5fa, #a78bfa); -webkit-background-clip: text; color: transparent; }
+  .pills { display: flex; gap: 14px; margin-top: 34px; }
+  .pill { font-size: 22px; font-weight: 500; padding: 10px 20px; border-radius: 999px; background: rgba(30,41,59,0.7); border: 1px solid rgba(148,163,184,0.25); color: #cbd5e1; }
+  .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; }
+  .url { font-size: 24px; font-weight: 600; color: #93c5fd; }
+  .tag { font-size: 20px; color: #94a3b8; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="brand">
+      <img src="../../public/brand/kuro-icon.svg" alt="">
+      <div><div class="name">Kuro Educational</div><div class="sub">CONSULTANCY</div></div>
+    </div>
+    <h1>Study in Europe from <span>Southern Africa</span></h1>
+    <div class="pills">
+      <div class="pill">Admissions</div><div class="pill">Student visas</div><div class="pill">Scholarships</div><div class="pill">2027 intake</div>
+    </div>
+    <div class="foot">
+      <div class="url">kuroeduconsultancy.com</div>
+      <div class="tag">Poland · Germany · and beyond</div>
+    </div>
+  </div>
+</body>
+</html>

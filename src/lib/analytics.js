@@ -62,7 +62,8 @@ export const initContactClickTracking = () => {
   document.addEventListener('click', (e) => {
     const href = e.target?.closest?.('a[href]')?.getAttribute('href') || '';
     let method = null;
-    if (/^https?:\/\/(wa\.me|api\.whatsapp\.com|chat\.whatsapp\.com)/i.test(href)) method = 'whatsapp';
+    // Only links to a number (wa.me/<digits>); wa.me/?text=... is a share link, not a contact.
+    if (/^https?:\/\/(wa\.me\/\d|api\.whatsapp\.com\/send\?phone=\d|chat\.whatsapp\.com\/)/i.test(href)) method = 'whatsapp';
     else if (href.startsWith('tel:')) method = 'phone';
     else if (href.startsWith('mailto:')) method = 'email';
     if (method) track('contact_click', { method, page_path: window.location.pathname });
